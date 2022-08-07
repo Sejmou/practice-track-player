@@ -11,6 +11,10 @@ a {
   text-decoration: none;
 }
 
+a:hover {
+  color: teal;
+}
+
 * {
   box-sizing: border-box;
 }

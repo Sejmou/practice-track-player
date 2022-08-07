@@ -1,4 +1,4 @@
-import { SongBase } from '../../pages/api/musicals';
+import { SongBase } from '@models';
 
 type Props = {
   song: SongBase;
