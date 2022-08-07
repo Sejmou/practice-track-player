@@ -1,8 +1,10 @@
 //useSWR allows the use of SWR (https://swr.vercel.app/) inside function components
 // SWR makes fetching data easier (compared to fetch w/ useState and useEffect or similar "low-level" approaches)
 // it also adds other useful stuff
-import { Musical } from '@models';
 import useSWR from 'swr';
+import { useRouter } from 'next/router';
+
+import { Musical } from '@models';
 import SongItem from './SongItem';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
@@ -16,6 +18,12 @@ const MusicalSummary = ({ musicalId }: Props) => {
     `/api/musicals/${musicalId}`,
     fetcher
   );
+  const router = useRouter();
+
+  const backToOverviewHandler = () => {
+    router.push('/');
+  };
+
   let content: JSX.Element = <div>Loading...</div>;
 
   //Handle the error state
@@ -24,8 +32,19 @@ const MusicalSummary = ({ musicalId }: Props) => {
   if (data) {
     content = (
       <div>
-        <h2>{data.title}</h2>
-        <h3>Tracks:</h3>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <h2>{data.title}</h2>
+          <div>
+            <button onClick={backToOverviewHandler}>Back to overview</button>
+          </div>
+        </div>
+        <span>Tracks:</span>
         <ul>
           {data.songs.map((song: any) => (
             <SongItem song={song} key={song.no} />

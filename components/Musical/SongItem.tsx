@@ -5,9 +5,9 @@ type Props = {
 };
 const SongItem = ({ song }: Props) => {
   return (
-    <div>
+    <li>
       {song.no}. {song.title}
-    </div>
+    </li>
   );
 };
 export default SongItem;

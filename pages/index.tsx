@@ -8,7 +8,7 @@ type Props = { musicalsBaseData: MusicalBaseData[] };
 
 const Home: NextPage<Props> = ({ musicalsBaseData }) => {
   return (
-    <div>
+    <>
       <Head>
         <title>Musical Practice Tracks Player</title>
         <meta
@@ -17,20 +17,17 @@ const Home: NextPage<Props> = ({ musicalsBaseData }) => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      <main>
-        <h1>Welcome!</h1>
-        <p>
-          On this page you will hopefully soon find practice tracks for several
-          musicals (pulled from{' '}
-          <a href="https://www.musicalpracticetracks.com/index.php/">
-            musicalpracticetracks.com
-          </a>
-          ). But for now, only a single musical is online:
-        </p>
-        <MusicalsList musicalData={musicalsBaseData} />
-      </main>
-    </div>
+      <h1>Welcome!</h1>
+      <p>
+        On this page you will hopefully soon find practice tracks for several
+        musicals (pulled from{' '}
+        <a href="https://www.musicalpracticetracks.com/index.php/">
+          musicalpracticetracks.com
+        </a>
+        ). But for now, only a single musical is online:
+      </p>
+      <MusicalsList musicalData={musicalsBaseData} />
+    </>
   );
 };
 
