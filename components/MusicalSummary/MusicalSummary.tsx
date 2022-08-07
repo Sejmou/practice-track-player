@@ -6,8 +6,7 @@ import SongItem from './SongItem';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
-type Props = {};
-const MusicalSummary = (props: Props) => {
+const MusicalSummary = () => {
   const { data, error } = useSWR('/api/musicals', fetcher);
   let content: JSX.Element = <div>Loading...</div>;
 
@@ -15,14 +14,12 @@ const MusicalSummary = (props: Props) => {
   if (error) content = <div>Failed to load</div>;
   //Handle the loading state
   if (data) {
-    const actualData = JSON.parse(data);
-    console.log('actual title', actualData.title);
     content = (
       <div>
-        <h2>{actualData.title}</h2>
+        <h2>{data.title}</h2>
         <h3>Tracks:</h3>
         <ul>
-          {actualData.songs.map((song: any) => (
+          {data.songs.map((song: any) => (
             <SongItem song={song} key={song.no} />
           ))}
         </ul>
