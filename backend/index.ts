@@ -37,6 +37,11 @@ export async function getMusical(id: string) {
   return musicals.get(id);
 }
 
+export async function getAllMusicalIds() {
+  await loadMusicals();
+  return Array.from(musicals.keys());
+}
+
 export async function getAllMusicals() {
   await loadMusicals();
   return Array.from(musicals.entries());
@@ -49,4 +54,11 @@ export async function getAllMusicalBaseData(): Promise<MusicalBaseData[]> {
     id,
     title: musical.title,
   }));
+}
+
+export async function getSongData(musicalId: string, songNo: string) {
+  await loadMusicals();
+  const musical = musicals.get(musicalId);
+  if (!musical) return;
+  return musical.songs.find(song => song.no === songNo);
 }

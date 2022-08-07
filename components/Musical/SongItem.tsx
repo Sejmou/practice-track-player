@@ -2,10 +2,11 @@ import { SongBase } from '@models';
 
 type Props = {
   song: SongBase;
+  onClick: (no: string) => void;
 };
-const SongItem = ({ song }: Props) => {
+const SongItem = ({ song, onClick }: Props) => {
   return (
-    <li>
+    <li onClick={() => onClick(song.no)}>
       {song.no}. {song.title}
     </li>
   );

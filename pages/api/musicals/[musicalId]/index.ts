@@ -3,7 +3,6 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { Musical } from '@models';
 import { getMusical } from '@backend';
-import { send } from 'process';
 
 export default async function handler(
   req: NextApiRequest,
