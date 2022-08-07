@@ -1,5 +1,6 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
+import MusicalSummary from '../components/MusicalSummary/MusicalSummary';
 
 const Home: NextPage = () => {
   return (
@@ -15,7 +16,8 @@ const Home: NextPage = () => {
 
       <main>
         <h1>Welcome!</h1>
-        <p>Here you will hopefully see an awesome Web App soon.</p>
+        <p>Here you will hopefully soon see a Music Player for the musical:</p>
+        <MusicalSummary />
       </main>
     </div>
   );
