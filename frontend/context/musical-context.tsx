@@ -18,8 +18,15 @@ const useMusicalController = (musical: Musical) => {
   const [nextSongAvailable, setNextSongAvailable] = useState(true);
   const [previousSongAvailable, setPreviousSongAvailable] = useState(false);
 
-  console.log('current song', currentSong);
   console.log('current track', currentTrack);
+
+  const updateNextPreviousAvailability = useCallback(
+    (newIdx: number) => {
+      setNextSongAvailable(!!songs[newIdx + 1]);
+      setPreviousSongAvailable(!!songs[newIdx - 1]);
+    },
+    [songs]
+  );
 
   const changeSongHandler = useCallback(
     (song: Song) => {
@@ -32,10 +39,9 @@ const useMusicalController = (musical: Musical) => {
       }
       setCurrentSong(songs[songIdx]);
       setCurrentTrack(songs[songIdx].tracks[0]);
-      setNextSongAvailable(!!songs[songIdx + 1]);
-      setPreviousSongAvailable(!!songs[songIdx - 1]);
+      updateNextPreviousAvailability(songIdx);
     },
-    [songs]
+    [songs, updateNextPreviousAvailability]
   );
 
   const changeTrackHandler = useCallback(
@@ -53,12 +59,32 @@ const useMusicalController = (musical: Musical) => {
     [tracks, currentSong]
   );
 
+  const goToNextSong = useCallback(() => {
+    const currentSongIdx = songs.findIndex(song => song === currentSong);
+    const nextSong = songs[currentSongIdx + 1];
+    if (nextSong) {
+      setCurrentSong(nextSong);
+      updateNextPreviousAvailability(currentSongIdx + 1);
+    }
+  }, [currentSong, songs, updateNextPreviousAvailability]);
+
+  const goToPreviousSong = useCallback(() => {
+    const currentSongIdx = songs.findIndex(song => song === currentSong);
+    const previousSong = songs[currentSongIdx - 1];
+    if (previousSong) {
+      setCurrentSong(previousSong);
+      updateNextPreviousAvailability(currentSongIdx - 1);
+    }
+  }, [currentSong, songs, updateNextPreviousAvailability]);
+
   return {
     songs,
     tracks,
     currentSong,
     currentTrack,
     setCurrentSong: changeSongHandler,
+    goToNextSong,
+    goToPreviousSong,
     previousSongAvailable,
     nextSongAvailable,
     setCurrentTrack: changeTrackHandler,
@@ -78,9 +104,11 @@ const MusicalContext = createContext<ReturnType<typeof useMusicalController>>({
     url: '',
   },
   setCurrentSong: () => {},
-  setCurrentTrack: () => {},
+  goToNextSong: () => {},
+  goToPreviousSong: () => {},
   previousSongAvailable: false,
   nextSongAvailable: false,
+  setCurrentTrack: () => {},
 });
 
 export const MusicalProvider = ({

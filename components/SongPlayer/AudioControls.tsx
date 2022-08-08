@@ -103,7 +103,12 @@ const AudioControls = ({
             justifyContent: 'center',
           }}
         >
-          <IconButton size="large" onClick={onPreviousClicked} color="primary">
+          <IconButton
+            size="large"
+            disabled={!previousAvailable}
+            onClick={onPreviousClicked}
+            color="primary"
+          >
             <SkipPreviousIcon />
           </IconButton>
           <IconButton
@@ -113,7 +118,12 @@ const AudioControls = ({
           >
             {!isPlaying ? <PlayArrowIcon /> : <PauseIcon />}
           </IconButton>
-          <IconButton size="large" onClick={onNextClicked} color="primary">
+          <IconButton
+            size="large"
+            disabled={!nextAvailable}
+            onClick={onNextClicked}
+            color="primary"
+          >
             <SkipNextIcon />
           </IconButton>
         </Box>

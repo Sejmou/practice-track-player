@@ -8,7 +8,15 @@ import AudioControls from './AudioControls';
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 const SongPlayer = () => {
-  const { currentSong: song, currentTrack: track } = useMusicalContext();
+  const {
+    currentSong: song,
+    currentTrack: track,
+    previousSongAvailable,
+    nextSongAvailable,
+    goToNextSong,
+    goToPreviousSong,
+  } = useMusicalContext();
+
   const videoId = useMemo(() => {
     const videoUrlSearch = new URL(track.url).search;
     const params = new URLSearchParams(videoUrlSearch);
@@ -19,9 +27,6 @@ const SongPlayer = () => {
     '/api/yt-audio/' + videoId,
     fetcher
   );
-
-  const nextSongClickHandler = () => {};
-  const previousSongClickHandler = () => {};
 
   return (
     <Box>
@@ -49,8 +54,10 @@ const SongPlayer = () => {
       ) : (
         <AudioControls
           audioData={audioData}
-          onNextClicked={nextSongClickHandler}
-          onPreviousClicked={previousSongClickHandler}
+          onNextClicked={goToNextSong}
+          onPreviousClicked={goToPreviousSong}
+          nextAvailable={nextSongAvailable}
+          previousAvailable={previousSongAvailable}
         />
       )}
     </Box>
