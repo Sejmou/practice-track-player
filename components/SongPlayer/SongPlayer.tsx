@@ -11,18 +11,29 @@ const SongPlayer = ({ song }: Props) => {
   const params = new URLSearchParams(videoUrlSearch);
   const videoId = params.get('v')!;
   console.log(videoId);
+
   const { data: audioData, error } = useSWRImmutable<SourceData, any>(
     '/api/yt-audio/' + videoId,
     fetcher
   );
 
+  const nextSongClickHandler = () => {};
+  const previousSongClickHandler = () => {};
+
   return (
     <div>
-      <h2>
-        Current Song: {song.no}. {song.title}
-      </h2>
+      <div>Current Song:</div>
+      <b>
+        {song.no}. {song.title}
+      </b>
       {error && <p>Could not load audio :/</p>}
-      {audioData && <AudioControls audioData={audioData} />}
+      {audioData && (
+        <AudioControls
+          audioData={audioData}
+          onNextClicked={nextSongClickHandler}
+          onPreviousClicked={previousSongClickHandler}
+        />
+      )}
     </div>
   );
 };

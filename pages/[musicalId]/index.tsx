@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import Head from 'next/head';
 
-import MusicalOverview from '@components/Musical/MusicalOverview';
+import SongList from '@components/Musical/SongList';
 import SongPlayer from '@components/SongPlayer/SongPlayer';
 import { getAllMusicalIds, getMusical } from '@backend';
 import { Musical } from '@models';
@@ -24,9 +24,16 @@ const MusicalPage: NextPage<Props> = ({ musical }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-        <MusicalOverview musical={musical} onSongClick={songClickHandler} />
+      <h1>{musical.title}</h1>
+      <div
+        style={{
+          display: 'flex',
+          gap: '10px',
+          flexDirection: 'column',
+        }}
+      >
         <SongPlayer song={currentSong} />
+        <SongList songs={musical.songs} onSongChange={songClickHandler} />
       </div>
     </>
   );

@@ -53,7 +53,6 @@ export class KeyboardShortcut {
     if (this.keyCombination.matches(event)) {
       event.preventDefault();
       event.stopPropagation();
-      console.log('matching!');
       this.fn();
       return true;
     }
