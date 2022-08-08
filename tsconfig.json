@@ -18,6 +18,8 @@
     "paths": {
       "@backend": ["backend/index"],
       "@backend/*": ["backend/*"],
+      "@frontend": ["frontend/index"],
+      "@frontend/*": ["frontend/*"],
       "@components/*": ["components/*"],
       "@pages/*": ["pages/*"],
       "@models": ["models/index"],
