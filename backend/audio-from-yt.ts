@@ -2,12 +2,15 @@
 export async function fetchAudioFromYouTube(videoID: string) {
   const audioStreams = new Map<string, string>();
 
-  const response = await fetch(
+  const url =
     'https://images' +
-      ~~(Math.random() * 33) +
-      '-focus-opensocial.googleusercontent.com/gadgets/proxy?container=none&url=' +
-      encodeURIComponent('https://www.youtube.com/watch?hl=en&v=' + videoID)
-  );
+    ~~(Math.random() * 33) +
+    '-focus-opensocial.googleusercontent.com/gadgets/proxy?container=none&url=' +
+    encodeURIComponent('https://www.youtube.com/watch?hl=en&v=' + videoID);
+
+  console.log('URL', url);
+
+  const response = await fetch(url);
 
   if (response.ok) {
     let data = await response.text();

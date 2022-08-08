@@ -12,7 +12,9 @@ type Props = { musical: Musical };
 const MusicalPage: NextPage<Props> = ({ musical }) => {
   const [currentSong, setCurrentSong] = useState(musical.songs[0]);
 
-  const songClickHandler = (songNo: string) => {};
+  const songClickHandler = (songNo: string) => {
+    setCurrentSong(() => musical.songs.find(song => song.no === songNo)!);
+  };
 
   return (
     <>
