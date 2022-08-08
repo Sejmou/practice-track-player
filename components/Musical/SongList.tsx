@@ -1,3 +1,4 @@
+import { useMusicalContext } from '@frontend/context/musical-context';
 import {
   Paper,
   List,
@@ -5,24 +6,33 @@ import {
   ListItemText,
   Typography,
   Box,
+  ListItemIcon,
 } from '@mui/material';
+import MusicNoteIcon from '@mui/icons-material/MusicNote';
 
-import { Song } from '@models';
-
-type Props = {
-  songs: Song[];
-  songIdx: number;
-  onSongChange: (idx: number) => void;
-};
-const SongList = ({ songs, onSongChange }: Props) => {
+const SongList = () => {
+  const { songs, currentSong, setCurrentSong } = useMusicalContext();
   return (
     <Box>
       <Typography variant="h4">All Songs</Typography>
       <Paper sx={{ maxHeight: '500px', overflow: 'auto' }}>
         <List>
           {songs.map((song, i) => (
-            <ListItemButton key={song.no} onClick={() => onSongChange(i)}>
-              <ListItemText primary={`${song.no}. ${song.title}`} />
+            <ListItemButton
+              selected={song === currentSong}
+              key={i}
+              onClick={() => setCurrentSong(song)}
+            >
+              {song === currentSong && (
+                <ListItemIcon>
+                  <MusicNoteIcon />
+                </ListItemIcon>
+              )}
+              <ListItemText
+                primary={`${song.no}. ${song.title}${
+                  song === currentSong ? ' (playing)' : ''
+                }`}
+              />
             </ListItemButton>
           ))}
         </List>

@@ -4,23 +4,37 @@ import {
   ListItemButton,
   ListItemText,
   Typography,
+  ListItemIcon,
 } from '@mui/material';
+import MusicNoteIcon from '@mui/icons-material/MusicNote';
 
-import { SongTrack } from '@models';
+import { useMusicalContext } from '@frontend/context/musical-context';
 
-type Props = {
-  tracks: SongTrack[];
-  onTrackChange: (trackIdx: number) => void;
-};
-const TrackList = ({ tracks, onTrackChange }: Props) => {
+const TrackList = () => {
+  const { tracks, currentTrack, setCurrentTrack } = useMusicalContext();
+  console.log('current track (track list)', currentTrack);
+
   return (
     <div>
       <Typography variant="h4">Available Tracks</Typography>
       <Paper sx={{ maxHeight: '500px', overflow: 'auto' }}>
         <List>
           {tracks.map((track, i) => (
-            <ListItemButton key={i} onClick={() => onTrackChange(i)}>
-              <ListItemText primary={`${track.track}`} />
+            <ListItemButton
+              selected={track === currentTrack}
+              key={i}
+              onClick={() => setCurrentTrack(track)}
+            >
+              {track === currentTrack && (
+                <ListItemIcon>
+                  <MusicNoteIcon />
+                </ListItemIcon>
+              )}
+              <ListItemText
+                primary={`${track.name}${
+                  track === currentTrack ? ' (playing)' : ''
+                }`}
+              />
             </ListItemButton>
           ))}
         </List>

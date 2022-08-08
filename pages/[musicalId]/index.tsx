@@ -9,26 +9,13 @@ import { getAllMusicalIds, getMusical } from '@backend';
 import { Musical } from '@models';
 import { Box, Button } from '@mui/material';
 import Link from 'next/link';
+import { MusicalProvider } from '@frontend/context/musical-context';
 
 type Props = { musical: Musical };
 
 const MusicalPage: NextPage<Props> = ({ musical }) => {
-  const [trackIdx, setTrackIdx] = useState(0);
-  const [songIdx, setSongIdx] = useState(0);
-  const [currentSong, setCurrentSong] = useState(musical.songs[0]);
-
-  const songChangeHandler = (songIdx: number) => {
-    setSongIdx(songIdx);
-    setCurrentSong(() => musical.songs[songIdx]);
-    setTrackIdx(0);
-  };
-
-  const trackChangeHandler = (trackIdx: number) => {
-    setTrackIdx(trackIdx);
-  };
-
   return (
-    <>
+    <MusicalProvider musical={musical}>
       <Head>
         <title>{musical.title}</title>
         <meta name="description" content={musical.title} />
@@ -49,22 +36,15 @@ const MusicalPage: NextPage<Props> = ({ musical }) => {
           flexDirection: 'column',
         }}
       >
-        <SongPlayer song={currentSong} trackIdx={trackIdx} />
+        <SongPlayer />
         <Box
           sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}
         >
-          <TrackList
-            tracks={currentSong.tracks}
-            onTrackChange={trackChangeHandler}
-          />
-          <SongList
-            songs={musical.songs}
-            songIdx={musical.songs}
-            onSongChange={songChangeHandler}
-          />
+          <TrackList />
+          <SongList />
         </Box>
       </Box>
-    </>
+    </MusicalProvider>
   );
 };
 
@@ -73,7 +53,9 @@ export default MusicalPage;
 export const getStaticPaths: GetStaticPaths = async () => {
   const musicalIds = await getAllMusicalIds();
 
-  const musicalPaths = musicalIds.map(id => ({ params: { musicalId: id } }));
+  const musicalPaths = musicalIds.map((id: string) => ({
+    params: { musicalId: id },
+  }));
 
   return {
     fallback: false,

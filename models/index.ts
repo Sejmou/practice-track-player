@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const SongTrackValidator = z.object({
-  track: z.string(),
+  name: z.string(),
   url: z.string().url().startsWith('https://www.youtube.com/watch?v='),
 });
 export type SongTrack = z.infer<typeof SongTrackValidator>;

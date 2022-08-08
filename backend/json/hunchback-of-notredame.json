@@ -6,11 +6,11 @@
       "title": "Olim",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=gsw3BT59ZAQ"
         },
         {
-          "track": "Vocal",
+          "name": "Vocal",
           "url": "https://www.youtube.com/watch?v=bLnff3C7mPA"
         }
       ]
@@ -20,11 +20,11 @@
       "title": "The Bells of Notre Dame (Part 1)",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=C7-myrIiksY"
         },
         {
-          "track": "Vocal",
+          "name": "Vocal",
           "url": "https://www.youtube.com/watch?v=Ip1zlp6ZTsM"
         }
       ]
@@ -34,11 +34,11 @@
       "title": "The Bells of Notre Dame (Part 2)",
       "tracks": [
         {
-          "track": "Vocal",
+          "name": "Vocal",
           "url": "https://www.youtube.com/watch?v=mR33WN1OwXw"
         },
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=3eMzJKWTnNY"
         }
       ]
@@ -48,11 +48,11 @@
       "title": "The Bells of Notre Dame (Part 3)",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=5TjpZm0mSCE"
         },
         {
-          "track": "Vocal",
+          "name": "Vocal",
           "url": "https://www.youtube.com/watch?v=sdyjT9JIBu4"
         }
       ]
@@ -62,11 +62,11 @@
       "title": "The Bells of Notre Dame (Part 4)",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=E7s0O5PJOe8"
         },
         {
-          "track": "Vocal",
+          "name": "Vocal",
           "url": "https://www.youtube.com/watch?v=mQ5BWIks36A"
         }
       ]
@@ -76,11 +76,11 @@
       "title": "The Bells of Notre Dame (Part 5)",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=GrRwyTov9xQ"
         },
         {
-          "track": "Vocal",
+          "name": "Vocal",
           "url": "https://www.youtube.com/watch?v=bUs25z8Ow-g"
         }
       ]
@@ -90,11 +90,11 @@
       "title": "The Bells of Notre Dame (Part 6)",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=wz0X0aKTx5c"
         },
         {
-          "track": "Vocal",
+          "name": "Vocal",
           "url": "https://www.youtube.com/watch?v=jkTVXH5qR-0"
         }
       ]
@@ -104,7 +104,7 @@
       "title": "Fanfare",
       "tracks": [
         {
-          "track": "Private video :/",
+          "name": "Private video :/",
           "url": "https://www.youtube.com/watch?v=PANei77r6sU"
         }
       ]
@@ -114,11 +114,11 @@
       "title": "Sanctuary",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=y1PtE-bxurY"
         },
         {
-          "track": "Vocal",
+          "name": "Vocal",
           "url": "https://www.youtube.com/watch?v=VG7VlyD2Xoc"
         }
       ]
@@ -128,11 +128,11 @@
       "title": "Out There",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=OgkfHqEn5AQ"
         },
         {
-          "track": "Quasimodo Vocal",
+          "name": "Quasimodo Vocal",
           "url": "https://www.youtube.com/watch?v=fDkwQw-PYuQ"
         }
       ]
@@ -142,75 +142,75 @@
       "title": "Topsy Turvy (Part 1)",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=p9646rFlqTk"
         },
         {
-          "track": "Clopin",
+          "name": "Clopin",
           "url": "https://www.youtube.com/watch?v=aAEjBLDRn7Q"
         },
         {
-          "track": "Quasimodo",
+          "name": "Quasimodo",
           "url": "https://www.youtube.com/watch?v=vReOag-LqjI"
         },
         {
-          "track": "Revelers Solo Women",
+          "name": "Revelers Solo Women",
           "url": "https://www.youtube.com/watch?v=9B8BnTbl_uE"
         },
         {
-          "track": "Revelers Solo Men",
+          "name": "Revelers Solo Men",
           "url": "https://www.youtube.com/watch?v=cfJnGVxLxeA"
         },
         {
-          "track": "Revelers Soprano 1",
+          "name": "Revelers Soprano 1",
           "url": "https://www.youtube.com/watch?v=0081jkgvJ60"
         },
         {
-          "track": "Revelers Soprano 2",
+          "name": "Revelers Soprano 2",
           "url": "https://www.youtube.com/watch?v=9GA5Y8HRXuI"
         },
         {
-          "track": "Revelers Alto",
+          "name": "Revelers Alto",
           "url": "https://www.youtube.com/watch?v=BHU1cHfQVCs"
         },
         {
-          "track": "Revelers Tenor 1",
+          "name": "Revelers Tenor 1",
           "url": "https://www.youtube.com/watch?v=2Q0oR8guoBM"
         },
         {
-          "track": "Revelers Tenor 2",
+          "name": "Revelers Tenor 2",
           "url": "https://www.youtube.com/watch?v=xkebYcq_A10"
         },
         {
-          "track": "Revelers Bass",
+          "name": "Revelers Bass",
           "url": "https://www.youtube.com/watch?v=8zg6OgXSBlA"
         },
         {
-          "track": "Choir Soprano 1",
+          "name": "Choir Soprano 1",
           "url": "https://www.youtube.com/watch?v=XI9D-PLQ43M"
         },
         {
-          "track": "Choir Soprano 2",
+          "name": "Choir Soprano 2",
           "url": "https://www.youtube.com/watch?v=3XCtl4dBIsA"
         },
         {
-          "track": "Choir Alto",
+          "name": "Choir Alto",
           "url": "https://www.youtube.com/watch?v=bA1XMabQTME"
         },
         {
-          "track": "Choir Tenor 1",
+          "name": "Choir Tenor 1",
           "url": "https://www.youtube.com/watch?v=ys-9eIpzgUk"
         },
         {
-          "track": "Choir Tenor 2",
+          "name": "Choir Tenor 2",
           "url": "https://www.youtube.com/watch?v=h8JK8VBmJBc"
         },
         {
-          "track": "Choir Bass",
+          "name": "Choir Bass",
           "url": "https://www.youtube.com/watch?v=T_53XRbyTPQ"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=c6QpBtJxlAM"
         }
       ]
@@ -220,47 +220,47 @@
       "title": "Rest and Recreation",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=g6kZTLOzZ1w"
         },
         {
-          "track": "Phoebus",
+          "name": "Phoebus",
           "url": "https://www.youtube.com/watch?v=QNU-DlYQimU"
         },
         {
-          "track": "Clopin",
+          "name": "Clopin",
           "url": "https://www.youtube.com/watch?v=_G9qA4yz5MA"
         },
         {
-          "track": "Solo Soldiers",
+          "name": "Solo Soldiers",
           "url": "https://www.youtube.com/watch?v=HuvL68_ZbZQ"
         },
         {
-          "track": "Women",
+          "name": "Women",
           "url": "https://www.youtube.com/watch?v=ApICG9jV5XY"
         },
         {
-          "track": "Soldiers Tenor 1",
+          "name": "Soldiers Tenor 1",
           "url": "https://www.youtube.com/watch?v=vJpmEofK5Ek"
         },
         {
-          "track": "Soldiers Baritone",
+          "name": "Soldiers Baritone",
           "url": "https://www.youtube.com/watch?v=TVPtsa6Wdng"
         },
         {
-          "track": "Soldiers Bass",
+          "name": "Soldiers Bass",
           "url": "https://www.youtube.com/watch?v=_bMbENLAO5k"
         },
         {
-          "track": "Choir Tenor",
+          "name": "Choir Tenor",
           "url": "https://www.youtube.com/watch?v=K75VzHNUF6Y"
         },
         {
-          "track": "Choir Bass",
+          "name": "Choir Bass",
           "url": "https://www.youtube.com/watch?v=1yIUFvqto0A"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=Lwmk2ektLsk"
         }
       ]
@@ -270,31 +270,31 @@
       "title": "Rhythm of the Tambourine",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=3cVGL-SLbqI"
         },
         {
-          "track": "Esmeralda",
+          "name": "Esmeralda",
           "url": "https://www.youtube.com/watch?v=6lyRtwbJWSQ"
         },
         {
-          "track": "Phoebus",
+          "name": "Phoebus",
           "url": "https://www.youtube.com/watch?v=sncM4BIS-4w"
         },
         {
-          "track": "Quasimodo",
+          "name": "Quasimodo",
           "url": "https://www.youtube.com/watch?v=FMVU476bSjA"
         },
         {
-          "track": "Frollo",
+          "name": "Frollo",
           "url": "https://www.youtube.com/watch?v=mYJiH8JNveg"
         },
         {
-          "track": "Clopin",
+          "name": "Clopin",
           "url": "https://www.youtube.com/watch?v=MhI7bOTs6qg"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=UtFz1QM887k"
         }
       ]
@@ -304,31 +304,31 @@
       "title": "Topsy Turvy (Part 2)",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=Ouy47QoOpfM"
         },
         {
-          "track": "Clopin",
+          "name": "Clopin",
           "url": "https://www.youtube.com/watch?v=McjsqbJe8PA"
         },
         {
-          "track": "Revelers/choir Soprano",
+          "name": "Revelers/choir Soprano",
           "url": "https://www.youtube.com/watch?v=UUPqsTtmQYE"
         },
         {
-          "track": "Revelers/choir Alto",
+          "name": "Revelers/choir Alto",
           "url": "https://www.youtube.com/watch?v=N8uGgJmD75Y"
         },
         {
-          "track": "Revelers/choir Tenor",
+          "name": "Revelers/choir Tenor",
           "url": "https://www.youtube.com/watch?v=dmlnEnKeIeI"
         },
         {
-          "track": "Revelers/choir Bass",
+          "name": "Revelers/choir Bass",
           "url": "https://www.youtube.com/watch?v=aWf5zUBPaIE"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=h2GR-cuDZwM"
         }
       ]
@@ -338,7 +338,7 @@
       "title": "The Harrowing",
       "tracks": [
         {
-          "track": "Instrumental Underscore",
+          "name": "Instrumental Underscore",
           "url": "https://www.youtube.com/watch?v=wqD5Pnx3dDw"
         }
       ]
@@ -348,19 +348,19 @@
       "title": "Sanctuary 2",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=9dw_GFL3Rtw"
         },
         {
-          "track": "Frollo",
+          "name": "Frollo",
           "url": "https://www.youtube.com/watch?v=x_modENm2I8"
         },
         {
-          "track": "Quasimodo",
+          "name": "Quasimodo",
           "url": "https://www.youtube.com/watch?v=HaHxbOHzAmo"
         },
         {
-          "track": "Both Parts And Piano Accompaniment",
+          "name": "Both Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=ke4jIW7YApw"
         }
       ]
@@ -370,39 +370,39 @@
       "title": "Bells Reprise",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=sm_LUM0bRcI"
         },
         {
-          "track": "Esmeralda",
+          "name": "Esmeralda",
           "url": "https://www.youtube.com/watch?v=-GiyQDX43GE"
         },
         {
-          "track": "Congregant Women Solos",
+          "name": "Congregant Women Solos",
           "url": "https://www.youtube.com/watch?v=arXiICZdFog"
         },
         {
-          "track": "Congregant Men Solos",
+          "name": "Congregant Men Solos",
           "url": "https://www.youtube.com/watch?v=-xcvSo2JNdo"
         },
         {
-          "track": "Choir Soprano",
+          "name": "Choir Soprano",
           "url": "https://www.youtube.com/watch?v=ona5ikO0NA4"
         },
         {
-          "track": "Choir Alto",
+          "name": "Choir Alto",
           "url": "https://www.youtube.com/watch?v=ndM0FwwCPXk"
         },
         {
-          "track": "Choir Tenor",
+          "name": "Choir Tenor",
           "url": "https://www.youtube.com/watch?v=bssuJBCqqKE"
         },
         {
-          "track": "Choir Bass",
+          "name": "Choir Bass",
           "url": "https://www.youtube.com/watch?v=YuA8HqZ9Dco"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=gDscm47fqQ8"
         }
       ]
@@ -412,91 +412,91 @@
       "title": "God Help the Outcasts",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=6mw2BAIQtaw"
         },
         {
-          "track": "Esmeralda",
+          "name": "Esmeralda",
           "url": "https://www.youtube.com/watch?v=qViD7P5adhg"
         },
         {
-          "track": "Female 1 Solo",
+          "name": "Female 1 Solo",
           "url": "https://www.youtube.com/watch?v=_9hPVDpGLpU"
         },
         {
-          "track": "Female 4 Solo",
+          "name": "Female 4 Solo",
           "url": "https://www.youtube.com/watch?v=ljQ48vXErIw"
         },
         {
-          "track": "Male 2 Solo",
+          "name": "Male 2 Solo",
           "url": "https://www.youtube.com/watch?v=J3f33Mnm49w"
         },
         {
-          "track": "Male 5 Solo",
+          "name": "Male 5 Solo",
           "url": "https://www.youtube.com/watch?v=EZuH3Zeh-lo"
         },
         {
-          "track": "Male 6 Solo",
+          "name": "Male 6 Solo",
           "url": "https://www.youtube.com/watch?v=83g624p7jHI"
         },
         {
-          "track": "Congregant Soprano 1",
+          "name": "Congregant Soprano 1",
           "url": "https://www.youtube.com/watch?v=6tdkqA98hGQ"
         },
         {
-          "track": "Congregant Soprano 2",
+          "name": "Congregant Soprano 2",
           "url": "https://www.youtube.com/watch?v=Cf51WQFqSs4"
         },
         {
-          "track": "Congregant Alto",
+          "name": "Congregant Alto",
           "url": "https://www.youtube.com/watch?v=fw3d8eyLBV0"
         },
         {
-          "track": "Congregant Tenor 1",
+          "name": "Congregant Tenor 1",
           "url": "https://www.youtube.com/watch?v=n46x3SHNgwQ"
         },
         {
-          "track": "Congregant Tenor 2",
+          "name": "Congregant Tenor 2",
           "url": "https://www.youtube.com/watch?v=y5VufqgWcrw"
         },
         {
-          "track": "Congregant Baritone",
+          "name": "Congregant Baritone",
           "url": "https://www.youtube.com/watch?v=eolt5dxu95o"
         },
         {
-          "track": "Congregant Bass",
+          "name": "Congregant Bass",
           "url": "https://www.youtube.com/watch?v=6193ITy19Yw"
         },
         {
-          "track": "Choir Soprano 1",
+          "name": "Choir Soprano 1",
           "url": "https://www.youtube.com/watch?v=TbRFRqCYiDc"
         },
         {
-          "track": "Choir Soprano 2",
+          "name": "Choir Soprano 2",
           "url": "https://www.youtube.com/watch?v=YwETZ2xzKoQ"
         },
         {
-          "track": "Choir Alto",
+          "name": "Choir Alto",
           "url": "https://www.youtube.com/watch?v=XS3Qk1fdGws"
         },
         {
-          "track": "Choir Tenor 1",
+          "name": "Choir Tenor 1",
           "url": "https://www.youtube.com/watch?v=ZObpjNhqOL4"
         },
         {
-          "track": "Choir Tenor 2",
+          "name": "Choir Tenor 2",
           "url": "https://www.youtube.com/watch?v=LHHmNx-xzI0"
         },
         {
-          "track": "Choir Baritone",
+          "name": "Choir Baritone",
           "url": "https://www.youtube.com/watch?v=ZvO9zumB-ac"
         },
         {
-          "track": "Choir Bass",
+          "name": "Choir Bass",
           "url": "https://www.youtube.com/watch?v=qG9CPbJFKso"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=M0Pgpn8Xvd8"
         }
       ]
@@ -506,27 +506,27 @@
       "title": "Transition to the Bell Tower",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=WpcwvjOv3wo"
         },
         {
-          "track": "Gargoyle Women Solos",
+          "name": "Gargoyle Women Solos",
           "url": "https://www.youtube.com/watch?v=e_H_mOmZQU8"
         },
         {
-          "track": "Gargoyle Men Solos",
+          "name": "Gargoyle Men Solos",
           "url": "https://www.youtube.com/watch?v=aajB6_HLkog"
         },
         {
-          "track": "Gargoyle Women",
+          "name": "Gargoyle Women",
           "url": "https://www.youtube.com/watch?v=Xsxqy8vQYJw"
         },
         {
-          "track": "Gargoyle Men",
+          "name": "Gargoyle Men",
           "url": "https://www.youtube.com/watch?v=wBqAD1KhokM"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=LcIEPS_3VOg"
         }
       ]
@@ -536,47 +536,47 @@
       "title": "Top of the World",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=ZOrYpKiOdLg"
         },
         {
-          "track": "Quasimodo",
+          "name": "Quasimodo",
           "url": "https://www.youtube.com/watch?v=236AeoXBfx4"
         },
         {
-          "track": "Esmeralda",
+          "name": "Esmeralda",
           "url": "https://www.youtube.com/watch?v=4l1Xxgnij-k"
         },
         {
-          "track": "Female Gargoyle Solos",
+          "name": "Female Gargoyle Solos",
           "url": "https://www.youtube.com/watch?v=IitCGBRebyg"
         },
         {
-          "track": "Male Gargoyle Solos",
+          "name": "Male Gargoyle Solos",
           "url": "https://www.youtube.com/watch?v=KKmDRtrQgto"
         },
         {
-          "track": "Soprano",
+          "name": "Soprano",
           "url": "https://www.youtube.com/watch?v=CoP4eTtUUwI"
         },
         {
-          "track": "Alto",
+          "name": "Alto",
           "url": "https://www.youtube.com/watch?v=tuPBzYxAAEE"
         },
         {
-          "track": "Tenor",
+          "name": "Tenor",
           "url": "https://www.youtube.com/watch?v=w1u-RHyzazI"
         },
         {
-          "track": "Baritone",
+          "name": "Baritone",
           "url": "https://www.youtube.com/watch?v=0pHSsgsuEp0"
         },
         {
-          "track": "Bass",
+          "name": "Bass",
           "url": "https://www.youtube.com/watch?v=89yrrxq0ne8"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=dF5XkV4Lc-o"
         }
       ]
@@ -586,7 +586,7 @@
       "title": "How Dare You",
       "tracks": [
         {
-          "track": "Instrumental Underscore",
+          "name": "Instrumental Underscore",
           "url": "https://www.youtube.com/watch?v=iQx-yeTxKxs"
         }
       ]
@@ -596,43 +596,43 @@
       "title": "Tavern Song",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=X0UR5KM59GU"
         },
         {
-          "track": "Gypsy Solos (High Part)",
+          "name": "Gypsy Solos (High Part)",
           "url": "https://www.youtube.com/watch?v=D3_FZ_F3lOo"
         },
         {
-          "track": "Gypsy Solos (Low Part)",
+          "name": "Gypsy Solos (Low Part)",
           "url": "https://www.youtube.com/watch?v=LgCR8kH0lW8"
         },
         {
-          "track": "Esmeralda",
+          "name": "Esmeralda",
           "url": "https://www.youtube.com/watch?v=K-X6n1_gKdQ"
         },
         {
-          "track": "Frollo",
+          "name": "Frollo",
           "url": "https://www.youtube.com/watch?v=ETIOP32h12g"
         },
         {
-          "track": "Soprano",
+          "name": "Soprano",
           "url": "https://www.youtube.com/watch?v=S84TWpalslw"
         },
         {
-          "track": "Alto",
+          "name": "Alto",
           "url": "https://www.youtube.com/watch?v=sJqAdAM3TsY"
         },
         {
-          "track": "Tenor",
+          "name": "Tenor",
           "url": "https://www.youtube.com/watch?v=w_mq2jr4OdA"
         },
         {
-          "track": "Bass",
+          "name": "Bass",
           "url": "https://www.youtube.com/watch?v=GOZ3VQiE93k"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=5MXRqfvGwk4"
         }
       ]
@@ -642,11 +642,11 @@
       "title": "Heaven’s Light",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=P1DXfJPliC0"
         },
         {
-          "track": "Quasimodo",
+          "name": "Quasimodo",
           "url": "https://www.youtube.com/watch?v=iSW4VGGR6s0"
         }
       ]
@@ -656,59 +656,59 @@
       "title": "Hellfire",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=CpxgyO2Yl2E"
         },
         {
-          "track": "Frollo",
+          "name": "Frollo",
           "url": "https://www.youtube.com/watch?v=bQMguQMlesY"
         },
         {
-          "track": "Priests Tenor 1",
+          "name": "Priests Tenor 1",
           "url": "https://www.youtube.com/watch?v=0Ui_dMPR6v0"
         },
         {
-          "track": "Priests Tenor 2",
+          "name": "Priests Tenor 2",
           "url": "https://www.youtube.com/watch?v=W-JVr-SGbqQ"
         },
         {
-          "track": "Priests Baritone",
+          "name": "Priests Baritone",
           "url": "https://www.youtube.com/watch?v=CFYRkp0dLu4"
         },
         {
-          "track": "Priests Bass",
+          "name": "Priests Bass",
           "url": "https://www.youtube.com/watch?v=pMgnDuFBOQ8"
         },
         {
-          "track": "Choir Soprano 1",
+          "name": "Choir Soprano 1",
           "url": "https://www.youtube.com/watch?v=6rVQALTxM5c"
         },
         {
-          "track": "Choir Soprano 2",
+          "name": "Choir Soprano 2",
           "url": "https://www.youtube.com/watch?v=0SwLl5ObuYE"
         },
         {
-          "track": "Choir Alto",
+          "name": "Choir Alto",
           "url": "https://www.youtube.com/watch?v=CuUoW1ow6Vs"
         },
         {
-          "track": "Choir Tenor 1",
+          "name": "Choir Tenor 1",
           "url": "https://www.youtube.com/watch?v=PNHZbrQvU2w"
         },
         {
-          "track": "Choir Tenor 2",
+          "name": "Choir Tenor 2",
           "url": "https://www.youtube.com/watch?v=MNFDRDXcz0w"
         },
         {
-          "track": "Choir Baritone",
+          "name": "Choir Baritone",
           "url": "https://www.youtube.com/watch?v=iE3KGS0XHvY"
         },
         {
-          "track": "Choir Bass",
+          "name": "Choir Bass",
           "url": "https://www.youtube.com/watch?v=vZzAFAC9e1o"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=w132YzPWRD0"
         }
       ]
@@ -718,59 +718,59 @@
       "title": "Esmeralda/Act 1 Finale (Part 1)",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=FKxV1LEgSTQ"
         },
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=-J0KALc_RxE"
         },
         {
-          "track": "Frollo",
+          "name": "Frollo",
           "url": "https://www.youtube.com/watch?v=mEDAxTYCn8I"
         },
         {
-          "track": "Quasimodo",
+          "name": "Quasimodo",
           "url": "https://www.youtube.com/watch?v=FWlwzQTadNU"
         },
         {
-          "track": "Phoebus",
+          "name": "Phoebus",
           "url": "https://www.youtube.com/watch?v=gmWKs9YLbiM"
         },
         {
-          "track": "Congregant Solo Women",
+          "name": "Congregant Solo Women",
           "url": "https://www.youtube.com/watch?v=s0m5WMh0mqk"
         },
         {
-          "track": "Congregant Solo Men",
+          "name": "Congregant Solo Men",
           "url": "https://www.youtube.com/watch?v=p8As65O1-U4"
         },
         {
-          "track": "Congregant Women",
+          "name": "Congregant Women",
           "url": "https://www.youtube.com/watch?v=Mc0zdSb2zgY"
         },
         {
-          "track": "Congregant Tenor",
+          "name": "Congregant Tenor",
           "url": "https://www.youtube.com/watch?v=rXNwmNrlCtk"
         },
         {
-          "track": "Congregant Bass",
+          "name": "Congregant Bass",
           "url": "https://www.youtube.com/watch?v=wia9aH8d62Y"
         },
         {
-          "track": "Choir Women",
+          "name": "Choir Women",
           "url": "https://www.youtube.com/watch?v=Fk2kl82WcBU"
         },
         {
-          "track": "Choir Tenor",
+          "name": "Choir Tenor",
           "url": "https://www.youtube.com/watch?v=97mz8GQrVrs"
         },
         {
-          "track": "Choir Bass",
+          "name": "Choir Bass",
           "url": "https://www.youtube.com/watch?v=oq3JToSFqh4"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=IkDNoG0LoWU"
         }
       ]
@@ -780,75 +780,75 @@
       "title": "Esmeralda/Act 1 Finale (Part 2)",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=M1oeOB6nv5A"
         },
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=-J0KALc_RxE"
         },
         {
-          "track": "Frollo",
+          "name": "Frollo",
           "url": "https://www.youtube.com/watch?v=UzswGRYpaV4"
         },
         {
-          "track": "Phoebus",
+          "name": "Phoebus",
           "url": "https://www.youtube.com/watch?v=PV1AtRMYkAg"
         },
         {
-          "track": "Quasimodo",
+          "name": "Quasimodo",
           "url": "https://www.youtube.com/watch?v=12DcGVNApKA"
         },
         {
-          "track": "Congregant Soprano",
+          "name": "Congregant Soprano",
           "url": "https://www.youtube.com/watch?v=8FiY4ZHLkKI"
         },
         {
-          "track": "Congregant Alto",
+          "name": "Congregant Alto",
           "url": "https://www.youtube.com/watch?v=A-Iy50Juie8"
         },
         {
-          "track": "Congregant Tenor",
+          "name": "Congregant Tenor",
           "url": "https://www.youtube.com/watch?v=cp6Z7y4IZcs"
         },
         {
-          "track": "Congregant Bass",
+          "name": "Congregant Bass",
           "url": "https://www.youtube.com/watch?v=nossUR12g-s"
         },
         {
-          "track": "Choir Soprano 1",
+          "name": "Choir Soprano 1",
           "url": "https://www.youtube.com/watch?v=kJX2tGFBwzg"
         },
         {
-          "track": "Choir Soprano 2",
+          "name": "Choir Soprano 2",
           "url": "https://www.youtube.com/watch?v=S6VZ1mxDJ_w"
         },
         {
-          "track": "Choir Alto 1",
+          "name": "Choir Alto 1",
           "url": "https://www.youtube.com/watch?v=jdkKZpQlFBw"
         },
         {
-          "track": "Choir Alto 2",
+          "name": "Choir Alto 2",
           "url": "https://www.youtube.com/watch?v=PL0nE9eOk78"
         },
         {
-          "track": "Choir Tenor 1",
+          "name": "Choir Tenor 1",
           "url": "https://www.youtube.com/watch?v=ugwGnY929x4"
         },
         {
-          "track": "Choir Tenor 2",
+          "name": "Choir Tenor 2",
           "url": "https://www.youtube.com/watch?v=rYcmvfyCOZQ"
         },
         {
-          "track": "Choir Baritone",
+          "name": "Choir Baritone",
           "url": "https://www.youtube.com/watch?v=55yP6WnDCls"
         },
         {
-          "track": "Choir Bass",
+          "name": "Choir Bass",
           "url": "https://www.youtube.com/watch?v=7UL6QBlY_II"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=9KlYdHdbOdk"
         }
       ]
@@ -858,51 +858,51 @@
       "title": "Entr’acte",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=855XDTQUrss"
         },
         {
-          "track": "Soprano 1",
+          "name": "Soprano 1",
           "url": "https://www.youtube.com/watch?v=ga3uuroBrdg"
         },
         {
-          "track": "Soprano 2",
+          "name": "Soprano 2",
           "url": "https://www.youtube.com/watch?v=TSdFp6hF05c"
         },
         {
-          "track": "Alto 1",
+          "name": "Alto 1",
           "url": "https://www.youtube.com/watch?v=dnAOTw8DUf8"
         },
         {
-          "track": "Alto 2",
+          "name": "Alto 2",
           "url": "https://www.youtube.com/watch?v=9AX_LLhCouU"
         },
         {
-          "track": "Tenor 1",
+          "name": "Tenor 1",
           "url": "https://www.youtube.com/watch?v=yqek7nBiPiM"
         },
         {
-          "track": "Tenor 2",
+          "name": "Tenor 2",
           "url": "https://www.youtube.com/watch?v=dEzwhLadn7A"
         },
         {
-          "track": "Baritone 1",
+          "name": "Baritone 1",
           "url": "https://www.youtube.com/watch?v=l4MM7l0X4_Q"
         },
         {
-          "track": "Baritone 2",
+          "name": "Baritone 2",
           "url": "https://www.youtube.com/watch?v=jhL5n7kMKv4"
         },
         {
-          "track": "Bass 1",
+          "name": "Bass 1",
           "url": "https://www.youtube.com/watch?v=nRq6IGZ54h4"
         },
         {
-          "track": "Bass 2",
+          "name": "Bass 2",
           "url": "https://www.youtube.com/watch?v=goixFNZuSfE"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=GjNNKNHiefg"
         }
       ]
@@ -912,27 +912,27 @@
       "title": "Agnus Dei",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=3wFX20HAciM"
         },
         {
-          "track": "Choir Soprano",
+          "name": "Choir Soprano",
           "url": "https://www.youtube.com/watch?v=EzotoSz4-Cs"
         },
         {
-          "track": "Choir Alto",
+          "name": "Choir Alto",
           "url": "https://www.youtube.com/watch?v=63YCcJY6bC0"
         },
         {
-          "track": "Choir Tenor",
+          "name": "Choir Tenor",
           "url": "https://www.youtube.com/watch?v=2ynRTDszN0M"
         },
         {
-          "track": "Choir Bass",
+          "name": "Choir Bass",
           "url": "https://www.youtube.com/watch?v=YBPYlWyKn5E"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=jpLUad4URV4"
         }
       ]
@@ -942,59 +942,59 @@
       "title": "Flight into Egypt",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=GVqFPixBI_A"
         },
         {
-          "track": "St. Aphrodisius Solo",
+          "name": "St. Aphrodisius Solo",
           "url": "https://www.youtube.com/watch?v=tVWPUEYopAY"
         },
         {
-          "track": "Female Gargoyle Solos",
+          "name": "Female Gargoyle Solos",
           "url": "https://www.youtube.com/watch?v=6_RvLtZ5z-M"
         },
         {
-          "track": "Male Gargoyle Solos",
+          "name": "Male Gargoyle Solos",
           "url": "https://www.youtube.com/watch?v=yQwu0-q0S1c"
         },
         {
-          "track": "Gargoyle Soprano",
+          "name": "Gargoyle Soprano",
           "url": "https://www.youtube.com/watch?v=8lcnhIVeQcA"
         },
         {
-          "track": "Gargoyle Alto",
+          "name": "Gargoyle Alto",
           "url": "https://www.youtube.com/watch?v=IroSlRrk970"
         },
         {
-          "track": "Gargoyle Tenor",
+          "name": "Gargoyle Tenor",
           "url": "https://www.youtube.com/watch?v=rJWUXWW0lBA"
         },
         {
-          "track": "Gargoyle Bass",
+          "name": "Gargoyle Bass",
           "url": "https://www.youtube.com/watch?v=5DX2LzP_cmQ"
         },
         {
-          "track": "Choir Soprano",
+          "name": "Choir Soprano",
           "url": "https://www.youtube.com/watch?v=8t3Bou_xE3Y"
         },
         {
-          "track": "Choir Alto",
+          "name": "Choir Alto",
           "url": "https://www.youtube.com/watch?v=dnpJUMpJbZc"
         },
         {
-          "track": "Choir Tenor 1",
+          "name": "Choir Tenor 1",
           "url": "https://www.youtube.com/watch?v=pXz3p8T-n1c"
         },
         {
-          "track": "Choir Tenor 2",
+          "name": "Choir Tenor 2",
           "url": "https://www.youtube.com/watch?v=zBtdu1wKfXE"
         },
         {
-          "track": "Choir Bass",
+          "name": "Choir Bass",
           "url": "https://www.youtube.com/watch?v=wjwCNCAxMvc"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=9aIzZ3oxu9Y"
         }
       ]
@@ -1004,23 +1004,23 @@
       "title": "Esmeralda Reprise",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=0fK1kzF0gOQ"
         },
         {
-          "track": "Frollo",
+          "name": "Frollo",
           "url": "https://www.youtube.com/watch?v=4WFVxSl8GiE"
         },
         {
-          "track": "Congregant Women",
+          "name": "Congregant Women",
           "url": "https://www.youtube.com/watch?v=6SnT3aDoAPI"
         },
         {
-          "track": "Congregant Men",
+          "name": "Congregant Men",
           "url": "https://www.youtube.com/watch?v=O5gssXIbK88"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=TwOquEA1fls"
         }
       ]
@@ -1030,19 +1030,19 @@
       "title": "Rest and Rec Reprise",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=t94aRRig0o8"
         },
         {
-          "track": "Quasimodo",
+          "name": "Quasimodo",
           "url": "https://www.youtube.com/watch?v=dgMP1cnyRaM"
         },
         {
-          "track": "Phoebus",
+          "name": "Phoebus",
           "url": "https://www.youtube.com/watch?v=bQnNsB5hDo8"
         },
         {
-          "track": "Both Parts And Piano Accompaniment",
+          "name": "Both Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=0kadf6WQU1U"
         }
       ]
@@ -1052,31 +1052,31 @@
       "title": "Court of Miracles",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=ctVF6SrVqmw"
         },
         {
-          "track": "Clopin",
+          "name": "Clopin",
           "url": "https://www.youtube.com/watch?v=6A69RdQReLY"
         },
         {
-          "track": "Soprano",
+          "name": "Soprano",
           "url": "https://www.youtube.com/watch?v=8mHPlCGu41o"
         },
         {
-          "track": "Alto",
+          "name": "Alto",
           "url": "https://www.youtube.com/watch?v=YSWLYxKy2Yo"
         },
         {
-          "track": "Tenor",
+          "name": "Tenor",
           "url": "https://www.youtube.com/watch?v=b4k5rXwNsfg"
         },
         {
-          "track": "Bass",
+          "name": "Bass",
           "url": "https://www.youtube.com/watch?v=ar4Dn7Tafds"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=rY1R3_kfEwY"
         }
       ]
@@ -1086,59 +1086,59 @@
       "title": "In a Place of Miracles",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=aIT07bkDTd4"
         },
         {
-          "track": "Quasimodo",
+          "name": "Quasimodo",
           "url": "https://www.youtube.com/watch?v=1djO6ZYW6r8"
         },
         {
-          "track": "Esmeralda",
+          "name": "Esmeralda",
           "url": "https://www.youtube.com/watch?v=qQx5s6X_20Y"
         },
         {
-          "track": "Phoebus",
+          "name": "Phoebus",
           "url": "https://www.youtube.com/watch?v=gRagn9QmNZI"
         },
         {
-          "track": "Clopin",
+          "name": "Clopin",
           "url": "https://www.youtube.com/watch?v=YjHV9BuVPSI"
         },
         {
-          "track": "Congregant Soprano",
+          "name": "Congregant Soprano",
           "url": "https://www.youtube.com/watch?v=c90mzL23Mhk"
         },
         {
-          "track": "Congregant Alto",
+          "name": "Congregant Alto",
           "url": "https://www.youtube.com/watch?v=zYyIK_i2Lhk"
         },
         {
-          "track": "Congregant Tenor",
+          "name": "Congregant Tenor",
           "url": "https://www.youtube.com/watch?v=25B-EcV8YPU"
         },
         {
-          "track": "Congregant Bass",
+          "name": "Congregant Bass",
           "url": "https://www.youtube.com/watch?v=fymlFWvwNR8"
         },
         {
-          "track": "Choir Soprano",
+          "name": "Choir Soprano",
           "url": "https://www.youtube.com/watch?v=0uuGMLY1NO0"
         },
         {
-          "track": "Choir Alto",
+          "name": "Choir Alto",
           "url": "https://www.youtube.com/watch?v=FpE3707_zdY"
         },
         {
-          "track": "Choir Tenor",
+          "name": "Choir Tenor",
           "url": "https://www.youtube.com/watch?v=iXT1PYjPFB0"
         },
         {
-          "track": "Choir Bass",
+          "name": "Choir Bass",
           "url": "https://www.youtube.com/watch?v=RnFiIrRK3Lw"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=TmGPTeNwVhA"
         }
       ]
@@ -1148,43 +1148,43 @@
       "title": "The Bells of Notre Dame (Reprise II)",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=lDfOgo-niGI"
         },
         {
-          "track": "Female Solos",
+          "name": "Female Solos",
           "url": "https://www.youtube.com/watch?v=DfAL1Nk0fbI"
         },
         {
-          "track": "Male Solos",
+          "name": "Male Solos",
           "url": "https://www.youtube.com/watch?v=BRpDau0ZvqA"
         },
         {
-          "track": "Congregant Women",
+          "name": "Congregant Women",
           "url": "https://www.youtube.com/watch?v=IaCKKn_IIPw"
         },
         {
-          "track": "Congregant Tenor",
+          "name": "Congregant Tenor",
           "url": "https://www.youtube.com/watch?v=fJA1ChhsOls"
         },
         {
-          "track": "Congregant Bass",
+          "name": "Congregant Bass",
           "url": "https://www.youtube.com/watch?v=2Z0a1a0iw3k"
         },
         {
-          "track": "Choir Women",
+          "name": "Choir Women",
           "url": "https://www.youtube.com/watch?v=j6q-Mlgw4kg"
         },
         {
-          "track": "Choir Tenor",
+          "name": "Choir Tenor",
           "url": "https://www.youtube.com/watch?v=Es8027-mYo4"
         },
         {
-          "track": "Choir Bass",
+          "name": "Choir Bass",
           "url": "https://www.youtube.com/watch?v=pDPTi1VVD38"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=62baCpbNGa4"
         }
       ]
@@ -1194,11 +1194,11 @@
       "title": "The Assault",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=qhTAxOx47kM"
         },
         {
-          "track": "Frollo",
+          "name": "Frollo",
           "url": "https://www.youtube.com/watch?v=0QGTi0IThsQ"
         }
       ]
@@ -1208,19 +1208,19 @@
       "title": "Someday",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=LltPO2zGAMI"
         },
         {
-          "track": "Phoebus",
+          "name": "Phoebus",
           "url": "https://www.youtube.com/watch?v=XnzxxgXPDgI"
         },
         {
-          "track": "Esmeralda",
+          "name": "Esmeralda",
           "url": "https://www.youtube.com/watch?v=8XB6fBijl9M"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=e7pxG0Y3lWE"
         }
       ]
@@ -1230,31 +1230,31 @@
       "title": "While the City Slumbered",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=GUFDxAfL8lU"
         },
         {
-          "track": "Congregant Women",
+          "name": "Congregant Women",
           "url": "https://www.youtube.com/watch?v=Hmopet4v0lY"
         },
         {
-          "track": "Congregant Men",
+          "name": "Congregant Men",
           "url": "https://www.youtube.com/watch?v=qUn5gvBQQvg"
         },
         {
-          "track": "Choir Women",
+          "name": "Choir Women",
           "url": "https://www.youtube.com/watch?v=VQv4HYuTAbo"
         },
         {
-          "track": "Choir Tenor",
+          "name": "Choir Tenor",
           "url": "https://www.youtube.com/watch?v=8ajlYQG3vEo"
         },
         {
-          "track": "Choir Bass",
+          "name": "Choir Bass",
           "url": "https://www.youtube.com/watch?v=F5rz2q9HrN0"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=IAKJ2m7iYHg"
         }
       ]
@@ -1264,27 +1264,27 @@
       "title": "Made of Stone",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=WOy1N1cx9LA"
         },
         {
-          "track": "Quasimodo",
+          "name": "Quasimodo",
           "url": "https://www.youtube.com/watch?v=Ujp6aQrhPKU"
         },
         {
-          "track": "Gargoyle Solos",
+          "name": "Gargoyle Solos",
           "url": "https://www.youtube.com/watch?v=plNpezu8pEQ"
         },
         {
-          "track": "Female Gargoyles",
+          "name": "Female Gargoyles",
           "url": "https://www.youtube.com/watch?v=P0Gfsxpp6-U"
         },
         {
-          "track": "Male Gargoyles",
+          "name": "Male Gargoyles",
           "url": "https://www.youtube.com/watch?v=adYPRB9Zxo8"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=UooP07DkCSE"
         }
       ]
@@ -1294,27 +1294,27 @@
       "title": "Judex Crederis",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=8QA1cbzegAk"
         },
         {
-          "track": "Choir Soprano",
+          "name": "Choir Soprano",
           "url": "https://www.youtube.com/watch?v=vEnynUrbqn8"
         },
         {
-          "track": "Choir Alto",
+          "name": "Choir Alto",
           "url": "https://www.youtube.com/watch?v=MWLk1yC8B48"
         },
         {
-          "track": "Choir Tenor",
+          "name": "Choir Tenor",
           "url": "https://www.youtube.com/watch?v=EPButlvJYeE"
         },
         {
-          "track": "Choir Bass",
+          "name": "Choir Bass",
           "url": "https://www.youtube.com/watch?v=-vZSJP_MIFY"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=2dCM-a5Ul5Q"
         }
       ]
@@ -1324,67 +1324,67 @@
       "title": "Kyrie Eleison",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=B5MH3Jr4xbw"
         },
         {
-          "track": "Quasimodo",
+          "name": "Quasimodo",
           "url": "https://www.youtube.com/watch?v=Y9Bp4pxF3SA"
         },
         {
-          "track": "Phoebus",
+          "name": "Phoebus",
           "url": "https://www.youtube.com/watch?v=V6C4loaTxcs"
         },
         {
-          "track": "Congregant Soprano",
+          "name": "Congregant Soprano",
           "url": "https://www.youtube.com/watch?v=r3wTJndt8JM"
         },
         {
-          "track": "Congregant Alto",
+          "name": "Congregant Alto",
           "url": "https://www.youtube.com/watch?v=j7kDutlzn4I"
         },
         {
-          "track": "Congregant Tenor 1",
+          "name": "Congregant Tenor 1",
           "url": "https://www.youtube.com/watch?v=4o-EGIhHCHg"
         },
         {
-          "track": "Congregant Tenor 2",
+          "name": "Congregant Tenor 2",
           "url": "https://www.youtube.com/watch?v=4MA4g6-5p2c"
         },
         {
-          "track": "Congregant Bass",
+          "name": "Congregant Bass",
           "url": "https://www.youtube.com/watch?v=ORDwNqG9k-U"
         },
         {
-          "track": "Choir Soprano 1",
+          "name": "Choir Soprano 1",
           "url": "https://www.youtube.com/watch?v=x_hcXIi4sC4"
         },
         {
-          "track": "Choir Soprano 2",
+          "name": "Choir Soprano 2",
           "url": "https://www.youtube.com/watch?v=jl-5mtrwre8"
         },
         {
-          "track": "Choir Alto",
+          "name": "Choir Alto",
           "url": "https://www.youtube.com/watch?v=2rYlZr2DY3g"
         },
         {
-          "track": "Choir Tenor 1",
+          "name": "Choir Tenor 1",
           "url": "https://www.youtube.com/watch?v=To3x43RFzok"
         },
         {
-          "track": "Choir Tenor 2",
+          "name": "Choir Tenor 2",
           "url": "https://www.youtube.com/watch?v=M_3uvmsgC2o"
         },
         {
-          "track": "Choir Baritone",
+          "name": "Choir Baritone",
           "url": "https://www.youtube.com/watch?v=J8MHqVDV8Vw"
         },
         {
-          "track": "Choir Bass",
+          "name": "Choir Bass",
           "url": "https://www.youtube.com/watch?v=tx31JDQ82Vs"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=iZ94kVOYH50"
         }
       ]
@@ -1394,23 +1394,23 @@
       "title": "Top of the World (Reprise)",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=6FLN1R-cUJA"
         },
         {
-          "track": "Esmeralda",
+          "name": "Esmeralda",
           "url": "https://www.youtube.com/watch?v=AwFwuz3k8s8"
         },
         {
-          "track": "Choir Soprano",
+          "name": "Choir Soprano",
           "url": "https://www.youtube.com/watch?v=nEzQfFQrI9A"
         },
         {
-          "track": "Choir Alto",
+          "name": "Choir Alto",
           "url": "https://www.youtube.com/watch?v=jO2j4lRrBX4"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=bXoK2cYGhyQ"
         }
       ]
@@ -1420,43 +1420,43 @@
       "title": "Esmeralda (Frollo Reprise)",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=QROHlN8V_fk"
         },
         {
-          "track": "Frollo",
+          "name": "Frollo",
           "url": "https://www.youtube.com/watch?v=G6SrTEQ1sLE"
         },
         {
-          "track": "Jehan",
+          "name": "Jehan",
           "url": "https://www.youtube.com/watch?v=NbvvPPY5L6Y"
         },
         {
-          "track": "Florika",
+          "name": "Florika",
           "url": "https://www.youtube.com/watch?v=BTSvVAkfc-k"
         },
         {
-          "track": "Congregant/choir Soprano",
+          "name": "Congregant/choir Soprano",
           "url": "https://www.youtube.com/watch?v=1T65d5Xk8tg"
         },
         {
-          "track": "Congregant/choir Alto",
+          "name": "Congregant/choir Alto",
           "url": "https://www.youtube.com/watch?v=vZhsCJvkY_c"
         },
         {
-          "track": "Congregant/choir Tenor",
+          "name": "Congregant/choir Tenor",
           "url": "https://www.youtube.com/watch?v=bxooJZbJm-E"
         },
         {
-          "track": "Congregant/choir Baritone",
+          "name": "Congregant/choir Baritone",
           "url": "https://www.youtube.com/watch?v=zw24cwgkcZg"
         },
         {
-          "track": "Congregant/choir Bass",
+          "name": "Congregant/choir Bass",
           "url": "https://www.youtube.com/watch?v=iVLOr6qRAPI"
         },
         {
-          "track": "All Parts And Piano Accompaniment",
+          "name": "All Parts And Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=kqUddRn9tHM"
         }
       ]
@@ -1466,59 +1466,59 @@
       "title": "Finale Ultimo",
       "tracks": [
         {
-          "track": "Piano Accompaniment",
+          "name": "Piano Accompaniment",
           "url": "https://www.youtube.com/watch?v=C_4ce7XE5jc"
         },
         {
-          "track": "Florika",
+          "name": "Florika",
           "url": "https://www.youtube.com/watch?v=ha0-4IztIiQ"
         },
         {
-          "track": "Clopin",
+          "name": "Clopin",
           "url": "https://www.youtube.com/watch?v=PB6-5u7rdtE"
         },
         {
-          "track": "Quasimodo",
+          "name": "Quasimodo",
           "url": "https://www.youtube.com/watch?v=0QS0F624-8A"
         },
         {
-          "track": "Congregant Women Solos",
+          "name": "Congregant Women Solos",
           "url": "https://www.youtube.com/watch?v=u50BXU-8mY4"
         },
         {
-          "track": "Congregant Men Solos",
+          "name": "Congregant Men Solos",
           "url": "https://www.youtube.com/watch?v=CqHcre7oDzQ"
         },
         {
-          "track": "Choir Soprano 1",
+          "name": "Choir Soprano 1",
           "url": "https://www.youtube.com/watch?v=YkrxRPKcL_s"
         },
         {
-          "track": "Choir Soprano 2",
+          "name": "Choir Soprano 2",
           "url": "https://www.youtube.com/watch?v=vd0QyMZyo8Y"
         },
         {
-          "track": "Choir Alto 1",
+          "name": "Choir Alto 1",
           "url": "https://www.youtube.com/watch?v=YzIoAwMDCW4"
         },
         {
-          "track": "Choir Alto 2",
+          "name": "Choir Alto 2",
           "url": "https://www.youtube.com/watch?v=OlMgnbS6VVM"
         },
         {
-          "track": "Choir Tenor 1",
+          "name": "Choir Tenor 1",
           "url": "https://www.youtube.com/watch?v=OFP9Yqw74Uw"
         },
         {
-          "track": "Choir Tenor 2",
+          "name": "Choir Tenor 2",
           "url": "https://www.youtube.com/watch?v=aHQvlpPOILU"
         },
         {
-          "track": "Choir Baritone",
+          "name": "Choir Baritone",
           "url": "https://www.youtube.com/watch?v=4ADad-DLhQQ"
         },
         {
-          "track": "Choir Bass",
+          "name": "Choir Bass",
           "url": "https://www.youtube.com/watch?v=GwoBfI0qFpQ"
         }
       ]
