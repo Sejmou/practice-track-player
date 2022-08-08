@@ -1,4 +1,5 @@
 import { Song, SourceData } from '@models';
+import { Box, CircularProgress } from '@mui/material';
 import useSWRImmutable from 'swr/immutable';
 import AudioControls from './AudioControls';
 
@@ -22,12 +23,28 @@ const SongPlayer = ({ song }: Props) => {
 
   return (
     <div>
-      <div>Current Song:</div>
-      <b>
-        {song.no}. {song.title}
-      </b>
+      <Box
+        sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+      >
+        <span>Current Song:</span>
+        <b>
+          {song.no}. {song.title}
+        </b>
+      </Box>
       {error && <p>Could not load audio :/</p>}
-      {audioData && (
+      {!audioData ? (
+        <Box
+          sx={{
+            height: '64px',
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
         <AudioControls
           audioData={audioData}
           onNextClicked={nextSongClickHandler}

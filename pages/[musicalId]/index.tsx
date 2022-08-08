@@ -6,6 +6,8 @@ import SongList from '@components/Musical/SongList';
 import SongPlayer from '@components/SongPlayer/SongPlayer';
 import { getAllMusicalIds, getMusical } from '@backend';
 import { Musical } from '@models';
+import { Box, Button } from '@mui/material';
+import Link from 'next/link';
 
 type Props = { musical: Musical };
 
@@ -23,8 +25,14 @@ const MusicalPage: NextPage<Props> = ({ musical }) => {
         <meta name="description" content={musical.title} />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      <h1>{musical.title}</h1>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <h1>{musical.title}</h1>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Button>
+            <Link href="/">Back to Home</Link>
+          </Button>
+        </Box>
+      </Box>
       <div
         style={{
           display: 'flex',

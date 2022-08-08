@@ -1,17 +1,23 @@
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import { MusicalBaseData } from '@models';
+import { List, ListItem, ListItemButton, ListItemText } from '@mui/material';
 
 type Props = { musicalData: MusicalBaseData[] };
 const MusicalsList = ({ musicalData }: Props) => {
   return (
-    <ul>
+    <List>
       {musicalData.map(d => (
-        <li key={d.id}>
-          <Link href={d.id}>{d.title}</Link>
-        </li>
+        <ListItem key={d.id}>
+          <Link href={d.id}>
+            <ListItemButton>
+              <ListItemText primary={d.title} />
+            </ListItemButton>
+          </Link>
+        </ListItem>
       ))}
-    </ul>
+    </List>
   );
 };
 export default MusicalsList;

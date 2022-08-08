@@ -1,4 +1,5 @@
 import { Song } from '@models';
+import { List, ListItem, ListItemButton, ListItemText } from '@mui/material';
 import SongItem from './SongItem';
 
 type Props = {
@@ -8,12 +9,14 @@ type Props = {
 const SongList = ({ songs, onSongChange }: Props) => {
   return (
     <div>
-      <h2>Songs:</h2>
-      <ul>
-        {songs.map((song: any) => (
-          <SongItem song={song} key={song.no} onClick={onSongChange} />
+      <h2>Songs (click any to switch):</h2>
+      <List>
+        {songs.map(song => (
+          <ListItemButton key={song.no} onClick={() => onSongChange(song.no)}>
+            <ListItemText primary={`${song.no}. ${song.title}`} />
+          </ListItemButton>
         ))}
-      </ul>
+      </List>
     </div>
   );
 };
