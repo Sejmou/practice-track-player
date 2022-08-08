@@ -1,5 +1,5 @@
-import { Song } from '@models';
-import useSWR from 'swr';
+import { Song, SourceData } from '@models';
+import useSWRImmutable from 'swr/immutable';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -10,15 +10,20 @@ const SongPlayer = ({ song }: Props) => {
   const params = new URLSearchParams(videoUrlSearch);
   const videoId = params.get('v')!;
   console.log(videoId);
-  const { data, error } = useSWR('/api/yt-audio/' + videoId, fetcher);
+  const { data: audioData, error } = useSWRImmutable<SourceData, any>(
+    '/api/yt-audio/' + videoId,
+    fetcher
+  );
 
   return (
     <div>
       <h2>
         Current Track: {song.no}. {song.title}
       </h2>
-      <p>Here you will hopefully soon see a Music Player for a song.</p>
-      <audio src={data} />
+      {error && <p>Could not load audio :/</p>}
+      <audio controls>
+        {audioData && <source src={audioData.src} type={audioData.type} />}
+      </audio>
     </div>
   );
 };

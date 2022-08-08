@@ -28,3 +28,10 @@ export const MusicalBaseDataValidator = z.object({
   id: z.string(),
 });
 export type MusicalBaseData = z.infer<typeof MusicalBaseDataValidator>;
+
+export const SourceDataValidator = z.object({
+  src: z.string().url(),
+  type: z.string(),
+});
+
+export type SourceData = z.infer<typeof SourceDataValidator>;
