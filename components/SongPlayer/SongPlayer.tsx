@@ -1,5 +1,6 @@
 import { Song, SourceData } from '@models';
 import useSWRImmutable from 'swr/immutable';
+import AudioControls from './AudioControls';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -18,12 +19,10 @@ const SongPlayer = ({ song }: Props) => {
   return (
     <div>
       <h2>
-        Current Track: {song.no}. {song.title}
+        Current Song: {song.no}. {song.title}
       </h2>
       {error && <p>Could not load audio :/</p>}
-      <audio controls>
-        {audioData && <source src={audioData.src} type={audioData.type} />}
-      </audio>
+      {audioData && <AudioControls audioData={audioData} />}
     </div>
   );
 };
