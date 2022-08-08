@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import Head from 'next/head';
 
+import TrackList from '@components/Musical/TrackList';
 import SongList from '@components/Musical/SongList';
 import SongPlayer from '@components/SongPlayer/SongPlayer';
 import { getAllMusicalIds, getMusical } from '@backend';
@@ -12,10 +13,18 @@ import Link from 'next/link';
 type Props = { musical: Musical };
 
 const MusicalPage: NextPage<Props> = ({ musical }) => {
+  const [trackIdx, setTrackIdx] = useState(0);
+  const [songIdx, setSongIdx] = useState(0);
   const [currentSong, setCurrentSong] = useState(musical.songs[0]);
 
-  const songClickHandler = (songNo: string) => {
-    setCurrentSong(() => musical.songs.find(song => song.no === songNo)!);
+  const songChangeHandler = (songIdx: number) => {
+    setSongIdx(songIdx);
+    setCurrentSong(() => musical.songs[songIdx]);
+    setTrackIdx(0);
+  };
+
+  const trackChangeHandler = (trackIdx: number) => {
+    setTrackIdx(trackIdx);
   };
 
   return (
@@ -33,16 +42,28 @@ const MusicalPage: NextPage<Props> = ({ musical }) => {
           </Button>
         </Box>
       </Box>
-      <div
-        style={{
+      <Box
+        sx={{
           display: 'flex',
           gap: '10px',
           flexDirection: 'column',
         }}
       >
-        <SongPlayer song={currentSong} />
-        <SongList songs={musical.songs} onSongChange={songClickHandler} />
-      </div>
+        <SongPlayer song={currentSong} trackIdx={trackIdx} />
+        <Box
+          sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}
+        >
+          <TrackList
+            tracks={currentSong.tracks}
+            onTrackChange={trackChangeHandler}
+          />
+          <SongList
+            songs={musical.songs}
+            songIdx={musical.songs}
+            onSongChange={songChangeHandler}
+          />
+        </Box>
+      </Box>
     </>
   );
 };

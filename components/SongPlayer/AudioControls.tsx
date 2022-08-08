@@ -57,7 +57,7 @@ const AudioControls = ({
   const audioElTime = audioElement?.currentTime;
 
   useEffect(() => {
-    console.log(audioElement);
+    console.log('audio element', audioElement);
     if (audioElement) {
       const { duration, currentTime, playbackRate } = audioElement;
       console.log({ duration, currentTime, playbackRate });

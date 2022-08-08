@@ -22,6 +22,7 @@ export default async function handler(
     );
     res.status(200).json({ src: url, type: mimeType || '' });
   } catch (error) {
-    res.status(400).end();
+    console.warn('An error occurred while fetching the audio stream', error);
+    res.status(404).end();
   }
 }

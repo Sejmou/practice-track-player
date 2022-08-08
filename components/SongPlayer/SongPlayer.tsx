@@ -1,20 +1,28 @@
 import { Song, SourceData } from '@models';
-import { Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 import useSWRImmutable from 'swr/immutable';
 import AudioControls from './AudioControls';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
-type Props = { song: Song };
+type Props = { song: Song; trackIdx: number };
 
-const SongPlayer = ({ song }: Props) => {
-  const videoUrlSearch = new URL(song.tracks[0].url).search;
-  const params = new URLSearchParams(videoUrlSearch);
-  const videoId = params.get('v')!;
-  console.log(videoId);
+const SongPlayer = ({ song, trackIdx }: Props) => {
+  console.log('current song', song);
+  console.log('current track index', trackIdx);
+  const [videoId, setVideoId] = useState<string>();
+
+  useEffect(() => {
+    const videoUrlSearch = new URL(song.tracks[trackIdx].url).search;
+    const params = new URLSearchParams(videoUrlSearch);
+    const newVideoId = params.get('v')!;
+
+    setVideoId(newVideoId);
+  }, [song.tracks, trackIdx]);
 
   const { data: audioData, error } = useSWRImmutable<SourceData, any>(
-    '/api/yt-audio/' + videoId,
+    videoId ? '/api/yt-audio/' + videoId : null,
     fetcher
   );
 
@@ -22,14 +30,14 @@ const SongPlayer = ({ song }: Props) => {
   const previousSongClickHandler = () => {};
 
   return (
-    <div>
+    <Box>
       <Box
         sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
       >
-        <span>Current Song:</span>
-        <b>
+        <Typography>Current Song:</Typography>
+        <Typography variant="h5">
           {song.no}. {song.title}
-        </b>
+        </Typography>
       </Box>
       {error && <p>Could not load audio :/</p>}
       {!audioData ? (
@@ -51,7 +59,7 @@ const SongPlayer = ({ song }: Props) => {
           onPreviousClicked={previousSongClickHandler}
         />
       )}
-    </div>
+    </Box>
   );
 };
 export default SongPlayer;
