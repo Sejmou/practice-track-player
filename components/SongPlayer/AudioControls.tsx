@@ -10,6 +10,7 @@ import {
   KeyboardShortcuts,
   KeyboardShortcut,
 } from '@frontend/keyboard-shortcuts';
+import PlaybackRatePicker from './PlaybackRatePicker';
 
 const shortcuts = new KeyboardShortcuts();
 
@@ -78,6 +79,12 @@ const AudioControls = ({
   }, [audioData]);
 
   useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.playbackRate = playbackRate;
+    }
+  }, [playbackRate]);
+
+  useEffect(() => {
     shortcuts.set([
       new KeyboardShortcut({ code: 'Space' }, () => {
         handlePlayPauseToggle();
@@ -108,34 +115,48 @@ const AudioControls = ({
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Box
           sx={{
-            display: 'flex',
+            display: 'grid',
             width: '100%',
-            justifyContent: 'center',
+            gridTemplateColumns: '1fr 1fr 1fr',
           }}
         >
-          <IconButton
-            size="large"
-            disabled={!previousAvailable}
-            onClick={onPreviousClicked}
-            color="primary"
+          <Box></Box>
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <IconButton
+              size="large"
+              disabled={!previousAvailable}
+              onClick={onPreviousClicked}
+              color="primary"
+            >
+              <SkipPreviousIcon />
+            </IconButton>
+            <IconButton
+              onClick={handlePlayPauseToggle}
+              color="primary"
+              size="large"
+            >
+              {!isPlaying ? <PlayArrowIcon /> : <PauseIcon />}
+            </IconButton>
+            <IconButton
+              size="large"
+              disabled={!nextAvailable}
+              onClick={onNextClicked}
+              color="primary"
+            >
+              <SkipNextIcon />
+            </IconButton>
+          </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+            }}
           >
-            <SkipPreviousIcon />
-          </IconButton>
-          <IconButton
-            onClick={handlePlayPauseToggle}
-            color="primary"
-            size="large"
-          >
-            {!isPlaying ? <PlayArrowIcon /> : <PauseIcon />}
-          </IconButton>
-          <IconButton
-            size="large"
-            disabled={!nextAvailable}
-            onClick={onNextClicked}
-            color="primary"
-          >
-            <SkipNextIcon />
-          </IconButton>
+            <PlaybackRatePicker
+              playbackRate={playbackRate}
+              onPlaybackRateChange={pbr => setPlaybackRate(pbr)}
+            />
+          </Box>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', mt: '-4px' }}>
           <Box sx={{ minWidth: 35 }}>
