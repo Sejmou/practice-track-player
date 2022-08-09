@@ -14,7 +14,7 @@ export default async function handler(
     const fileName = mp3Folder[0];
 
     if (fileName) {
-      res.status(200).json({ src: `/mp3/${mp3Folder[0]}`, type: 'audio/mp3' });
+      res.status(200).json({ src: `/mp3/${mp3Folder[0]}`, type: 'audio/mpeg' });
     } else throw Error(`No audio file found for ID '${req.query.fileId}'`);
   } catch (error) {
     console.warn('An error occurred while fetching the audio URL', error);

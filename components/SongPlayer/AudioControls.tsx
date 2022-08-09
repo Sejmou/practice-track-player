@@ -1,5 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
-import { Box, IconButton, Typography, Slider } from '@mui/material';
+import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
+import { Box, IconButton, Typography } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
@@ -11,6 +13,10 @@ import {
   KeyboardShortcut,
 } from '@frontend/keyboard-shortcuts';
 import PlaybackRatePicker from './PlaybackRatePicker';
+
+const WaveFormView = dynamic(() => import('./WaveFormView/WaveformView'), {
+  ssr: false,
+});
 
 const shortcuts = new KeyboardShortcuts();
 
@@ -31,45 +37,12 @@ const AudioControls = ({
 }: Props) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0.0001);
   const [playbackRate, setPlaybackRate] = useState(1);
-
-  const intervalRef = useRef<NodeJS.Timer>();
-
-  const startProgressUpdateTimer = () => {
-    clearInterval(intervalRef.current);
-    const newTimer = setInterval(() => {
-      if (audioRef.current) {
-        setProgress(audioRef.current.currentTime);
-      }
-    }, 100);
-    intervalRef.current = newTimer;
-  };
 
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const handleMetadataLoaded = () => {
-    setDuration(audioRef.current!.duration);
-  };
-
   const handlePlayPauseToggle = () => {
     setIsPlaying(previous => !previous);
-  };
-
-  const handleProgressSliderChange = (
-    event: Event,
-    newValue: number | number[]
-  ) => {
-    clearInterval(intervalRef.current);
-    const newTime = (duration * (newValue as number)) / 100;
-    if (audioRef.current) {
-      audioRef.current.currentTime = newTime;
-    }
-    setProgress(newTime);
-  };
-
-  const handleProgressSliderChangeEnd = () => {
-    startProgressUpdateTimer();
   };
 
   useEffect(() => {
@@ -95,23 +68,25 @@ const AudioControls = ({
   useEffect(() => {
     if (isPlaying) {
       audioRef.current?.play();
-      startProgressUpdateTimer();
     } else {
       audioRef.current?.pause();
     }
   }, [isPlaying]);
 
-  useEffect(() => {
-    const intervalTimer = intervalRef.current;
-    return () => {
-      clearInterval(intervalTimer);
-    };
-  }, []);
-
   return (
     <div
       onKeyDownCapture={keyboardEvent => shortcuts.applyMatching(keyboardEvent)}
     >
+      {audioRef.current && (
+        <WaveFormView
+          audioElement={audioRef.current}
+          audioUrl={audioData.src}
+          audioContentType={audioData.type}
+          audioContext={new AudioContext()}
+          setSegments={() => {}}
+          setPoints={() => {}}
+        />
+      )}
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Box
           sx={{
@@ -158,30 +133,8 @@ const AudioControls = ({
             />
           </Box>
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', mt: '-4px' }}>
-          <Box sx={{ minWidth: 35 }}>
-            <Typography variant="body2" color="text.secondary">
-              {secondsToMinutesAndSecondsStr(progress)}
-            </Typography>
-          </Box>
-          <Box sx={{ width: '100%', mr: 2, ml: 2 }}>
-            <Slider
-              sx={{ p: '5px 0' }}
-              value={(progress / duration) * 100}
-              onChange={handleProgressSliderChange}
-              onKeyUp={handleProgressSliderChangeEnd}
-              onMouseUp={handleProgressSliderChangeEnd}
-              size="small"
-            />
-          </Box>
-          <Box sx={{ minWidth: 35 }}>
-            <Typography variant="body2" color="text.secondary">
-              {secondsToMinutesAndSecondsStr(duration)}
-            </Typography>
-          </Box>
-        </Box>
       </Box>
-      <audio onLoadedMetadata={handleMetadataLoaded} ref={audioRef}>
+      <audio ref={audioRef}>
         <source src={audioData.src} />
       </audio>
     </div>

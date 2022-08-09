@@ -1,15 +1,14 @@
-import { useState } from 'react';
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import Head from 'next/head';
 
 import TrackList from '@components/Musical/TrackList';
 import SongList from '@components/Musical/SongList';
-import SongPlayer from '@components/SongPlayer/SongPlayer';
 import { getAllMusicalIds, getMusical } from '@backend';
 import { Musical } from '@models';
 import { Box, Button } from '@mui/material';
 import Link from 'next/link';
 import { MusicalProvider } from '@frontend/context/musical-context';
+import SongPlayer from '@components/SongPlayer/SongPlayer';
 
 type Props = { musical: Musical };
 

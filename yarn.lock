@@ -1088,6 +1088,11 @@ esutils@^2.0.2:
   resolved "https://registry.npmjs.org/esutils/-/esutils-2.0.3.tgz"
   integrity sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==
 
+eventemitter3@~4.0.7:
+  version "4.0.7"
+  resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-4.0.7.tgz#2de9b68f6528d5644ef5c59526a1b4a07306169f"
+  integrity sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==
+
 fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   version "3.1.3"
   resolved "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz"
@@ -1516,6 +1521,11 @@ json5@^1.0.1:
     array-includes "^3.1.5"
     object.assign "^4.1.2"
 
+konva@^8.3.11:
+  version "8.3.11"
+  resolved "https://registry.yarnpkg.com/konva/-/konva-8.3.11.tgz#ffd8012a8240498d63652218c8db13e7fb51a3e7"
+  integrity sha512-5PsE3oQYnzwwUUCv8gV2zpLjenotqLy0AmXauyy9GPi+UHIynmLkrsAIZfEkjPNEgAwmh5r6I0JQa1fTt8ZrGw==
+
 language-subtag-registry@~0.3.2:
   version "0.3.22"
   resolved "https://registry.npmjs.org/language-subtag-registry/-/language-subtag-registry-0.3.22.tgz"
@@ -1822,6 +1832,13 @@ path-type@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npmjs.org/path-type/-/path-type-4.0.0.tgz"
   integrity sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==
+
+peaks.js@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/peaks.js/-/peaks.js-2.0.3.tgz#f201c4b143cf2556afaab05aa14968af4280a217"
+  integrity sha512-IqwTuo+/Tn4NRyqE8SZoW9nCqrCifiE9w/X2kfbazRy7l5P+tOqpqIRrY9obHBxUeE1Mqpq+JnJsiIAFCiCkEg==
+  dependencies:
+    eventemitter3 "~4.0.7"
 
 picocolors@^1.0.0:
   version "1.0.0"
@@ -2197,6 +2214,11 @@ v8-compile-cache@^2.0.3:
   version "2.3.0"
   resolved "https://registry.npmjs.org/v8-compile-cache/-/v8-compile-cache-2.3.0.tgz"
   integrity sha512-l8lCEmLcLYZh4nbunNZvQCJc5pv7+RCwa8q/LdUx8u7lsWvPDKmpodJAJNwkAhJC//dFY48KuIEmjtd4RViDrA==
+
+waveform-data@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/waveform-data/-/waveform-data-4.3.0.tgz#03fcafa522ec1302f48583cc0c9ffd20737d499d"
+  integrity sha512-gddZgTV1dM8Mfaqn+mCJjwTAc7O/GbX2LgOrijRCHEGC60ZVdd/qTzrgEcCE5MfBoBPgwQ85huy1icSf5IZY5Q==
 
 which-boxed-primitive@^1.0.2:
   version "1.0.2"
