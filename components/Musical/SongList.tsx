@@ -30,7 +30,7 @@ const SongList = () => {
               )}
               <ListItemText
                 primary={`${song.no}. ${song.title}${
-                  song === currentSong ? ' (playing)' : ''
+                  song === currentSong ? ' [current]' : ''
                 }`}
               />
             </ListItemButton>

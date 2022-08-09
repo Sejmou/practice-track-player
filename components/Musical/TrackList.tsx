@@ -31,7 +31,7 @@ const TrackList = () => {
               )}
               <ListItemText
                 primary={`${track.name}${
-                  track === currentTrack ? ' (playing)' : ''
+                  track === currentTrack ? ' [playing]' : ''
                 }`}
               />
             </ListItemButton>
