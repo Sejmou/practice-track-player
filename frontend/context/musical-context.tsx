@@ -18,8 +18,6 @@ const useMusicalController = (musical: Musical) => {
   const [nextSongAvailable, setNextSongAvailable] = useState(true);
   const [previousSongAvailable, setPreviousSongAvailable] = useState(false);
 
-  console.log('current track', currentTrack);
-
   const updateNextPreviousAvailability = useCallback(
     (newIdx: number) => {
       setNextSongAvailable(!!songs[newIdx + 1]);

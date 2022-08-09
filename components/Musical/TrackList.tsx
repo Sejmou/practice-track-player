@@ -12,7 +12,6 @@ import { useMusicalContext } from '@frontend/context/musical-context';
 
 const TrackList = () => {
   const { tracks, currentTrack, setCurrentTrack } = useMusicalContext();
-  console.log('current track (track list)', currentTrack);
 
   return (
     <div>

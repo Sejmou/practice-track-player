@@ -1,11 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import {
-  LinearProgress,
-  Box,
-  IconButton,
-  Typography,
-  Slider,
-} from '@mui/material';
+import { useEffect, useState, useRef } from 'react';
+import { Box, IconButton, Typography, Slider } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
@@ -27,18 +21,35 @@ type Props = {
   onPreviousClicked: () => void;
 };
 const AudioControls = ({
+  // TODO: improve perfomance of this; current code is probably not very efficient I guess
   audioData,
   nextAvailable,
   previousAvailable,
   onNextClicked,
   onPreviousClicked,
 }: Props) => {
-  const audioElRef = useRef<HTMLAudioElement>(null);
-
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(1);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0.0001);
   const [playbackRate, setPlaybackRate] = useState(1);
+
+  const intervalRef = useRef<NodeJS.Timer>();
+
+  const startProgressUpdateTimer = () => {
+    clearInterval(intervalRef.current);
+    const newTimer = setInterval(() => {
+      if (audioRef.current) {
+        setProgress(audioRef.current.currentTime);
+      }
+    }, 100);
+    intervalRef.current = newTimer;
+  };
+
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  const handleMetadataLoaded = () => {
+    setDuration(audioRef.current!.duration);
+  };
 
   const handlePlayPauseToggle = () => {
     setIsPlaying(previous => !previous);
@@ -48,31 +59,23 @@ const AudioControls = ({
     event: Event,
     newValue: number | number[]
   ) => {
+    clearInterval(intervalRef.current);
     const newTime = (duration * (newValue as number)) / 100;
-    console.log(newTime);
-    setCurrentTime(newTime);
+    if (audioRef.current) {
+      audioRef.current.currentTime = newTime;
+    }
+    setProgress(newTime);
   };
 
-  const audioElement = audioElRef.current;
-  const audioElTime = audioElement?.currentTime;
+  const handleProgressSliderChangeEnd = () => {
+    startProgressUpdateTimer();
+  };
 
   useEffect(() => {
-    console.log('audio element', audioElement);
-    if (audioElement) {
-      const { duration, currentTime, playbackRate } = audioElement;
-      console.log({ duration, currentTime, playbackRate });
-
-      setCurrentTime(currentTime);
-      setDuration(duration);
-      setPlaybackRate(playbackRate);
+    if (audioRef.current) {
+      audioRef.current.src = audioData.src;
     }
-  }, [audioElement]);
-
-  useEffect(() => {
-    if (audioElRef.current) {
-      audioElRef.current.currentTime = currentTime;
-    }
-  }, [currentTime]);
+  }, [audioData]);
 
   useEffect(() => {
     shortcuts.set([
@@ -84,13 +87,20 @@ const AudioControls = ({
 
   useEffect(() => {
     if (isPlaying) {
-      audioElRef.current?.play();
+      audioRef.current?.play();
+      startProgressUpdateTimer();
     } else {
-      audioElRef.current?.pause();
+      audioRef.current?.pause();
     }
   }, [isPlaying]);
 
-  const { src, type } = audioData;
+  useEffect(() => {
+    const intervalTimer = intervalRef.current;
+    return () => {
+      clearInterval(intervalTimer);
+    };
+  }, []);
+
   return (
     <div
       onKeyDownCapture={keyboardEvent => shortcuts.applyMatching(keyboardEvent)}
@@ -130,14 +140,16 @@ const AudioControls = ({
         <Box sx={{ display: 'flex', alignItems: 'center', mt: '-4px' }}>
           <Box sx={{ minWidth: 35 }}>
             <Typography variant="body2" color="text.secondary">
-              {secondsToMinutesAndSecondsStr(currentTime)}
+              {secondsToMinutesAndSecondsStr(progress)}
             </Typography>
           </Box>
           <Box sx={{ width: '100%', mr: 2, ml: 2 }}>
             <Slider
               sx={{ p: '5px 0' }}
-              value={(currentTime / duration) * 100}
+              value={(progress / duration) * 100}
               onChange={handleProgressSliderChange}
+              onKeyUp={handleProgressSliderChangeEnd}
+              onMouseUp={handleProgressSliderChangeEnd}
               size="small"
             />
           </Box>
@@ -148,8 +160,8 @@ const AudioControls = ({
           </Box>
         </Box>
       </Box>
-      <audio ref={audioElRef}>
-        <source src={src} type={type} />
+      <audio onLoadedMetadata={handleMetadataLoaded} ref={audioRef}>
+        <source src={audioData.src} />
       </audio>
     </div>
   );
