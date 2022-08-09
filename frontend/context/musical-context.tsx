@@ -63,6 +63,7 @@ const useMusicalController = (musical: Musical) => {
     if (nextSong) {
       setCurrentSong(nextSong);
       updateNextPreviousAvailability(currentSongIdx + 1);
+      setCurrentTrack(nextSong.tracks[0]);
     }
   }, [currentSong, songs, updateNextPreviousAvailability]);
 
@@ -72,6 +73,7 @@ const useMusicalController = (musical: Musical) => {
     if (previousSong) {
       setCurrentSong(previousSong);
       updateNextPreviousAvailability(currentSongIdx - 1);
+      setCurrentTrack(previousSong.tracks[0]);
     }
   }, [currentSong, songs, updateNextPreviousAvailability]);
 
