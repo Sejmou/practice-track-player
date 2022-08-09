@@ -24,16 +24,16 @@ const TrackList = () => {
               key={i}
               onClick={() => setCurrentTrack(track)}
             >
-              {track === currentTrack && (
-                <ListItemIcon>
-                  <MusicNoteIcon />
-                </ListItemIcon>
-              )}
               <ListItemText
                 primary={`${track.name}${
                   track === currentTrack ? ' [playing]' : ''
                 }`}
               />
+              {track === currentTrack && (
+                <ListItemIcon>
+                  <MusicNoteIcon />
+                </ListItemIcon>
+              )}
             </ListItemButton>
           ))}
         </List>

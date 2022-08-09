@@ -38,7 +38,6 @@ const SongPlayer = () => {
           {song.no}. {song.title}
         </Typography>
       </Box>
-      {error && <p>Could not load audio :/</p>}
       {!audioData ? (
         <Box
           sx={{
@@ -49,7 +48,14 @@ const SongPlayer = () => {
             justifyContent: 'center',
           }}
         >
-          <CircularProgress />
+          {error ? (
+            <Typography>
+              Could not load audio 😢 Try again later or pick some other
+              track/song
+            </Typography>
+          ) : (
+            <CircularProgress />
+          )}
         </Box>
       ) : (
         <AudioControls
