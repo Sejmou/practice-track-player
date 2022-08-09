@@ -24,7 +24,8 @@ const SongPlayer = () => {
   }, [track]);
 
   const { data: audioData, error } = useSWRImmutable<SourceData, any>(
-    '/api/yt-audio/' + videoId,
+    // '/api/yt-audio/' + videoId,
+    'api/server-audio/0',
     fetcher
   );
 
