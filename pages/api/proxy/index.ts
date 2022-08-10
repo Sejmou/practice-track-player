@@ -5,6 +5,8 @@ import { promisify } from 'util';
 
 const pipeline = promisify(callbackPipeline);
 
+// this route proxies any incoming request to work around CORS issues
+// currently, only streams of data are supported (e.g. audio files)
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<string>
