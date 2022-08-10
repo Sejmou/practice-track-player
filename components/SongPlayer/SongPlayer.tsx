@@ -1,4 +1,4 @@
-import LoadingSpinnerContainer from '@components/LoadingSpinnerContainer/LoadingSpinnerContainer';
+import SuspenseContainer from '@components/LoadingSpinnerContainer/LoadingSpinnerContainer';
 import { useMusicalContext } from '@frontend/context/musical-context';
 import { SourceData } from '@models';
 import { Box, CircularProgress, Typography } from '@mui/material';
@@ -66,13 +66,11 @@ const SongPlayer = ({ waveformDataStrategy }: Props) => {
     waveformDataFetcher
   );
 
-  const playerReady = waveformDataStrategy
-    ? !!audioElSrcData && !!waveformData
-    : !!audioElSrcData;
-
-  if (playerReady) {
-    console.log(audioElSrcData, waveformData);
-  }
+  const playerReady =
+    audioElSrcData &&
+    (waveformDataStrategy
+      ? !!audioElSrcData && !!waveformData
+      : !!audioElSrcData);
 
   return (
     <Box>
@@ -84,26 +82,7 @@ const SongPlayer = ({ waveformDataStrategy }: Props) => {
           {song.no}. {song.title}
         </Typography>
       </Box>
-      {!audioElSrcData ? (
-        <Box
-          sx={{
-            height: '64px',
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {error ? (
-            <Typography>
-              Could not load audio 😢 Try again later or pick some other
-              track/song
-            </Typography>
-          ) : (
-            <CircularProgress />
-          )}
-        </Box>
-      ) : playerReady ? (
+      {playerReady ? (
         <AudioControls
           audioContext={audioContext}
           audioElSrcData={audioElSrcData}
@@ -114,7 +93,13 @@ const SongPlayer = ({ waveformDataStrategy }: Props) => {
           previousAvailable={previousSongAvailable}
         />
       ) : (
-        <LoadingSpinnerContainer height={309} message="Loading Player" />
+        <SuspenseContainer
+          height={309 + 64}
+          status={!error ? 'loading' : 'error'}
+          errorMessage="Could not load audio 😢 Try again later or pick some other
+        track/song"
+          loadingMessage="Loading Player"
+        />
       )}
     </Box>
   );

@@ -1,8 +1,18 @@
 import { CircularProgress, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 
-type Props = { height: number; message?: string };
-const LoadingSpinnerContainer = ({ height, message }: Props) => {
+type Props = {
+  height: number;
+  loadingMessage?: string;
+  errorMessage: string;
+  status: 'error' | 'loading';
+};
+const SuspenseContainer = ({
+  height,
+  status,
+  errorMessage,
+  loadingMessage,
+}: Props) => {
   return (
     <Box
       sx={{
@@ -22,10 +32,14 @@ const LoadingSpinnerContainer = ({ height, message }: Props) => {
           gap: '10px',
         }}
       >
-        {message && <Typography>{message}</Typography>}
+        {
+          <Typography>
+            {status === 'loading' ? loadingMessage : errorMessage}
+          </Typography>
+        }
         <CircularProgress />
       </Box>
     </Box>
   );
 };
-export default LoadingSpinnerContainer;
+export default SuspenseContainer;

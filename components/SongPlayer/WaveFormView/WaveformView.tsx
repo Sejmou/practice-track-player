@@ -53,8 +53,6 @@ class WaveformView extends Component<Props> {
   peaks: any;
 
   render() {
-    console.log('WaveformView.render, current props:', this.props);
-
     return (
       <div>
         <div
@@ -92,14 +90,10 @@ class WaveformView extends Component<Props> {
   }
 
   componentDidMount() {
-    console.log('WaveformComponent.componentDidMount');
-
     this.initPeaks();
   }
 
   componentDidUpdate(prevProps: Props, prevState: any, snapshot: any) {
-    console.log('WaveformComponent.componentDidUpdate');
-
     if (this.props.audioUrl === prevProps.audioUrl) {
       return;
     }
@@ -188,8 +182,6 @@ class WaveformView extends Component<Props> {
   }
 
   componentWillUnmount() {
-    console.log('WaveformView.componentWillUnmount');
-
     if (this.peaks) {
       this.peaks.destroy();
     }

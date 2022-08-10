@@ -43,7 +43,8 @@ const AudioControls = ({
   onPreviousClicked,
 }: Props) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [isReady, setIsReady] = useState(false);
+
   const [playbackRate, setPlaybackRate] = useState(1);
 
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -79,6 +80,11 @@ const AudioControls = ({
       audioRef.current?.pause();
     }
   }, [isPlaying]);
+
+  const metadataLoadedHandler = () => {
+    console.log('asdfa');
+    setIsReady(true);
+  };
 
   return (
     <div
@@ -142,7 +148,7 @@ const AudioControls = ({
           </Box>
         </Box>
       </Box>
-      <audio ref={audioRef}>
+      <audio ref={audioRef} onLoadedMetadata={metadataLoadedHandler}>
         <source src={audioElSrcData.src} />
       </audio>
     </div>
