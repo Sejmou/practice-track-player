@@ -21,7 +21,12 @@ const WaveFormView = dynamic(() => import('./WaveFormView/WaveformView'), {
 const shortcuts = new KeyboardShortcuts();
 
 type Props = {
-  audioData: SourceData;
+  audioContext?: AudioContext;
+  audioElSrcData: SourceData;
+  /**
+   * required if src provided in audioElSrcData does not support CORS
+   */
+  audioBuffer?: AudioBuffer;
   nextAvailable?: boolean;
   previousAvailable?: boolean;
   onNextClicked: () => void;
@@ -29,7 +34,9 @@ type Props = {
 };
 const AudioControls = ({
   // TODO: improve perfomance of this; current code is probably not very efficient I guess
-  audioData,
+  audioContext,
+  audioElSrcData,
+  audioBuffer,
   nextAvailable,
   previousAvailable,
   onNextClicked,
@@ -47,9 +54,9 @@ const AudioControls = ({
 
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.src = audioData.src;
+      audioRef.current.src = audioElSrcData.src;
     }
-  }, [audioData]);
+  }, [audioElSrcData]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -80,11 +87,12 @@ const AudioControls = ({
       {audioRef.current && (
         <WaveFormView
           audioElement={audioRef.current}
-          audioUrl={audioData.src}
-          audioContentType={audioData.type}
-          audioContext={new AudioContext()}
+          audioUrl={audioElSrcData.src}
+          audioContentType={audioElSrcData.type}
           setSegments={() => {}}
           setPoints={() => {}}
+          audioContext={audioContext}
+          audioBuffer={audioBuffer}
         />
       )}
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -135,7 +143,7 @@ const AudioControls = ({
         </Box>
       </Box>
       <audio ref={audioRef}>
-        <source src={audioData.src} />
+        <source src={audioElSrcData.src} />
       </audio>
     </div>
   );

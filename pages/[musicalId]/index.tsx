@@ -35,7 +35,7 @@ const MusicalPage: NextPage<Props> = ({ musical }) => {
           flexDirection: 'column',
         }}
       >
-        <SongPlayer />
+        <SongPlayer fetchWaveformDataViaProxy />
         <Box
           sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}
         >

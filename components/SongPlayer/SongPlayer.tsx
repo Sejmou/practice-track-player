@@ -1,13 +1,23 @@
+import LoadingSpinnerContainer from '@components/LoadingSpinnerContainer/LoadingSpinnerContainer';
 import { useMusicalContext } from '@frontend/context/musical-context';
 import { SourceData } from '@models';
 import { Box, CircularProgress, Typography } from '@mui/material';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import useSWRImmutable from 'swr/immutable';
 import AudioControls from './AudioControls';
 
-const fetcher = (url: string) => fetch(url).then(res => res.json());
+const jsonFetcher = (url: string) => fetch(url).then(res => res.json());
 
-const SongPlayer = () => {
+const waveformDataFetcher = (url: string, ctx: AudioContext) =>
+  fetch(url)
+    .then(data => data.arrayBuffer())
+    .then(buffer => ctx.decodeAudioData(buffer));
+
+type Props = {
+  fetchWaveformDataViaProxy: boolean;
+};
+
+const SongPlayer = ({ fetchWaveformDataViaProxy }: Props) => {
   const {
     currentSong: song,
     currentTrack: track,
@@ -16,6 +26,7 @@ const SongPlayer = () => {
     goToNextSong,
     goToPreviousSong,
   } = useMusicalContext();
+  const [audioContext, setAudioContext] = useState<AudioContext>();
 
   const videoId = useMemo(() => {
     const videoUrlSearch = new URL(track.url).search;
@@ -23,11 +34,36 @@ const SongPlayer = () => {
     return params.get('v')!;
   }, [track]);
 
-  const { data: audioData, error } = useSWRImmutable<SourceData, any>(
+  useEffect(() => {
+    setAudioContext(new AudioContext());
+  }, []);
+
+  const { data: audioElSrcData, error } = useSWRImmutable<SourceData, any>(
     '/api/yt-audio/' + videoId,
     // 'api/server-audio/0', // use while testing
-    fetcher
+    jsonFetcher
   );
+
+  const { data: waveformData, error: waveformError } = useSWRImmutable<
+    AudioBuffer,
+    any
+  >(
+    fetchWaveformDataViaProxy && audioElSrcData
+      ? [
+          '/api/proxy?url=' + encodeURIComponent(audioElSrcData.src),
+          audioContext,
+        ]
+      : null,
+    waveformDataFetcher
+  );
+
+  const playerReady = fetchWaveformDataViaProxy
+    ? !!audioElSrcData && !!waveformData
+    : !!audioElSrcData;
+
+  if (playerReady) {
+    console.log(audioElSrcData, waveformData);
+  }
 
   return (
     <Box>
@@ -39,7 +75,7 @@ const SongPlayer = () => {
           {song.no}. {song.title}
         </Typography>
       </Box>
-      {!audioData ? (
+      {!audioElSrcData ? (
         <Box
           sx={{
             height: '64px',
@@ -58,14 +94,18 @@ const SongPlayer = () => {
             <CircularProgress />
           )}
         </Box>
-      ) : (
+      ) : playerReady ? (
         <AudioControls
-          audioData={audioData}
+          audioContext={audioContext}
+          audioElSrcData={audioElSrcData}
+          audioBuffer={waveformData}
           onNextClicked={goToNextSong}
           onPreviousClicked={goToPreviousSong}
           nextAvailable={nextSongAvailable}
           previousAvailable={previousSongAvailable}
         />
+      ) : (
+        <LoadingSpinnerContainer height={309} message="Loading Player" />
       )}
     </Box>
   );
