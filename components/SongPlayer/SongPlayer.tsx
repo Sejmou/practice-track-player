@@ -14,10 +14,16 @@ const waveformDataFetcher = (url: string, ctx: AudioContext) =>
     .then(buffer => ctx.decodeAudioData(buffer));
 
 type Props = {
-  fetchWaveformDataViaProxy: boolean;
+  /**
+   * specifies how waveform data for the player should be retrieved
+   */
+  waveformDataStrategy:
+    | 'compute on-the-fly (with audio context)'
+    | 'fetch from own server'
+    | 'fetch via proxy';
 };
 
-const SongPlayer = ({ fetchWaveformDataViaProxy }: Props) => {
+const SongPlayer = ({ waveformDataStrategy }: Props) => {
   const {
     currentSong: song,
     currentTrack: track,
@@ -39,7 +45,7 @@ const SongPlayer = ({ fetchWaveformDataViaProxy }: Props) => {
   }, []);
 
   const { data: audioElSrcData, error } = useSWRImmutable<SourceData, any>(
-    '/api/yt-audio/' + videoId,
+    '/api/yt-audio/audio-el-data/' + videoId,
     // 'api/server-audio/0', // use while testing
     jsonFetcher
   );
@@ -48,16 +54,19 @@ const SongPlayer = ({ fetchWaveformDataViaProxy }: Props) => {
     AudioBuffer,
     any
   >(
-    fetchWaveformDataViaProxy && audioElSrcData
+    waveformDataStrategy !== 'compute on-the-fly (with audio context)' &&
+      audioElSrcData
       ? [
-          '/api/proxy?url=' + encodeURIComponent(audioElSrcData.src),
+          waveformDataStrategy === 'fetch via proxy'
+            ? '/api/proxy?url=' + encodeURIComponent(audioElSrcData.src)
+            : '/api/yt-audio/waveform-data/' + videoId,
           audioContext,
         ]
       : null,
     waveformDataFetcher
   );
 
-  const playerReady = fetchWaveformDataViaProxy
+  const playerReady = waveformDataStrategy
     ? !!audioElSrcData && !!waveformData
     : !!audioElSrcData;
 
