@@ -80,9 +80,14 @@ const SongPlayer = ({ waveformDataStrategy }: Props) => {
 
   const dataReady =
     !!audioElSrcData &&
-    (waveformDataStrategy ===
-      'fetch audio from audioElement src, create waveforms on client' ||
-      !!audioBuffer);
+    ((waveformDataStrategy ===
+      'fetch audio from server, create waveforms on client' &&
+      !!audioBuffer) ||
+      (waveformDataStrategy ===
+        'fetch pre-computed binary audio buffer from server' &&
+        !!audioBuffer) ||
+      waveformDataStrategy ===
+        'fetch audio from audioElement src, create waveforms on client');
 
   return (
     <Box>
