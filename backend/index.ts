@@ -1,5 +1,5 @@
 import path from 'path';
-import { promises as fs, createReadStream } from 'fs';
+import { promises as fs, createReadStream, stat } from 'fs';
 
 import { Musical, MusicalBaseData, MusicalValidator } from '@models';
 import { NextApiRequest, NextApiResponse } from 'next';
@@ -118,6 +118,8 @@ export async function findFile(
     .map(file => path.parse(file).name);
 
   for (const f of fileNames) {
+    const stat = await fs.stat(`${dataFolderPath}/${f}.${fileExt}`);
+    console.log('file:', f, 'size:', stat.size);
     if (f === name) {
       return `${dataFolderPath}/${f}.${fileExt}`;
     }
