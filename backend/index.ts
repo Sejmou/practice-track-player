@@ -110,14 +110,18 @@ export async function findFile(
 ) {
   const dataFolderPath = `./public/${folderName}/`;
   const folderContent = await fs.readdir(dataFolderPath);
-  const fileNames = folderContent.map(file => path.parse(file).name);
+  const fileNames = folderContent
+    .filter(file => {
+      const ext = path.extname(file).slice(1); // path.extname() includes the '.'
+      return ext === fileExt;
+    })
+    .map(file => path.parse(file).name);
 
   for (const f of fileNames) {
     if (f === name) {
-      if (path.extname(f) === fileExt)
-        return `${dataFolderPath}/${f}.${fileExt}`;
+      return `${dataFolderPath}/${f}.${fileExt}`;
     }
   }
 
-  throw Error(`No file called '${name}' found!`);
+  throw Error(`No file called '${name}' found in '${dataFolderPath}'!`);
 }

@@ -53,7 +53,10 @@ const SongPlayer = ({ waveformDataStrategy }: Props) => {
 
   const { data: audioElSrcData, error } = useSWRImmutable<SourceData, any>(
     '/api/yt-audio/audio-el-data/' + videoId,
-    jsonFetcher
+    jsonFetcher,
+    {
+      shouldRetryOnError: false, // we must not spam the API, otherwise YouTube blocks the server!
+    }
   );
 
   const { data: audioBuffer, error: bufferError } = useSWRImmutable<
@@ -108,6 +111,7 @@ const SongPlayer = ({ waveformDataStrategy }: Props) => {
           onPreviousClicked={goToPreviousSong}
           nextAvailable={nextSongAvailable}
           previousAvailable={previousSongAvailable}
+          waveformDataUri={waveformDataUri}
         />
       ) : (
         <SuspenseContainer
