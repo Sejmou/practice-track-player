@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
+import Peaks from 'peaks.js';
 import { Box, Button } from '@mui/material';
 
 import { createPointMarker, createSegmentMarker } from './MarkerFactories';
 import { createSegmentLabel } from './SegmentLabelFactory';
 
 import classes from './WaveformView.module.css';
-import Peaks from 'peaks.js';
 
 // See https://github.com/bbc/peaks.js#generating-waveform-data for details on how peaks.js actually generates the audio waveform
 type Props = {

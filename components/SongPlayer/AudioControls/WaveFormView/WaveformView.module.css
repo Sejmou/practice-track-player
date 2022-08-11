@@ -15,3 +15,8 @@
   line-height: 0;
   height: 85px;
 }
+
+.zoomview-container,
+.overview-container {
+  background-color: #fff;
+}
