@@ -37,6 +37,3 @@ next-env.d.ts
 
 # folder with example mp3 files - for local testing only
 /public/mp3
-
-# folder with waveform data (currently meant for YouTube files only) - too big too be checked into GitHub
-/public/waveform-data
