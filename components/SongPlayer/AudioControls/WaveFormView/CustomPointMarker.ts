@@ -3,83 +3,95 @@ import { Line } from 'konva/lib/shapes/Line';
 import { Text } from 'konva/lib/shapes/Text';
 
 class CustomPointMarker {
-  constructor(options) {
-    this._options = options;
+  constructor(options: any) {
+    this.options = options;
   }
 
-  init(group) {
-    this._group = group;
+  private options: any;
+  private group: any;
+  private label: any;
+  private tag: any;
+  private text: any;
+  private line: any;
 
-    this._label = new Label({
+  init(group: any) {
+    this.group = group;
+
+    this.label = new Label({
       x: 0.5,
-      y: 0.5
+      y: 0.5,
     });
 
-    this._tag = new Tag({
-      fill:             this._options.color,
-      stroke:           this._options.color,
-      strokeWidth:      1,
+    this.tag = new Tag({
+      fill: this.options.color,
+      stroke: this.options.color,
+      strokeWidth: 1,
       pointerDirection: 'down',
-      pointerWidth:     10,
-      pointerHeight:    10,
-      lineJoin:         'round',
-      shadowColor:      'black',
-      shadowBlur:       10,
-      shadowOffsetX:    3,
-      shadowOffsetY:    3,
-      shadowOpacity:    0.3
+      pointerWidth: 10,
+      pointerHeight: 10,
+      lineJoin: 'round',
+      shadowColor: 'black',
+      shadowBlur: 10,
+      shadowOffsetX: 3,
+      shadowOffsetY: 3,
+      shadowOpacity: 0.3,
     });
 
-    this._label.add(this._tag);
+    this.label.add(this.tag);
 
-    this._text = new Text({
-      text:       this._options.point.labelText,
+    this.text = new Text({
+      text: this.options.point.labelText,
       fontFamily: 'Calibri',
-      fontSize:   14,
-      padding:    5,
-      fill:       'white'
+      fontSize: 14,
+      padding: 5,
+      fill: 'white',
     });
 
-    this._label.add(this._text);
+    this.label.add(this.text);
 
     // Vertical Line - create with default y and points, the real values
     // are set in fitToView().
-    this._line = new Line({
-      x:           0,
-      y:           0,
-      stroke:      this._options.color,
-      strokeWidth: 1
+    this.line = new Line({
+      x: 0,
+      y: 0,
+      stroke: this.options.color,
+      strokeWidth: 1,
     });
 
-    group.add(this._label);
-    group.add(this._line);
+    group.add(this.label);
+    group.add(this.line);
 
     this.fitToView();
 
     this.bindEventHandlers();
-  };
+  }
 
   bindEventHandlers() {
-    this._group.on('mouseenter', () => {
+    this.group.on('mouseenter', () => {
       document.body.style.cursor = 'move';
     });
 
-    this._group.on('mouseleave', () => {
+    this.group.on('mouseleave', () => {
       document.body.style.cursor = 'default';
     });
-  };
+  }
 
   fitToView() {
-    const height = this._options.layer.getHeight();
+    const height = this.options.layer.getHeight();
 
-    const labelHeight = this._text.height() + 2 * this._text.padding();
+    const labelHeight = this.text.height() + 2 * this.text.padding();
     const offsetTop = 14;
     const offsetBottom = 26;
 
-    this._group.y(offsetTop + labelHeight + 0.5);
+    this.group.y(offsetTop + labelHeight + 0.5);
 
-    this._line.points([0.5, 0, 0.5, height - labelHeight - offsetTop - offsetBottom]);
-  };
+    this.line.points([
+      0.5,
+      0,
+      0.5,
+      height - labelHeight - offsetTop - offsetBottom,
+    ]);
+  }
 }
 
 export default CustomPointMarker;
