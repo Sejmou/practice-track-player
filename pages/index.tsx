@@ -11,9 +11,7 @@ import {
 } from '@mui/material';
 import InternalLink from 'next/link';
 
-type Props = { musicalsBaseData: MusicalBaseData[] };
-
-const Home: NextPage<Props> = ({ musicalsBaseData }) => {
+const Home: NextPage = () => {
   return (
     <>
       <Head>
@@ -24,7 +22,7 @@ const Home: NextPage<Props> = ({ musicalsBaseData }) => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Typography variant="h1">Welcome!</Typography>
+      <Typography variant="h2">Welcome!</Typography>
       <Card>
         <CardContent>
           <Typography variant="h5">Musicals</Typography>

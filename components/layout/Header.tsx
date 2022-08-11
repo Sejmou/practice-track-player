@@ -4,7 +4,6 @@ import {
   Box,
   Toolbar,
   List,
-  ListItem,
   ListItemText,
   IconButton,
   Drawer,
@@ -18,7 +17,6 @@ import {
 import Link from 'next/link';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useState, KeyboardEvent } from 'react';
-import classes from './Layout.module.css';
 import { useRouter } from 'next/router';
 import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 
@@ -57,10 +55,7 @@ const Header = (props: Props) => {
   return (
     <AppBar position="sticky" color="inherit">
       <Container maxWidth="xl">
-        <Toolbar
-          className={classes.toolBar}
-          sx={{ display: 'flex', justifyContent: 'space-between' }}
-        >
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Button
             startIcon={<LibraryMusicIcon />}
             color="inherit"
@@ -79,7 +74,7 @@ const Header = (props: Props) => {
                 aria-label="menu"
                 onClick={handleDrawerClick}
               >
-                <MenuIcon className={classes.menuIcon} />
+                <MenuIcon />
               </IconButton>
               <Drawer
                 anchor="right"
@@ -118,9 +113,13 @@ const Header = (props: Props) => {
           ) : (
             <Stack direction="row" spacing={2}>
               {links.map((link, i) => (
-                <Link href={link.href} target="_blank" key={i}>
-                  <Button className={classes.link}>{link.text}</Button>
-                </Link>
+                <Button
+                  color={router.pathname === link.href ? 'primary' : 'inherit'}
+                  key={i}
+                  onClick={() => router.push(link.href)}
+                >
+                  {link.text}
+                </Button>
               ))}
             </Stack>
           )}
