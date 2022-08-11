@@ -10,6 +10,7 @@ console.log(__dirname);
 async function run() {
   const inputFolder = path.join(__dirname, '../../public/mp3');
   const outputFolder = path.join(__dirname, '../../public/waveform-data');
+  await fs.mkdir(outputFolder, { recursive: true });
 
   const mp3Files = await fs.readdir(path.join(__dirname, '../../public/mp3'));
   for (const file of mp3Files) {
@@ -19,9 +20,7 @@ async function run() {
     }
     const cmd = `audiowaveform -i ${inputFolder}/${file} -o ${name}.dat -z 256 -b 8`;
     console.log('executing command:', cmd);
-    exec(
-      `audiowaveform -i ${inputFolder}/${file} -o ${outputFolder}/${name}.dat -z 256 -b 8`
-    );
+    exec(cmd);
   }
 }
 
