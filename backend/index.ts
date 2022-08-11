@@ -108,7 +108,9 @@ export async function findFile(
   folderName: string,
   fileExt: string
 ) {
-  const dataFolderPath = `./public/${folderName}/`;
+  const dataFolderPath = path.join(__dirname, `./public/${folderName}/`);
+  console.log('__dirname', __dirname);
+  console.log('data folder path', dataFolderPath);
   const folderContent = await fs.readdir(dataFolderPath);
   const fileNames = folderContent
     .filter(file => {
