@@ -22,7 +22,6 @@ export default async function handler(
     let fileFound = false;
 
     for (const f of fileNames) {
-      console.log(f);
       if (f === videoId) {
         const filePath = `${waveformDataPath}/${f}.mp3`;
         const stat = await fs.stat(filePath);
@@ -34,7 +33,6 @@ export default async function handler(
 
         readStream.pipe(res);
         fileFound = true;
-        console.log('piping data, yoohoo');
       }
     }
 

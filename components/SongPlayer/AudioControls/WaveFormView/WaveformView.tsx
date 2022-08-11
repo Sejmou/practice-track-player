@@ -64,14 +64,6 @@ class WaveformView extends Component<Props> {
           ref={this.overviewWaveformRef}
         ></div>
 
-        {/* <audio ref={this.audioElementRef} controls>
-          <source
-            src={this.props.audioUrl}
-            type={this.props.audioContentType}
-          />
-          Your browser does not support the audio element.
-        </audio> */}
-
         {/* {this.renderButtons()} */}
       </div>
     );
@@ -97,9 +89,6 @@ class WaveformView extends Component<Props> {
     if (this.props.audioUrl === prevProps.audioUrl) {
       return;
     }
-
-    console.log('props', this.props);
-    console.log('prevProps', prevProps);
 
     this.initPeaks();
   }

@@ -1,7 +1,6 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import dynamic from 'next/dynamic';
-import { Suspense } from 'react';
-import { Box, IconButton, Typography } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
@@ -13,6 +12,7 @@ import {
   KeyboardShortcut,
 } from '@frontend/keyboard-shortcuts';
 import PlaybackRatePicker from './PlaybackRatePicker';
+import PlaybackRateSlider from './PlaybackRateSlider';
 
 const WaveFormView = dynamic(() => import('./WaveFormView/WaveformView'), {
   ssr: false,
@@ -43,6 +43,8 @@ const AudioControls = ({
   onPreviousClicked,
 }: Props) => {
   const [isPlaying, setIsPlaying] = useState(false);
+
+  // isReady state is actually irrelevant, I'm just abusing useState to trigger a rerender once the audio element's metadata is loaded
   const [isReady, setIsReady] = useState(false);
 
   const [playbackRate, setPlaybackRate] = useState(1);
@@ -141,7 +143,7 @@ const AudioControls = ({
               alignItems: 'center',
             }}
           >
-            <PlaybackRatePicker
+            <PlaybackRateSlider
               playbackRate={playbackRate}
               onPlaybackRateChange={pbr => setPlaybackRate(pbr)}
             />
@@ -155,17 +157,3 @@ const AudioControls = ({
   );
 };
 export default AudioControls;
-
-function secondsToMinutesAndSecondsStr(secs: number) {
-  let minutes = Math.floor(secs / 60);
-  let seconds = Math.round(secs % 60);
-  if (seconds == 60) {
-    minutes++;
-    seconds = 0;
-  }
-  return `${padTo2Digits(minutes)}:${padTo2Digits(seconds)}`;
-}
-
-function padTo2Digits(num: number) {
-  return num.toString().padStart(2, '0');
-}

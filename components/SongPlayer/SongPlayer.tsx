@@ -1,10 +1,10 @@
-import SuspenseContainer from '@components/LoadingSpinnerContainer/LoadingSpinnerContainer';
+import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
 import { useMusicalContext } from '@frontend/context/musical-context';
 import { SourceData } from '@models';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import useSWRImmutable from 'swr/immutable';
-import AudioControls from './AudioControls';
+import AudioControls from './AudioControls/AudioControls';
 
 const jsonFetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -66,7 +66,7 @@ const SongPlayer = ({ waveformDataStrategy }: Props) => {
     waveformDataFetcher
   );
 
-  const playerReady =
+  const dataReady =
     audioElSrcData &&
     (waveformDataStrategy
       ? !!audioElSrcData && !!waveformData
@@ -82,7 +82,7 @@ const SongPlayer = ({ waveformDataStrategy }: Props) => {
           {song.no}. {song.title}
         </Typography>
       </Box>
-      {playerReady ? (
+      {dataReady ? (
         <AudioControls
           audioContext={audioContext}
           audioElSrcData={audioElSrcData}
