@@ -24,7 +24,7 @@ const MusicalPage: NextPage<Props> = ({ musical }) => {
         <h1>{musical.title}</h1>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Button>
-            <Link href="/">Back to Home</Link>
+            <Link href="/musicals">Back to Overview</Link>
           </Button>
         </Box>
       </Box>

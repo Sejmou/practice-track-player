@@ -1,13 +1,31 @@
+import Header from '@components/layout/Header';
+import {
+  Container,
+  createTheme,
+  CssBaseline,
+  ThemeProvider,
+} from '@mui/material';
 import type { AppProps } from 'next/app';
 
 import '../styles/globals.css';
-import Layout from '../components/layout/Layout';
+
+const theme = createTheme({
+  palette: {
+    background: {
+      default: '#eeeeee',
+    },
+  },
+});
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <Layout>
-      <Component {...pageProps} />
-    </Layout>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Header />
+      <Container>
+        <Component {...pageProps} />
+      </Container>
+    </ThemeProvider>
   );
 }
 

@@ -1,23 +1,34 @@
-import Link from 'next/link';
-import { useRouter } from 'next/router';
+import NextLink from 'next/link';
+import React, { forwardRef } from 'react';
+import { List, ListItem, ListItemButton, Paper } from '@mui/material';
 
 import { MusicalBaseData } from '@models';
-import { List, ListItem, ListItemButton, ListItemText } from '@mui/material';
+
+// https://stackoverflow.com/a/72224893/13727176
+const LinkListItemButton = forwardRef((props: any, ref: any) => {
+  const { href } = props;
+  return (
+    <NextLink href={href} passHref>
+      <ListItemButton ref={ref} {...props} />
+    </NextLink>
+  );
+});
+LinkListItemButton.displayName = 'LinkListItemButton';
 
 type Props = { musicalData: MusicalBaseData[] };
 const MusicalsList = ({ musicalData }: Props) => {
   return (
-    <List>
-      {musicalData.map(d => (
-        <ListItem key={d.id}>
-          <Link href={d.id}>
-            <ListItemButton>
-              <ListItemText primary={d.title} />
-            </ListItemButton>
-          </Link>
-        </ListItem>
-      ))}
-    </List>
+    <Paper>
+      <List>
+        {musicalData.map(d => (
+          <ListItem key={d.id}>
+            <LinkListItemButton href={`musicals/${d.id}`}>
+              {d.title}
+            </LinkListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    </Paper>
   );
 };
 export default MusicalsList;

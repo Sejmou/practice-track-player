@@ -1,8 +1,15 @@
-import MusicalsList from '@components/Musical/MusicalsList';
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { getAllMusicalBaseData } from '@backend';
 import { MusicalBaseData } from '@models';
+import {
+  Typography,
+  Link,
+  Card,
+  CardContent,
+  Button,
+  CardActions,
+} from '@mui/material';
+import InternalLink from 'next/link';
 
 type Props = { musicalsBaseData: MusicalBaseData[] };
 
@@ -10,34 +17,37 @@ const Home: NextPage<Props> = ({ musicalsBaseData }) => {
   return (
     <>
       <Head>
-        <title>Musical Practice Tracks Player</title>
+        <title>Practice Tracks Player</title>
         <meta
           name="description"
-          content="A tool allowing you to play Musical Practice Tracks (several voices)"
+          content="A browser-based player for Music(al) practice tracks"
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <h1>Welcome!</h1>
-      <p>
-        On this page you will hopefully soon find practice tracks for several
-        musicals (pulled from{' '}
-        <a href="https://www.musicalpracticetracks.com/index.php/">
-          musicalpracticetracks.com
-        </a>
-        ). But for now, only a single musical is online:
-      </p>
-      <MusicalsList musicalData={musicalsBaseData} />
+      <Typography variant="h1">Welcome!</Typography>
+      <Card>
+        <CardContent>
+          <Typography variant="h5">Musicals</Typography>
+          <Typography>
+            Play practice tracks for musicals created by the kind folks at
+            &nbsp;
+            <Link
+              target="_blank"
+              href="https://www.musicalpracticetracks.com/index.php/"
+            >
+              musicalpracticetracks.com
+            </Link>
+            &nbsp;:)
+          </Typography>
+        </CardContent>
+        <CardActions>
+          <Button size="small">
+            <InternalLink href="/musicals">Take me there!</InternalLink>
+          </Button>
+        </CardActions>
+      </Card>
     </>
   );
 };
 
 export default Home;
-
-export async function getStaticProps() {
-  const musicalsBaseData = await getAllMusicalBaseData();
-  return {
-    props: {
-      musicalsBaseData,
-    },
-  };
-}
