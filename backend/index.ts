@@ -1,7 +1,8 @@
 import path from 'path';
-import { promises as fs } from 'fs';
+import { promises as fs, createReadStream } from 'fs';
 
 import { Musical, MusicalBaseData, MusicalValidator } from '@models';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 const musicals = new Map<string, Musical>();
 let musicalsInitialized = false;
@@ -61,4 +62,62 @@ export async function getSongData(musicalId: string, songNo: string) {
   const musical = musicals.get(musicalId);
   if (!musical) return;
   return musical.songs.find(song => song.no === songNo);
+}
+
+export async function handleLocalFileRequest(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  folderName: string,
+  fileExt: string,
+  mimeType: string,
+  paramName: string = 'id'
+) {
+  try {
+    const id = extractQueryParamAsString(req, paramName);
+    const filePath = await findFile(id, folderName, fileExt);
+    const stat = await fs.stat(filePath);
+    const readStream = createReadStream(filePath);
+    res
+      .status(200)
+      .setHeader('Content-Type', mimeType)
+      .setHeader('Content-Length', stat.size);
+
+    readStream.pipe(res);
+  } catch (error) {
+    console.warn('An error occurred while getting the data', error);
+    res.status(404).end();
+  }
+}
+
+export function extractQueryParamAsString(
+  req: NextApiRequest,
+  paramName: string
+) {
+  const paramValue = req.query[paramName];
+  if (!paramValue) {
+    throw Error(`No value for ${paramName} found!`);
+  }
+  if (typeof paramValue !== 'string') {
+    throw Error(`Multiple values for ${paramName} provided!`);
+  }
+  return paramValue;
+}
+
+export async function findFile(
+  name: string,
+  folderName: string,
+  fileExt: string
+) {
+  const dataFolderPath = `./public/${folderName}/`;
+  const folderContent = await fs.readdir(dataFolderPath);
+  const fileNames = folderContent.map(file => path.parse(file).name);
+
+  for (const f of fileNames) {
+    if (f === name) {
+      if (path.extname(f) === fileExt)
+        return `${dataFolderPath}/${f}.${fileExt}`;
+    }
+  }
+
+  throw Error(`No file called '${name}' found!`);
 }

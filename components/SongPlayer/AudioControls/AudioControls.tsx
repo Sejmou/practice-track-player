@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { Box, IconButton } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -23,9 +23,13 @@ type Props = {
   audioContext?: AudioContext;
   audioElSrcData: SourceData;
   /**
-   * required if src provided in audioElSrcData does not support CORS
+   * either this or waveformDataUri is required if src of audioElSrcData does not support CORS!
    */
   audioBuffer?: AudioBuffer;
+  /**
+   * either this or audioBuffer is required if src of audioElSrcData does not support CORS!
+   */
+  waveformDataUri?: string;
   nextAvailable?: boolean;
   previousAvailable?: boolean;
   onNextClicked: () => void;
@@ -36,6 +40,7 @@ const AudioControls = ({
   audioContext,
   audioElSrcData,
   audioBuffer,
+  waveformDataUri,
   nextAvailable,
   previousAvailable,
   onNextClicked,
@@ -94,6 +99,7 @@ const AudioControls = ({
         <WaveFormView
           audioElement={audioRef.current}
           audioUrl={audioElSrcData.src}
+          waveformDataUri={waveformDataUri}
           audioContentType={audioElSrcData.type}
           setSegments={() => {}}
           setPoints={() => {}}

@@ -37,7 +37,7 @@ const SuspenseContainer = ({
             {status === 'loading' ? loadingMessage : errorMessage}
           </Typography>
         }
-        <CircularProgress />
+        {status === 'loading' && <CircularProgress />}
       </Box>
     </Box>
   );

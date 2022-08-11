@@ -8,15 +8,18 @@ import AudioControls from './AudioControls/AudioControls';
 
 const jsonFetcher = (url: string) => fetch(url).then(res => res.json());
 
-const waveformDataFetcher = (url: string, ctx: AudioContext) =>
+const audioFileFetcherAndConverter = (url: string, ctx: AudioContext) =>
   fetch(url)
     .then(data => data.arrayBuffer())
     .then(buffer => ctx.decodeAudioData(buffer));
 
+const binaryDataUrlFetcher = (url: string) =>
+  fetch(url).then(data => data.text());
+
 type WaveformDataStrategy =
-  | 'fetch from audioElement src'
-  | 'fetch from own server'
-  | 'fetch via proxy';
+  | 'fetch audio from audioElement src, create waveforms on client'
+  | 'fetch pre-computed binary audio buffer from server'
+  | 'fetch audio from server, create waveforms on client';
 
 type Props = {
   /**
@@ -46,30 +49,40 @@ const SongPlayer = ({ waveformDataStrategy }: Props) => {
     return params.get('v')!;
   }, [track]);
 
+  // this logic is quite nasty lol
+
   const { data: audioElSrcData, error } = useSWRImmutable<SourceData, any>(
     '/api/yt-audio/audio-el-data/' + videoId,
-    // 'api/server-audio/0', // use while testing
     jsonFetcher
   );
 
-  const { data: waveformData, error: waveformError } = useSWRImmutable<
+  const { data: audioBuffer, error: bufferError } = useSWRImmutable<
     AudioBuffer,
     any
   >(
-    waveformDataStrategy !== 'fetch from audioElement src' && audioElSrcData
-      ? [
-          waveformDataStrategy === 'fetch via proxy'
-            ? '/api/proxy?url=' + encodeURIComponent(audioElSrcData.src)
-            : '/api/yt-audio/waveform-data/' + videoId,
-          audioContext,
-        ]
+    waveformDataStrategy ===
+      'fetch audio from server, create waveforms on client'
+      ? ['/api/server-audio/mp3/' + videoId, audioContext]
       : null,
-    waveformDataFetcher
+    audioFileFetcherAndConverter
+  );
+
+  const { data: waveformDataUri, error: waveformUriError } = useSWRImmutable<
+    string,
+    any
+  >(
+    waveformDataStrategy ===
+      'fetch pre-computed binary audio buffer from server'
+      ? '/api/server-audio/waveform-data/' + videoId
+      : null,
+    binaryDataUrlFetcher
   );
 
   const dataReady =
     !!audioElSrcData &&
-    (waveformDataStrategy === 'fetch from audioElement src' || !!waveformData);
+    (waveformDataStrategy ===
+      'fetch audio from audioElement src, create waveforms on client' ||
+      !!audioBuffer);
 
   return (
     <Box>
@@ -85,7 +98,7 @@ const SongPlayer = ({ waveformDataStrategy }: Props) => {
         <AudioControls
           audioContext={audioContext}
           audioElSrcData={audioElSrcData}
-          audioBuffer={waveformData}
+          audioBuffer={audioBuffer}
           onNextClicked={goToNextSong}
           onPreviousClicked={goToPreviousSong}
           nextAvailable={nextSongAvailable}

@@ -55,7 +55,7 @@ const Header = (props: Props) => {
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   return (
-    <AppBar position="static" color="inherit">
+    <AppBar position="sticky" color="inherit">
       <Container maxWidth="xl">
         <Toolbar
           className={classes.toolBar}
