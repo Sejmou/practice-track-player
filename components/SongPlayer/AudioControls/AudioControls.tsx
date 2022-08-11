@@ -11,7 +11,6 @@ import {
   KeyboardShortcuts,
   KeyboardShortcut,
 } from '@frontend/keyboard-shortcuts';
-import PlaybackRatePicker from './PlaybackRatePicker';
 import PlaybackRateSlider from './PlaybackRateSlider';
 
 const WaveFormView = dynamic(() => import('./WaveFormView/WaveformView'), {
@@ -84,7 +83,6 @@ const AudioControls = ({
   }, [isPlaying]);
 
   const metadataLoadedHandler = () => {
-    console.log('asdfa');
     setIsReady(true);
   };
 

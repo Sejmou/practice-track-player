@@ -13,14 +13,16 @@ const waveformDataFetcher = (url: string, ctx: AudioContext) =>
     .then(data => data.arrayBuffer())
     .then(buffer => ctx.decodeAudioData(buffer));
 
+type WaveformDataStrategy =
+  | 'fetch from audioElement src'
+  | 'fetch from own server'
+  | 'fetch via proxy';
+
 type Props = {
   /**
    * specifies how waveform data for the player should be retrieved
    */
-  waveformDataStrategy:
-    | 'compute on-the-fly (with audio context)'
-    | 'fetch from own server'
-    | 'fetch via proxy';
+  waveformDataStrategy: WaveformDataStrategy;
 };
 
 const SongPlayer = ({ waveformDataStrategy }: Props) => {
@@ -32,17 +34,17 @@ const SongPlayer = ({ waveformDataStrategy }: Props) => {
     goToNextSong,
     goToPreviousSong,
   } = useMusicalContext();
+
   const [audioContext, setAudioContext] = useState<AudioContext>();
+  useEffect(() => {
+    setAudioContext(new AudioContext());
+  }, []);
 
   const videoId = useMemo(() => {
     const videoUrlSearch = new URL(track.url).search;
     const params = new URLSearchParams(videoUrlSearch);
     return params.get('v')!;
   }, [track]);
-
-  useEffect(() => {
-    setAudioContext(new AudioContext());
-  }, []);
 
   const { data: audioElSrcData, error } = useSWRImmutable<SourceData, any>(
     '/api/yt-audio/audio-el-data/' + videoId,
@@ -54,8 +56,7 @@ const SongPlayer = ({ waveformDataStrategy }: Props) => {
     AudioBuffer,
     any
   >(
-    waveformDataStrategy !== 'compute on-the-fly (with audio context)' &&
-      audioElSrcData
+    waveformDataStrategy !== 'fetch from audioElement src' && audioElSrcData
       ? [
           waveformDataStrategy === 'fetch via proxy'
             ? '/api/proxy?url=' + encodeURIComponent(audioElSrcData.src)
@@ -67,10 +68,8 @@ const SongPlayer = ({ waveformDataStrategy }: Props) => {
   );
 
   const dataReady =
-    audioElSrcData &&
-    (waveformDataStrategy
-      ? !!audioElSrcData && !!waveformData
-      : !!audioElSrcData);
+    !!audioElSrcData &&
+    (waveformDataStrategy === 'fetch from audioElement src' || !!waveformData);
 
   return (
     <Box>
