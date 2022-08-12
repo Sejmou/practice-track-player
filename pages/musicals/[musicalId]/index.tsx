@@ -8,6 +8,7 @@ import { Musical } from '@models';
 import {
   Box,
   Button,
+  Stack,
   SxProps,
   Typography,
   useMediaQuery,
@@ -18,6 +19,16 @@ import { MusicalProvider } from '@frontend/context/musical-context';
 import SongPlayer from '@components/SongPlayer/SongPlayer';
 
 type Props = { musical: Musical };
+
+const tracksAndSongsContainerStyles: SxProps = {
+  display: 'grid',
+  gridAutoColumns: 'minmax(0, 1fr)',
+  gridTemplateColumns: {
+    xs: '1fr',
+    sm: '1fr 1fr',
+  },
+  gap: { sm: '10px' },
+};
 
 const MusicalPage: NextPage<Props> = ({ musical }) => {
   const theme = useTheme();
@@ -40,21 +51,13 @@ const MusicalPage: NextPage<Props> = ({ musical }) => {
           </Button>
         </Box>
       </Box>
-      <Box
-        sx={{
-          display: 'flex',
-          gap: '10px',
-          flexDirection: 'column',
-        }}
-      >
+      <Stack spacing={1}>
         <SongPlayer waveformDataStrategy="fetch pre-computed waveform data from server" />
-        <Box
-          sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}
-        >
+        <Box sx={tracksAndSongsContainerStyles}>
           <TrackList />
           <SongList />
         </Box>
-      </Box>
+      </Stack>
     </MusicalProvider>
   );
 };
