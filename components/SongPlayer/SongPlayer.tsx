@@ -120,8 +120,8 @@ const SongPlayer = ({ waveformDataStrategy }: Props) => {
           audioContext={audioContext}
           audioElSrcData={audioElSrcData}
           audioBuffer={audioBuffer}
-          onNextClicked={goToNextSong}
-          onPreviousClicked={goToPreviousSong}
+          onNext={goToNextSong}
+          onPrevious={goToPreviousSong}
           nextAvailable={nextSongAvailable}
           previousAvailable={previousSongAvailable}
           waveformDataBuffer={waveformDataBuffer}

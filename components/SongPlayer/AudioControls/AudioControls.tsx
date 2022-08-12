@@ -1,10 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
-import { Box, IconButton } from '@mui/material';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
-import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
-import SkipNextIcon from '@mui/icons-material/SkipNext';
+import { Box } from '@mui/material';
 
 import { SourceData } from '@models';
 import {
@@ -12,6 +8,7 @@ import {
   KeyboardShortcut,
 } from '@frontend/keyboard-shortcuts';
 import PlaybackRateSlider from './PlaybackRateSlider';
+import BasicControls from './BasicControls';
 
 const WaveFormView = dynamic(() => import('./WaveFormView/WaveformView'), {
   ssr: false,
@@ -32,8 +29,8 @@ type Props = {
   waveformDataBuffer?: ArrayBuffer;
   nextAvailable?: boolean;
   previousAvailable?: boolean;
-  onNextClicked: () => void;
-  onPreviousClicked: () => void;
+  onNext: () => void;
+  onPrevious: () => void;
 };
 const AudioControls = ({
   // TODO: improve perfomance of this; current code is probably not very efficient I guess
@@ -43,8 +40,8 @@ const AudioControls = ({
   waveformDataBuffer,
   nextAvailable,
   previousAvailable,
-  onNextClicked,
-  onPreviousClicked,
+  onNext,
+  onPrevious,
 }: Props) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -115,32 +112,16 @@ const AudioControls = ({
             gridTemplateColumns: '1fr 1fr 1fr',
           }}
         >
+          {/* This empty Box exists only for layout reasons */}
           <Box></Box>
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <IconButton
-              size="large"
-              disabled={!previousAvailable}
-              onClick={onPreviousClicked}
-              color="primary"
-            >
-              <SkipPreviousIcon />
-            </IconButton>
-            <IconButton
-              onClick={handlePlayPauseToggle}
-              color="primary"
-              size="large"
-            >
-              {!isPlaying ? <PlayArrowIcon /> : <PauseIcon />}
-            </IconButton>
-            <IconButton
-              size="large"
-              disabled={!nextAvailable}
-              onClick={onNextClicked}
-              color="primary"
-            >
-              <SkipNextIcon />
-            </IconButton>
-          </Box>
+          <BasicControls
+            previousAvailable={previousAvailable}
+            nextAvailable={nextAvailable}
+            playing={isPlaying}
+            onNext={onNext}
+            onPrevious={onPrevious}
+            onPlayPause={() => setIsPlaying(prev => !prev)}
+          />
           <Box
             sx={{
               display: 'flex',
@@ -154,6 +135,7 @@ const AudioControls = ({
           </Box>
         </Box>
       </Box>
+      {/* As we have no controls attribute on the audio element, it is invisible, which is what we want here */}
       <audio ref={audioRef} onLoadedMetadata={metadataLoadedHandler}>
         <source src={audioElSrcData.src} />
       </audio>
