@@ -4,13 +4,13 @@ import { Box } from '@mui/system';
 type Props = {
   height: number;
   loadingMessage?: string;
-  errorMessage: string;
+  errors: string[];
   status: 'error' | 'loading';
 };
 const SuspenseContainer = ({
   height,
   status,
-  errorMessage,
+  errors,
   loadingMessage,
 }: Props) => {
   return (
@@ -32,11 +32,15 @@ const SuspenseContainer = ({
           gap: '10px',
         }}
       >
-        {
-          <Typography>
-            {status === 'loading' ? loadingMessage : errorMessage}
-          </Typography>
-        }
+        {status == 'loading' ? (
+          <Typography>{loadingMessage}</Typography>
+        ) : (
+          <>
+            {errors.map((err, i) => (
+              <Typography key={i}>{err}</Typography>
+            ))}
+          </>
+        )}
         {status === 'loading' && <CircularProgress />}
       </Box>
     </Box>

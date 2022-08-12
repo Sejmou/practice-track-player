@@ -8,17 +8,15 @@ import AudioControls from './AudioControls/AudioControls';
 
 const jsonFetcher = (url: string) => fetch(url).then(res => res.json());
 
-const audioFileFetcherAndConverter = (url: string, ctx: AudioContext) =>
-  fetch(url)
-    .then(data => data.arrayBuffer())
-    .then(buffer => ctx.decodeAudioData(buffer));
+const binaryDataFetcher = (url: string) =>
+  fetch(url).then(data => data.arrayBuffer());
 
-const binaryDataUrlFetcher = (url: string) =>
-  fetch(url).then(data => data.text());
+const audioBufferFetcher = (url: string, ctx: AudioContext) =>
+  binaryDataFetcher(url).then(buffer => ctx.decodeAudioData(buffer));
 
 type WaveformDataStrategy =
   | 'fetch audio from audioElement src, create waveforms on client'
-  | 'fetch pre-computed binary audio buffer from server'
+  | 'fetch pre-computed waveform data from server'
   | 'fetch audio from server, create waveforms on client';
 
 type Props = {
@@ -51,15 +49,23 @@ const SongPlayer = ({ waveformDataStrategy }: Props) => {
 
   // this logic is quite nasty lol
 
-  const { data: audioElSrcData, error } = useSWRImmutable<SourceData, any>(
-    '/api/yt-audio/audio-el-data/' + videoId,
-    jsonFetcher,
-    {
-      shouldRetryOnError: false, // we must not spam the API, otherwise YouTube blocks the server!
-    }
-  );
+  const { data: audioElSrcData, error: audioElSrcDataError } = useSWRImmutable<
+    SourceData,
+    any
+  >('/api/yt-audio/audio-el-data/' + videoId, jsonFetcher, {
+    shouldRetryOnError: false, // we must not spam the API, otherwise YouTube blocks the server!
+  });
 
-  const { data: audioBuffer, error: bufferError } = useSWRImmutable<
+  // maybe useful for debugging
+  // const { data: audioElSrcData, error: audioElSrcDataError } = {
+  //   data: {
+  //     src: 'https://rr5---sn-h0jeenle.googlevideo.com/videoplayback?expire=1660315795&ei=MxT2Yo7RNZiIgAfApJeoCA&ip=84.115.237.172&id=o-AD3BE2JL_ED8ZbF6WVQmihCjrQ1WDIh3FsrD7JuodVJT&itag=251&source=youtube&requiressl=yes&mh=5n&mm=31%2C29&mn=sn-h0jeenle%2Csn-h0jelnes&ms=au%2Crdu&mv=m&mvi=5&pl=19&initcwndbps=2417500&spc=lT-KhmXkPbfGel7oZGOIVtDWoKS4UhA&vprv=1&mime=audio%2Fwebm&ns=FRG2tShWt-lEet29vGwPH5kH&gir=yes&clen=961454&otfp=1&dur=85.521&lmt=1649186800517049&mt=1660293906&fvip=5&keepalive=yes&fexp=24001373%2C24007246&c=WEB&rbqsm=fr&txp=6211224&n=1RmjdttY28P7sQ&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cspc%2Cvprv%2Cmime%2Cns%2Cgir%2Cclen%2Cotfp%2Cdur%2Clmt&sig=AOq0QJ8wRQIhAJ7t_Sc6dIrSQAF_n0VBq2AICa5Nc96pUdz1iewP8nI6AiBIyNEGKlncExSC7slpS9Pp-mVS3-5UBs6BjocjYeDjvQ%3D%3D&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AG3C_xAwRQIhAIEA-S0cE-hYzX6E2oQVxNpBvUHkqFHKJelGgm08NGrDAiAUHj3Pi-GAPEQW4TbhW6aYPBHQzjBXatgyl-Rj3S28hw%3D%3D',
+  //     type: 'audio/mpeg',
+  //   },
+  //   error: null,
+  // };
+
+  const { data: audioBuffer, error: audioBufferError } = useSWRImmutable<
     AudioBuffer,
     any
   >(
@@ -67,19 +73,26 @@ const SongPlayer = ({ waveformDataStrategy }: Props) => {
       'fetch audio from server, create waveforms on client'
       ? ['/api/server-audio/mp3/' + videoId, audioContext]
       : null,
-    audioFileFetcherAndConverter
+    audioBufferFetcher
   );
 
-  const { data: waveformDataUri, error: waveformUriError } = useSWRImmutable<
-    string,
-    any
-  >(
-    waveformDataStrategy ===
-      'fetch pre-computed binary audio buffer from server'
-      ? '/api/server-audio/waveform-data/' + videoId
-      : null,
-    binaryDataUrlFetcher
-  );
+  const { data: waveformDataBuffer, error: waveformDataBufferError } =
+    useSWRImmutable<ArrayBuffer, any>(
+      waveformDataStrategy === 'fetch pre-computed waveform data from server'
+        ? '/api/server-audio/waveform-data/' + videoId
+        : null,
+      binaryDataFetcher
+    );
+
+  console.log({ audioElSrcData, audioBuffer, waveformDataBuffer });
+
+  const errorMsgs = [
+    audioElSrcDataError ? 'Could not load audio file' : '',
+    audioBufferError ? 'Could not load waveform data from audio file' : '',
+    waveformDataBufferError ? 'Could not load waveform data' : '',
+  ];
+
+  const hasErrors = errorMsgs.some(msg => !!msg);
 
   const dataReady =
     !!audioElSrcData &&
@@ -87,8 +100,8 @@ const SongPlayer = ({ waveformDataStrategy }: Props) => {
       'fetch audio from server, create waveforms on client' &&
       !!audioBuffer) ||
       (waveformDataStrategy ===
-        'fetch pre-computed binary audio buffer from server' &&
-        !!audioBuffer) ||
+        'fetch pre-computed waveform data from server' &&
+        !!waveformDataBuffer) ||
       waveformDataStrategy ===
         'fetch audio from audioElement src, create waveforms on client');
 
@@ -111,15 +124,17 @@ const SongPlayer = ({ waveformDataStrategy }: Props) => {
           onPreviousClicked={goToPreviousSong}
           nextAvailable={nextSongAvailable}
           previousAvailable={previousSongAvailable}
-          waveformDataUri={waveformDataUri}
+          waveformDataBuffer={waveformDataBuffer}
         />
       ) : (
         <SuspenseContainer
           height={309 + 64}
-          status={!error ? 'loading' : 'error'}
-          errorMessage="Could not load audio 😢 Try again later or pick some other
-        track/song"
-          loadingMessage="Loading Player"
+          status={!hasErrors ? 'loading' : 'error'}
+          errors={[
+            'Could not load player 😢',
+            ...errorMsgs.filter(msg => !!msg),
+          ]}
+          loadingMessage="Loading player"
         />
       )}
     </Box>

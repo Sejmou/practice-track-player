@@ -29,7 +29,7 @@ type Props = {
   /**
    * either this or audioBuffer is required if src of audioElSrcData does not support CORS!
    */
-  waveformDataUri?: string;
+  waveformDataBuffer?: ArrayBuffer;
   nextAvailable?: boolean;
   previousAvailable?: boolean;
   onNextClicked: () => void;
@@ -40,7 +40,7 @@ const AudioControls = ({
   audioContext,
   audioElSrcData,
   audioBuffer,
-  waveformDataUri,
+  waveformDataBuffer,
   nextAvailable,
   previousAvailable,
   onNextClicked,
@@ -99,7 +99,7 @@ const AudioControls = ({
         <WaveFormView
           audioElement={audioRef.current}
           audioUrl={audioElSrcData.src}
-          waveformDataUri={waveformDataUri}
+          waveformDataBuffer={waveformDataBuffer}
           audioContentType={audioElSrcData.type}
           setSegments={() => {}}
           setPoints={() => {}}

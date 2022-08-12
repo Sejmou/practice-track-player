@@ -1,17 +1,16 @@
-import { extractQueryParamAsString, findFile } from '@backend';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { handleLocalFileRequest } from '@backend';
 
+// this endpoint is not used atm
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse // TODO: research on how to type properly
 ) {
-  try {
-    const id = extractQueryParamAsString(req, 'id');
-    const filePath = await findFile(id, 'waveform-data', 'dat');
-    console.log(filePath);
-    res.status(200).end();
-  } catch (error) {
-    console.warn('An error occurred while getting the data', error);
-    res.status(404).end();
-  }
+  return handleLocalFileRequest(
+    req,
+    res,
+    'waveform-data',
+    'dat',
+    'application/octet-stream'
+  );
 }
