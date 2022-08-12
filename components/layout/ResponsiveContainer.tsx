@@ -34,7 +34,9 @@ const ResponsiveContainer = ({ title, children }: Props) => {
     </Accordion>
   ) : (
     <Box>
-      <Typography variant="h4">{title}</Typography>
+      <Typography variant="h4" sx={{ mb: 1, ml: 1 }}>
+        {title}
+      </Typography>
       <Paper sx={{ maxHeight: '500px', overflow: 'auto' }}>{children}</Paper>
     </Box>
   );

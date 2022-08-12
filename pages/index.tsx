@@ -27,15 +27,14 @@ const Home: NextPage = () => {
         <CardContent>
           <Typography variant="h5">Musicals</Typography>
           <Typography>
-            Play practice tracks for musicals created by the kind folks at
-            &nbsp;
+            Play musical practice tracks created by the kind folks at &nbsp;
             <Link
               target="_blank"
               href="https://www.musicalpracticetracks.com/index.php/"
             >
               musicalpracticetracks.com
             </Link>
-            &nbsp;:)
+            &nbsp; in an audio player, directly in your browser :)
           </Typography>
         </CardContent>
         <CardActions>

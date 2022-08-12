@@ -1,6 +1,6 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
-import { Typography, Link } from '@mui/material';
+import { Typography, Link, Box } from '@mui/material';
 
 import { getAllMusicalBaseData } from '@backend';
 import { MusicalBaseData } from '@models';
@@ -19,19 +19,26 @@ const Musicals: NextPage<Props> = ({ musicalsBaseData }) => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Typography variant="h2">Musicals</Typography>
-
-      <Typography>
-        On this site, musical practice tracks from &nbsp;
-        <Link
-          target="_blank"
-          href="https://www.musicalpracticetracks.com/index.php/"
-        >
-          musicalpracticetracks.com
-        </Link>
-        &nbsp; will be collected.
-      </Typography>
-      <Typography>For now, only a single musical is available:</Typography>
+      <Box sx={{ mb: 1 }}>
+        <Typography variant="h2">Musicals</Typography>
+        <Typography>
+          This is a list of musical practice tracks from &nbsp;
+          <Link
+            target="_blank"
+            href="https://www.musicalpracticetracks.com/index.php/"
+          >
+            musicalpracticetracks.com
+          </Link>
+          .
+        </Typography>
+        <Typography>
+          Select any musical and play every song and all the practice tracks for
+          it in a web-based audio player 👌
+        </Typography>
+        {musicalsBaseData.length == 1 && (
+          <Typography>For now, only a single musical is available:</Typography>
+        )}
+      </Box>
       <MusicalsList musicalData={musicalsBaseData} />
     </>
   );
