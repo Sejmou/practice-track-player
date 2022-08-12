@@ -17,6 +17,7 @@ import {
 import Link from 'next/link';
 import { MusicalProvider } from '@frontend/context/musical-context';
 import SongPlayer from '@components/SongPlayer/SongPlayer';
+import MusicalSongPlayer from '@components/Musical/MusicalSongPlayer';
 
 type Props = { musical: Musical };
 
@@ -45,14 +46,14 @@ const MusicalPage: NextPage<Props> = ({ musical }) => {
         <Typography variant={narrowViewport ? 'h6' : 'h4'}>
           {musical.title}
         </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Stack direction="row" spacing={1}>
           <Button>
             <Link href="/musicals">Back to Overview</Link>
           </Button>
-        </Box>
+        </Stack>
       </Box>
       <Stack spacing={1}>
-        <SongPlayer waveformDataStrategy="fetch pre-computed waveform data from server" />
+        <MusicalSongPlayer />
         <Box sx={tracksAndSongsContainerStyles}>
           <TrackList />
           <SongList />

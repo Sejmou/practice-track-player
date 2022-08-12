@@ -109,7 +109,6 @@ export async function findFile(
   fileExt: string
 ) {
   const dataFolderPath = path.join(process.cwd(), `./public/${folderName}/`);
-  console.log('__dirname', __dirname);
   console.log('process.cwd()', process.cwd());
   console.log('data folder path', dataFolderPath);
   const folderContent = await fs.readdir(dataFolderPath);
@@ -125,8 +124,6 @@ export async function findFile(
     .map(file => path.parse(file).name);
 
   for (const f of fileNames) {
-    const stat = await fs.stat(`${dataFolderPath}/${f}.${fileExt}`);
-    console.log('file:', f, 'size:', stat.size);
     if (f === name) {
       return `${dataFolderPath}/${f}.${fileExt}`;
     }
