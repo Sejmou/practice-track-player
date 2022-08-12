@@ -1,12 +1,17 @@
-import { Box, Grid, Slider, Stack, Typography } from '@mui/material';
+import { Box, Grid, Slider, Stack, SxProps, Typography } from '@mui/material';
 // import SlowMotionVideoIcon from '@mui/icons-material/SlowMotionVideo';
 import SpeedIcon from '@mui/icons-material/Speed';
 
 type Props = {
   playbackRate: number;
   onPlaybackRateChange: (pbr: number) => void;
+  sx?: SxProps;
 };
-const PlaybackRateSlider = ({ playbackRate, onPlaybackRateChange }: Props) => {
+const PlaybackRateSlider = ({
+  playbackRate,
+  onPlaybackRateChange,
+  sx,
+}: Props) => {
   const handleSliderChange = (event: Event, newValue: number | number[]) => {
     onPlaybackRateChange(newValue as number);
   };
@@ -16,7 +21,7 @@ const PlaybackRateSlider = ({ playbackRate, onPlaybackRateChange }: Props) => {
       width="100%"
       spacing={1}
       direction="row"
-      sx={{ p: '16px' }}
+      sx={{ p: '16px', ...sx }}
       alignItems="center"
     >
       <SpeedIcon color="primary" />

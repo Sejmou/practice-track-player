@@ -1,4 +1,4 @@
-import { Box, IconButton } from '@mui/material';
+import { Box, IconButton, SxProps } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
@@ -11,6 +11,7 @@ type Props = {
   onNext: () => void;
   onPrevious: () => void;
   onPlayPause: () => void;
+  sx?: SxProps;
 };
 const BasicControls = ({
   previousAvailable,
@@ -19,12 +20,18 @@ const BasicControls = ({
   onNext,
   onPrevious,
   onPlayPause,
+  sx,
 }: Props) => {
   return (
     <Box
-      sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        ...sx,
+      }}
     >
-      <Box>
+      <Box sx={{ width: 'max-content' }}>
         <IconButton
           size="large"
           disabled={!previousAvailable}

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
-import { Box } from '@mui/material';
+import { Box, SxProps } from '@mui/material';
 
 import { SourceData } from '@models';
 import {
@@ -15,6 +15,21 @@ const WaveFormView = dynamic(() => import('./WaveFormView/WaveformView'), {
 });
 
 const shortcuts = new KeyboardShortcuts();
+
+const controlsContainerStyles: SxProps = {
+  display: 'grid',
+  width: '100%',
+  gridAutoColumns: 'minmax(0, 1fr)', // this makes columns exactly the same width https://stackoverflow.com/a/61240964/13727176
+  gridTemplateAreas: { xs: '"pbr" "basic"', sm: '"1fr basic  pbr"' },
+};
+
+const basicControlsStyles: SxProps = {
+  gridArea: 'basic',
+};
+
+const playbackRatePickerStyles: SxProps = {
+  gridArea: 'pbr',
+};
 
 type Props = {
   audioContext?: AudioContext;
@@ -104,36 +119,21 @@ const AudioControls = ({
           audioBuffer={audioBuffer}
         />
       )}
-      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        <Box
-          sx={{
-            display: 'grid',
-            width: '100%',
-            gridTemplateColumns: '1fr 1fr 1fr',
-          }}
-        >
-          {/* This empty Box exists only for layout reasons */}
-          <Box></Box>
-          <BasicControls
-            previousAvailable={previousAvailable}
-            nextAvailable={nextAvailable}
-            playing={isPlaying}
-            onNext={onNext}
-            onPrevious={onPrevious}
-            onPlayPause={() => setIsPlaying(prev => !prev)}
-          />
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            <PlaybackRateSlider
-              playbackRate={playbackRate}
-              onPlaybackRateChange={pbr => setPlaybackRate(pbr)}
-            />
-          </Box>
-        </Box>
+      <Box sx={controlsContainerStyles}>
+        <BasicControls
+          previousAvailable={previousAvailable}
+          nextAvailable={nextAvailable}
+          playing={isPlaying}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          onPlayPause={() => setIsPlaying(prev => !prev)}
+          sx={basicControlsStyles}
+        />
+        <PlaybackRateSlider
+          sx={playbackRatePickerStyles}
+          playbackRate={playbackRate}
+          onPlaybackRateChange={pbr => setPlaybackRate(pbr)}
+        />
       </Box>
       {/* As we have no controls attribute on the audio element, it is invisible, which is what we want here */}
       <audio ref={audioRef} onLoadedMetadata={metadataLoadedHandler}>
