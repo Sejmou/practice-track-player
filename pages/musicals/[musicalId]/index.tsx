@@ -5,7 +5,14 @@ import TrackList from '@components/Musical/TrackList';
 import SongList from '@components/Musical/SongList';
 import { getAllMusicalIds, getMusical } from '@backend';
 import { Musical } from '@models';
-import { Box, Button, SxProps, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  SxProps,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import Link from 'next/link';
 import { MusicalProvider } from '@frontend/context/musical-context';
 import SongPlayer from '@components/SongPlayer/SongPlayer';
@@ -13,6 +20,9 @@ import SongPlayer from '@components/SongPlayer/SongPlayer';
 type Props = { musical: Musical };
 
 const MusicalPage: NextPage<Props> = ({ musical }) => {
+  const theme = useTheme();
+  const narrowViewport = useMediaQuery(theme.breakpoints.down('md'));
+
   return (
     <MusicalProvider musical={musical}>
       <Head>
@@ -21,7 +31,9 @@ const MusicalPage: NextPage<Props> = ({ musical }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Box sx={{ pb: 1 }}>
-        <Typography variant="h4">{musical.title}</Typography>
+        <Typography variant={narrowViewport ? 'h6' : 'h4'}>
+          {musical.title}
+        </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Button>
             <Link href="/musicals">Back to Overview</Link>

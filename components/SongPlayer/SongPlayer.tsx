@@ -1,7 +1,7 @@
 import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
 import { useMusicalContext } from '@frontend/context/musical-context';
 import { SourceData } from '@models';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import useSWRImmutable from 'swr/immutable';
 import AudioControls from './AudioControls/AudioControls';
@@ -105,13 +105,18 @@ const SongPlayer = ({ waveformDataStrategy }: Props) => {
       waveformDataStrategy ===
         'fetch audio from audioElement src, create waveforms on client');
 
+  const theme = useTheme();
+  const narrowViewport = useMediaQuery(theme.breakpoints.down('md'));
+
   return (
     <Box>
       <Box
         sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
       >
-        <Typography>Current Song:</Typography>
-        <Typography variant="h5">
+        <Typography variant={narrowViewport ? 'body2' : 'body1'}>
+          Current Song:
+        </Typography>
+        <Typography variant={narrowViewport ? 'h6' : 'h5'}>
           {song.no}. {song.title}
         </Typography>
       </Box>
