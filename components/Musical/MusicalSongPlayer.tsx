@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
 
 import { useMusicalContext } from '@frontend/context/musical-context';
-
 import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
 import SongPlayer from '@components/SongPlayer/SongPlayer';
 import {
@@ -47,26 +47,37 @@ const MusicalSongPlayer = () => {
     [track]
   );
 
-  return dataReady ? (
-    <SongPlayer
-      song={song}
-      audioElSrcData={audioElSrcData}
-      waveformData={waveformData}
-      previousSongAvailable={previousSongAvailable}
-      nextSongAvailable={nextSongAvailable}
-      onNextSong={goToNextSong}
-      onPreviousSong={goToPreviousSong}
-    />
-  ) : (
-    <>
-      <SuspenseContainer
-        height={309 + 64}
-        status={!hasErrors ? 'loading' : 'error'}
-        errors={['Player loading failed 😢', ...errorMsgs.filter(msg => !!msg)]}
-        fallbackActionButtonData={fallbackActionButtonData}
-        loadingMessage="Loading player"
-      />
-    </>
+  const theme = useTheme();
+  // required for setting minHeight to prevent height glitch while loading peaks.js WaveformView
+  const narrowViewport = useMediaQuery(theme.breakpoints.down('sm'));
+
+  return (
+    <Box minHeight={narrowViewport ? 517 : 470}>
+      {dataReady ? (
+        <SongPlayer
+          song={song}
+          audioElSrcData={audioElSrcData}
+          waveformData={waveformData}
+          previousSongAvailable={previousSongAvailable}
+          nextSongAvailable={nextSongAvailable}
+          onNextSong={goToNextSong}
+          onPreviousSong={goToPreviousSong}
+        />
+      ) : (
+        <>
+          <SuspenseContainer
+            height={narrowViewport ? 517 : 470}
+            status={!hasErrors ? 'loading' : 'error'}
+            errors={[
+              'Player loading failed 😢',
+              ...errorMsgs.filter(msg => !!msg),
+            ]}
+            fallbackActionButtonData={fallbackActionButtonData}
+            loadingMessage="Loading player"
+          />
+        </>
+      )}
+    </Box>
   );
 };
 export default MusicalSongPlayer;

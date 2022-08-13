@@ -88,7 +88,6 @@ const AudioControls = ({
     if (peaks) {
       peaks.zoom.zoomIn();
       setZoomLevel(peaks.zoom.getZoom());
-      console.log(peaks.zoom.getZoom());
     }
   };
 
@@ -104,7 +103,6 @@ const AudioControls = ({
       // picked some arbitrary value a little bit larger than 0 to allow for going to previous song by double-clicking
       audioRef.current.currentTime = 0;
     } else {
-      console.log('go to previous');
       onPrevious();
       setIsPlaying(false);
     }
@@ -168,7 +166,7 @@ const AudioControls = ({
     <div
       onKeyDownCapture={keyboardEvent => shortcuts.applyMatching(keyboardEvent)}
     >
-      {audioRef.current && (
+      {(audioRef.current && (
         <WaveFormView
           audioElement={audioRef.current}
           audioUrl={audioElSrcData.src}
@@ -181,7 +179,7 @@ const AudioControls = ({
           waveformZoomviewColor={primaryColor}
           onPeaksReady={peaksLoadedHandler}
         />
-      )}
+      )) || <Box minHeight={309}></Box>}
       <Box sx={controlsContainerStyles}>
         <WaveformViewZoomControls
           onZoomIn={handleZoomIn}
