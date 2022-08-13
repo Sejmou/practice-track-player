@@ -93,7 +93,9 @@ const Header = (props: Props) => {
                           primary={
                             <Typography
                               color={
-                                router.pathname === link.href ? 'primary' : ''
+                                router.pathname.startsWith(link.href)
+                                  ? 'primary'
+                                  : ''
                               }
                             >
                               {link.text}
@@ -114,7 +116,11 @@ const Header = (props: Props) => {
             <Stack direction="row" spacing={2}>
               {links.map((link, i) => (
                 <Button
-                  color={router.pathname === link.href ? 'primary' : 'inherit'}
+                  color={
+                    router.pathname.startsWith(link.href)
+                      ? 'primary'
+                      : 'inherit'
+                  }
                   key={i}
                   onClick={() => router.push(link.href)}
                 >
