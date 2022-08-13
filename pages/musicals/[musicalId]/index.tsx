@@ -16,19 +16,31 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { MusicalProvider } from '@frontend/context/musical-context';
-import SongPlayer from '@components/SongPlayer/SongPlayer';
 import MusicalSongPlayer from '@components/Musical/MusicalSongPlayer';
+import DescriptionContainer from '@components/Musical/DescriptionContainer';
 
 type Props = { musical: Musical };
 
 const tracksAndSongsContainerStyles: SxProps = {
   display: 'grid',
   gridAutoColumns: 'minmax(0, 1fr)',
-  gridTemplateColumns: {
-    xs: '1fr',
-    sm: '1fr 1fr',
+  gridTemplateAreas: {
+    xs: '"tl" "d" "sl"',
+    md: '"d tl" "sl sl"',
   },
-  gap: { sm: '10px' },
+  gap: { md: '10px' },
+};
+
+const trackListStyles: SxProps = {
+  gridArea: 'tl',
+};
+
+const songListStyles: SxProps = {
+  gridArea: 'sl',
+};
+
+const descriptionContainerStyles: SxProps = {
+  gridArea: 'd',
 };
 
 const MusicalPage: NextPage<Props> = ({ musical }) => {
@@ -55,8 +67,9 @@ const MusicalPage: NextPage<Props> = ({ musical }) => {
       <Stack spacing={1}>
         <MusicalSongPlayer />
         <Box sx={tracksAndSongsContainerStyles}>
-          <TrackList />
-          <SongList />
+          <TrackList sx={trackListStyles} />
+          <DescriptionContainer sx={descriptionContainerStyles} />
+          <SongList sx={songListStyles} />
         </Box>
       </Stack>
     </MusicalProvider>

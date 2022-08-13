@@ -38,6 +38,16 @@ export const useYouTubeAudioSrcDataFetcher = (videoId: string) => {
   );
 };
 
+export const useYouTubeDescriptionFetcher = (videoId: string) => {
+  return useSWRImmutable<string, any>(
+    '/api/yt-audio/description/' + videoId,
+    jsonFetcher,
+    {
+      shouldRetryOnError: false, // we must not spam the API, otherwise YouTube blocks the server!
+    }
+  );
+};
+
 export const useServerAudioSrcDataFetcher = (fileId: string) => {
   return useSWRImmutable<SourceData, any>(
     '/api/server/mp3-src-data/' + fileId,
