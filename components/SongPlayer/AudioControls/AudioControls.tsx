@@ -108,6 +108,24 @@ const AudioControls = ({
     }
   }, [onPrevious]);
 
+  const handleBackward5 = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = Math.max(
+        audioRef.current.currentTime - 5,
+        0
+      );
+    }
+  }, []);
+
+  const handleForward5 = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = Math.min(
+        audioRef.current.currentTime + 5,
+        audioRef.current.duration
+      );
+    }
+  }, []);
+
   const handleNext = useCallback(() => {
     onNext();
     setIsPlaying(false);
@@ -194,6 +212,8 @@ const AudioControls = ({
           playing={isPlaying}
           onNext={handleNext}
           onPrevious={handlePrevious}
+          onForward5={handleForward5}
+          onBackward5={handleBackward5}
           onPlayPause={() => setIsPlaying(prev => !prev)}
           sx={basicControlsStyles}
         />
