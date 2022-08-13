@@ -32,12 +32,7 @@ const BasicControls = ({
       }}
     >
       <Box sx={{ width: 'max-content' }}>
-        <IconButton
-          size="large"
-          disabled={!previousAvailable}
-          onClick={onPrevious}
-          color="primary"
-        >
+        <IconButton size="large" onClick={onPrevious} color="primary">
           <SkipPreviousIcon />
         </IconButton>
         <IconButton onClick={onPlayPause} color="primary" size="large">

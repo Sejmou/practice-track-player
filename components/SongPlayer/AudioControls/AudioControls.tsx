@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { Box, SxProps, useTheme } from '@mui/material';
 
@@ -99,6 +99,19 @@ const AudioControls = ({
     }
   };
 
+  const handlePrevious = useCallback(() => {
+    console.log(audioRef.current);
+    console.log(audioRef.current?.currentTime);
+    if (audioRef.current && audioRef.current.currentTime > 1) {
+      // picked some arbitrary value a little bit larger than 0 to allow for going to previous song by double-clicking
+      console.log(audioRef.current.currentTime);
+      audioRef.current.currentTime = 0;
+    } else {
+      console.log('go to previous');
+      onPrevious();
+    }
+  }, [onPrevious]);
+
   const zoomOutEnabled = useMemo(() => {
     if (!peaks) {
       return false;
@@ -179,7 +192,7 @@ const AudioControls = ({
           nextAvailable={nextAvailable}
           playing={isPlaying}
           onNext={onNext}
-          onPrevious={onPrevious}
+          onPrevious={handlePrevious}
           onPlayPause={() => setIsPlaying(prev => !prev)}
           sx={basicControlsStyles}
         />
