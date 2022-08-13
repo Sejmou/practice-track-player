@@ -9,6 +9,8 @@ import {
 } from '@frontend/keyboard-shortcuts';
 import PlaybackRateSlider from './PlaybackRateSlider';
 import BasicControls from './BasicControls';
+import { PeaksInstance } from 'peaks.js';
+import WaveformViewZoomControls from './WaveformViewZoomControls';
 
 const WaveFormView = dynamic(() => import('./WaveFormView/WaveformView'), {
   ssr: false,
@@ -20,7 +22,10 @@ const controlsContainerStyles: SxProps = {
   display: 'grid',
   width: '100%',
   gridAutoColumns: 'minmax(0, 1fr)', // this makes columns exactly the same width https://stackoverflow.com/a/61240964/13727176
-  gridTemplateAreas: { xs: '"pbr" "basic"', sm: '"1fr basic  pbr"' },
+  gridTemplateAreas: {
+    xs: '"zoom pbr pbr" "basic basic basic"',
+    sm: '"zoom basic  pbr"',
+  },
 };
 
 const basicControlsStyles: SxProps = {
@@ -29,6 +34,10 @@ const basicControlsStyles: SxProps = {
 
 const playbackRatePickerStyles: SxProps = {
   gridArea: 'pbr',
+};
+
+const zoomControlsStyles: SxProps = {
+  gridArea: 'zoom',
 };
 
 type Props = {
@@ -59,17 +68,50 @@ const AudioControls = ({
   onPrevious,
 }: Props) => {
   const [isPlaying, setIsPlaying] = useState(false);
-
   // isReady state is actually irrelevant, I'm just abusing useState to trigger a rerender once the audio element's metadata is loaded
   const [isReady, setIsReady] = useState(false);
-
   const [playbackRate, setPlaybackRate] = useState(1);
-
   const audioRef = useRef<HTMLAudioElement>(null);
+  const [peaks, setPeaks] = useState<PeaksInstance>();
+  const [zoomLevel, setZoomLevel] = useState(0);
+
+  const peaksLoadedHandler = (peaks: PeaksInstance) => {
+    setPeaks(peaks);
+    setZoomLevel(peaks.zoom.getZoom());
+  };
 
   const handlePlayPauseToggle = () => {
     setIsPlaying(previous => !previous);
   };
+
+  const handleZoomIn = () => {
+    if (peaks) {
+      peaks.zoom.zoomIn();
+      setZoomLevel(peaks.zoom.getZoom());
+      console.log(peaks.zoom.getZoom());
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (peaks) {
+      peaks.zoom.zoomOut();
+      setZoomLevel(peaks.zoom.getZoom());
+    }
+  };
+
+  const zoomOutEnabled = useMemo(() => {
+    if (!peaks) {
+      return false;
+    }
+    return zoomLevel < 3;
+  }, [peaks, zoomLevel]);
+
+  const zoomInEnabled = useMemo(() => {
+    if (!peaks) {
+      return false;
+    }
+    return zoomLevel > 0;
+  }, [peaks, zoomLevel]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -121,9 +163,17 @@ const AudioControls = ({
           audioContext={audioContext}
           audioBuffer={audioBuffer}
           waveformZoomviewColor={primaryColor}
+          onPeaksReady={peaksLoadedHandler}
         />
       )}
       <Box sx={controlsContainerStyles}>
+        <WaveformViewZoomControls
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+          zoomInEnabled={zoomInEnabled}
+          zoomOutEnabled={zoomOutEnabled}
+          sx={zoomControlsStyles}
+        />
         <BasicControls
           previousAvailable={previousAvailable}
           nextAvailable={nextAvailable}

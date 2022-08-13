@@ -60,6 +60,10 @@ type Props = {
    * CSS color string for waveform zoom view color
    */
   waveformZoomviewColor?: string;
+  /**
+   * called when peaks instance is ready
+   */
+  onPeaksReady?: (peaks: Peaks.PeaksInstance) => void;
 };
 
 // this file and all related files were adapted from https://github.com/chrisn/peaksjs-react-example
@@ -100,11 +104,13 @@ class WaveformView extends Component<Props> {
   renderButtons() {
     return (
       <Box>
-        <Button onClick={this.zoomIn}>Zoom in</Button>&nbsp;
-        <Button onClick={this.zoomOut}>Zoom out</Button>&nbsp;
-        <Button onClick={this.addSegment}>Add Segment</Button>&nbsp;
-        <Button onClick={this.addPoint}>Add Point</Button>&nbsp;
-        <Button onClick={this.logMarkers}>Log segments/points</Button>
+        <Button onClick={this.zoomIn.bind(this)}>Zoom in</Button>&nbsp;
+        <Button onClick={this.zoomOut.bind(this)}>Zoom out</Button>&nbsp;
+        <Button onClick={this.addSegment.bind(this)}>Add Segment</Button>&nbsp;
+        <Button onClick={this.addPoint.bind(this)}>Add Point</Button>&nbsp;
+        <Button onClick={this.logMarkers.bind(this)}>
+          Log segments/points
+        </Button>
       </Box>
     );
   }
@@ -224,11 +230,14 @@ class WaveformView extends Component<Props> {
 
   onPeaksReady() {
     // Do something when the Peaks instance is ready for use
-    const zoomview = this.peaks?.views.getView('zoomview');
-    if (this.props.waveformZoomviewColor) {
-      zoomview?.setWaveformColor(this.props.waveformZoomviewColor);
+    if (this.peaks) {
+      const zoomview = this.peaks?.views.getView('zoomview');
+      if (this.props.waveformZoomviewColor) {
+        zoomview?.setWaveformColor(this.props.waveformZoomviewColor);
+      }
+      console.log('Peaks.js is ready');
+      this.props.onPeaksReady?.(this.peaks);
     }
-    console.log('Peaks.js is ready');
   }
 }
 
