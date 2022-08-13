@@ -5,7 +5,6 @@ import { useMusicalContext } from '@frontend/context/musical-context';
 import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
 import SongPlayer from '@components/SongPlayer/SongPlayer';
 import {
-  useServerAudioSrcDataFetcher,
   useServerWaveformDataFetcher,
   useYouTubeAudioSrcDataFetcher,
 } from '@frontend/hooks/use-audio-data-fetcher';
@@ -38,6 +37,16 @@ const MusicalSongPlayer = () => {
   ];
   const hasErrors = errorMsgs.some(msg => !!msg);
 
+  const fallbackActionButtonData = useMemo(
+    () => ({
+      label: 'Play on Youtube instead',
+      action: () => {
+        window.open(track.url, '_blank');
+      },
+    }),
+    [track]
+  );
+
   return dataReady ? (
     <SongPlayer
       song={song}
@@ -49,12 +58,15 @@ const MusicalSongPlayer = () => {
       onPreviousSong={goToPreviousSong}
     />
   ) : (
-    <SuspenseContainer
-      height={309 + 64}
-      status={!hasErrors ? 'loading' : 'error'}
-      errors={['Could not load player 😢', ...errorMsgs.filter(msg => !!msg)]}
-      loadingMessage="Loading player"
-    />
+    <>
+      <SuspenseContainer
+        height={309 + 64}
+        status={!hasErrors ? 'loading' : 'error'}
+        errors={['Player loading failed 😢', ...errorMsgs.filter(msg => !!msg)]}
+        fallbackActionButtonData={fallbackActionButtonData}
+        loadingMessage="Loading player"
+      />
+    </>
   );
 };
 export default MusicalSongPlayer;
