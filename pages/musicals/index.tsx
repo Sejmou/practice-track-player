@@ -2,7 +2,7 @@ import { NextPage } from 'next';
 import Head from 'next/head';
 import { Typography, Link, Box } from '@mui/material';
 
-import { getAllMusicalBaseData } from '@backend';
+import { getAllMusicalBaseData } from '@backend/musical-data';
 import { MusicalBaseData } from '@models';
 import MusicalsList from '@components/Musical/MusicalsList';
 

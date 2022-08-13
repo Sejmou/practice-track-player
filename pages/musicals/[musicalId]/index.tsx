@@ -3,7 +3,7 @@ import Head from 'next/head';
 
 import TrackList from '@components/Musical/TrackList';
 import SongList from '@components/Musical/SongList';
-import { getAllMusicalIds, getMusical } from '@backend';
+import { getAllMusicalIds, getMusical } from '@backend/musical-data';
 import { Musical } from '@models';
 import {
   Box,

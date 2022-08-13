@@ -5,6 +5,7 @@ import { useMusicalContext } from '@frontend/context/musical-context';
 import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
 import SongPlayer from '@components/SongPlayer/SongPlayer';
 import {
+  useServerAudioSrcDataFetcher,
   useServerWaveformDataFetcher,
   useYouTubeAudioSrcDataFetcher,
 } from '@frontend/hooks/use-audio-data-fetcher';
@@ -26,7 +27,8 @@ const MusicalSongPlayer = () => {
   }, [track]);
 
   const { data: audioElSrcData, error: audioElSrcError } =
-    useYouTubeAudioSrcDataFetcher(videoId);
+    useServerAudioSrcDataFetcher(videoId);
+  // useYouTubeAudioSrcDataFetcher(videoId);
   const { data: waveformData, error: waveformDataError } =
     useServerWaveformDataFetcher(videoId);
 

@@ -38,6 +38,13 @@ export const useYouTubeAudioSrcDataFetcher = (videoId: string) => {
   );
 };
 
+export const useServerAudioSrcDataFetcher = (fileId: string) => {
+  return useSWRImmutable<SourceData, any>(
+    '/api/server/mp3-src-data/' + fileId,
+    jsonFetcher
+  );
+};
+
 export const useAudioBufferFetcher = (url: string) => {
   const [audioContext, setAudioContext] = useState<AudioContext>();
   useEffect(() => {
