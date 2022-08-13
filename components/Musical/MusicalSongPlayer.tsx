@@ -27,8 +27,7 @@ const MusicalSongPlayer = () => {
   }, [track]);
 
   const { data: audioElSrcData, error: audioElSrcError } =
-    useServerAudioSrcDataFetcher(videoId);
-  // useYouTubeAudioSrcDataFetcher(videoId);
+    useYouTubeAudioSrcDataFetcher(videoId);
   const { data: waveformData, error: waveformDataError } =
     useServerWaveformDataFetcher(videoId);
 
