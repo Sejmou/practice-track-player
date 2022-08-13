@@ -37,3 +37,6 @@ next-env.d.ts
 
 # folder with example mp3 files - for local testing only
 /public/mp3
+
+# API keys and other secrets
+.env
