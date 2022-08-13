@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Peaks from 'peaks.js';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Theme, withTheme } from '@mui/material';
 
 import { createPointMarker, createSegmentMarker } from './MarkerFactories';
 import { createSegmentLabel } from './SegmentLabelFactory';
@@ -56,6 +56,10 @@ type Props = {
    * If supplied, neither waveformDataBuffer nor audioContext are required
    */
   audioBuffer?: AudioBuffer;
+  /**
+   * CSS color string for waveform zoom view color
+   */
+  waveformZoomviewColor?: string;
 };
 
 // this file and all related files were adapted from https://github.com/chrisn/peaksjs-react-example
@@ -74,7 +78,7 @@ class WaveformView extends Component<Props> {
   zoomviewWaveformRef: any;
   overviewWaveformRef: any;
   // audioElementRef: any;
-  peaks: any;
+  peaks: Peaks.PeaksInstance | null | undefined;
 
   render() {
     return (
@@ -146,6 +150,7 @@ class WaveformView extends Component<Props> {
       createSegmentMarker: createSegmentMarker,
       createSegmentLabel: createSegmentLabel,
       createPointMarker: createPointMarker,
+      // zoomWaveformColor: this.props.waveformZoomviewColor, // doesn't work for some reason
     };
 
     const options: Peaks.PeaksOptions = {
@@ -219,6 +224,10 @@ class WaveformView extends Component<Props> {
 
   onPeaksReady() {
     // Do something when the Peaks instance is ready for use
+    const zoomview = this.peaks?.views.getView('zoomview');
+    if (this.props.waveformZoomviewColor) {
+      zoomview?.setWaveformColor(this.props.waveformZoomviewColor);
+    }
     console.log('Peaks.js is ready');
   }
 }

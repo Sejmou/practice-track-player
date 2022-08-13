@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import dynamic from 'next/dynamic';
-import { Box, SxProps } from '@mui/material';
+import { Box, SxProps, useTheme } from '@mui/material';
 
 import { SourceData } from '@models';
 import {
@@ -103,6 +103,9 @@ const AudioControls = ({
     setIsReady(true);
   };
 
+  const theme = useTheme();
+  const primaryColor = useMemo(() => theme.palette.primary.main, [theme]);
+
   return (
     <div
       onKeyDownCapture={keyboardEvent => shortcuts.applyMatching(keyboardEvent)}
@@ -117,6 +120,7 @@ const AudioControls = ({
           setPoints={() => {}}
           audioContext={audioContext}
           audioBuffer={audioBuffer}
+          waveformZoomviewColor={primaryColor}
         />
       )}
       <Box sx={controlsContainerStyles}>
