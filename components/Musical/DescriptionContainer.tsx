@@ -1,4 +1,5 @@
 import ResponsiveContainer from '@components/layout/ResponsiveContainer';
+import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
 import { useMusicalContext } from '@frontend/context/musical-context';
 import { useYouTubeDescriptionFetcher } from '@frontend/hooks/use-audio-data-fetcher';
 import { SxProps, Typography } from '@mui/material';
@@ -18,20 +19,35 @@ const DescriptionContainer = ({ sx }: Props) => {
 
   return (
     <ResponsiveContainer sx={sx} title="Current Track Description">
-      {description?.split('\n').map((line, i, lines) => (
+      {description ? (
+        description?.split('\n').map((line, i, lines) => (
+          <Typography
+            sx={{
+              px: 2,
+              py: 1,
+              pt: i == 0 ? 2 : null,
+              pb: i == lines.length - 1 ? 2 : null,
+            }}
+            variant="body2"
+            key={i}
+          >
+            {line}
+          </Typography>
+        ))
+      ) : description === '' ? (
         <Typography
           sx={{
-            px: 2,
-            py: 1,
-            pt: i == 0 ? 2 : null,
-            pb: i == lines.length - 1 ? 2 : null,
+            p: 2,
           }}
-          variant="body2"
-          key={i}
         >
-          {line}
+          No description found.
         </Typography>
-      ))}
+      ) : (
+        <SuspenseContainer
+          status={!descriptionError ? 'loading' : 'error'}
+          errors={[descriptionError]}
+        />
+      )}
     </ResponsiveContainer>
   );
 };

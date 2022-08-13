@@ -2,7 +2,7 @@ import { Button, CircularProgress, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 
 type Props = {
-  height: number;
+  height?: number | string;
   loadingMessage?: string;
   errors: string[];
   status: 'error' | 'loading';
@@ -26,7 +26,8 @@ const SuspenseContainer = ({
   return (
     <Box
       sx={{
-        height: `${height}px`,
+        minHeight: '100px',
+        height,
         width: '100%',
         display: 'flex',
         alignItems: 'center',
@@ -56,7 +57,7 @@ const SuspenseContainer = ({
             )}
           </>
         )}
-        {status === 'loading' && <CircularProgress />}
+        {status === 'loading' && <CircularProgress sx={{ height: '200px' }} />}
       </Box>
     </Box>
   );
