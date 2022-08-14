@@ -15,7 +15,7 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Practice Tracks Player</title>
+        <title>Practice Track Player</title>
         <meta
           name="description"
           content="A browser-based player for Music(al) practice tracks"
