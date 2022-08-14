@@ -33,7 +33,7 @@ const Musicals: NextPage<Props> = ({ musicalsBaseData }) => {
         </Typography>
         <Typography>
           Select any musical and play every song and all the practice tracks for
-          it in a web-based audio player 👌
+          it in an audio player, directly in your browser 👌
         </Typography>
         {musicalsBaseData.length == 1 && (
           <Typography>For now, only a single musical is available:</Typography>
