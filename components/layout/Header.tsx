@@ -14,7 +14,6 @@ import {
   Button,
   Container,
 } from '@mui/material';
-import Link from 'next/link';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useState, KeyboardEvent } from 'react';
 import { useRouter } from 'next/router';
@@ -31,7 +30,7 @@ const Header = (props: Props) => {
       href: '/musicals',
       text: 'Musicals',
     },
-    // { href: '/player', text: 'Play your own track' },
+    { href: '/player', text: 'Play your own tracks' },
   ];
 
   const handleDrawerKeyEvent = (event: KeyboardEvent<HTMLDivElement>) => {

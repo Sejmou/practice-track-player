@@ -6,7 +6,7 @@ import React, {
   useCallback,
 } from 'react';
 
-import { Musical, Song, SongTrack } from '@models';
+import { Musical, MusicalSong, SongTrack } from '@models';
 
 const useMusicalController = (musical: Musical) => {
   const songs = musical.songs;
@@ -27,7 +27,7 @@ const useMusicalController = (musical: Musical) => {
   );
 
   const changeSongHandler = useCallback(
-    (song: Song) => {
+    (song: MusicalSong) => {
       const songIdx = songs.findIndex(s => s.no === song.no);
       if (songIdx === -1) {
         console.warn(

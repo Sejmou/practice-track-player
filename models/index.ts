@@ -6,20 +6,20 @@ export const SongTrackValidator = z.object({
 });
 export type SongTrack = z.infer<typeof SongTrackValidator>;
 
-const SongBaseValidator = z.object({
+const SongValidator = z.object({
   no: z.string(),
   title: z.string(),
 });
-export type SongBase = z.infer<typeof SongBaseValidator>;
+export type Song = z.infer<typeof SongValidator>;
 
-export const SongValidator = SongBaseValidator.extend({
+export const MusicalSongValidator = SongValidator.extend({
   tracks: z.array(SongTrackValidator),
 });
-export type Song = z.infer<typeof SongValidator>;
+export type MusicalSong = z.infer<typeof MusicalSongValidator>;
 
 export const MusicalValidator = z.object({
   title: z.string(),
-  songs: z.array(SongValidator),
+  songs: z.array(MusicalSongValidator),
 });
 export type Musical = z.infer<typeof MusicalValidator>;
 
