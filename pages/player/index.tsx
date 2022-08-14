@@ -77,7 +77,7 @@ const Player: NextPage = (props: Props) => {
         audioBuffer: fileAudioBuffers[i],
       }))
     );
-  }, []);
+  }, [audioContext]);
 
   return (
     <>
