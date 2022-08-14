@@ -55,6 +55,13 @@ type Props = {
   previousAvailable?: boolean;
   onNext: () => void;
   onPrevious: () => void;
+  /**
+   * The number of seconds the controls should seek to
+   *
+   * Every time this prop changes, the controls seek their audioElement to the new value
+   *
+   */
+  seekTime?: number;
 };
 const AudioControls = ({
   // TODO: improve perfomance of this; current code is probably not very efficient I guess
@@ -66,6 +73,7 @@ const AudioControls = ({
   previousAvailable,
   onNext,
   onPrevious,
+  seekTime,
 }: Props) => {
   const [isPlaying, setIsPlaying] = useState(false);
   // isReady state is actually irrelevant, I'm just abusing useState to trigger a rerender once the audio element's metadata is loaded
@@ -172,6 +180,12 @@ const AudioControls = ({
       audioRef.current?.pause();
     }
   }, [isPlaying]);
+
+  useEffect(() => {
+    if (audioRef.current && seekTime) {
+      audioRef.current.currentTime = seekTime;
+    }
+  }, [seekTime]);
 
   const metadataLoadedHandler = () => {
     setIsReady(true);

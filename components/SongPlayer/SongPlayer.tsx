@@ -1,13 +1,5 @@
 import { Song, SourceData } from '@models';
-import {
-  Box,
-  Button,
-  Link,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material';
-import { useEffect, useState } from 'react';
+import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
 
 import AudioControls from './AudioControls/AudioControls';
 
@@ -36,6 +28,13 @@ type Props = {
   nextSongAvailable?: boolean;
   onNextSong: () => void;
   onPreviousSong: () => void;
+  /**
+   * The number of seconds the player should seek to
+   *
+   * Every time this prop changes, the player seeks the track to the new value
+   *
+   */
+  seekTime?: number;
 };
 
 const SongPlayer = ({
@@ -47,6 +46,7 @@ const SongPlayer = ({
   nextSongAvailable,
   onNextSong,
   onPreviousSong,
+  seekTime,
 }: Props) => {
   const theme = useTheme();
   const narrowViewport = useMediaQuery(theme.breakpoints.down('md'));
@@ -71,6 +71,7 @@ const SongPlayer = ({
         nextAvailable={nextSongAvailable}
         previousAvailable={previousSongAvailable}
         waveformDataBuffer={waveformData}
+        seekTime={seekTime}
       />
     </Box>
   );

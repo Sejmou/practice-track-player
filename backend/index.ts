@@ -2,6 +2,7 @@ import path from 'path';
 import { promises as fs, createReadStream } from 'fs';
 
 import { NextApiRequest, NextApiResponse } from 'next';
+import { getSubstringAfterFirstSubstringOccurence } from '@util';
 
 export class BaseError extends Error {
   message: string;
@@ -135,17 +136,4 @@ export function extractQueryParamAsString(
     );
   }
   return paramValue;
-}
-
-function getSubstringAfterFirstSubstringOccurence(
-  input: string,
-  substring: string
-) {
-  const substrIdx = input.indexOf(substring);
-  if (substrIdx === -1) {
-    throw Error(
-      `Provided substring '${substring}' not found in input string '${input}'`
-    );
-  }
-  return input.slice(substrIdx + substring.length);
 }

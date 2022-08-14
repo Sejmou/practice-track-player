@@ -5,6 +5,7 @@ import { useMusicalContext } from '@frontend/context/musical-context';
 import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
 import SongPlayer from '@components/SongPlayer/SongPlayer';
 import {
+  useServerAudioSrcDataFetcher,
   useServerWaveformDataFetcher,
   useYouTubeAudioSrcDataFetcher,
 } from '@frontend/hooks/use-audio-data-fetcher';
@@ -17,6 +18,7 @@ const MusicalSongPlayer = () => {
     nextSongAvailable,
     goToNextSong,
     goToPreviousSong,
+    lastSeekedTime,
   } = useMusicalContext();
 
   const videoId = useMemo(() => {
@@ -26,7 +28,9 @@ const MusicalSongPlayer = () => {
   }, [track]);
 
   const { data: audioElSrcData, error: audioElSrcError } =
-    useYouTubeAudioSrcDataFetcher(videoId);
+    // useYouTubeAudioSrcDataFetcher(videoId);
+    useServerAudioSrcDataFetcher(videoId);
+
   const { data: waveformData, error: waveformDataError } =
     useServerWaveformDataFetcher(videoId);
 
@@ -62,6 +66,7 @@ const MusicalSongPlayer = () => {
           nextSongAvailable={nextSongAvailable}
           onNextSong={goToNextSong}
           onPreviousSong={goToPreviousSong}
+          seekTime={lastSeekedTime}
         />
       ) : (
         <>
