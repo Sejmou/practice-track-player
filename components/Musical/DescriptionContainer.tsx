@@ -2,7 +2,7 @@ import ResponsiveContainer from '@components/layout/ResponsiveContainer';
 import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
 import { useMusicalContext } from '@frontend/context/musical-context';
 import { useYouTubeDescriptionFetcher } from '@frontend/hooks/use-audio-data-fetcher';
-import { SxProps, Typography } from '@mui/material';
+import { Box, Link, SxProps, Typography } from '@mui/material';
 import { useMemo } from 'react';
 
 type Props = { sx?: SxProps };
@@ -18,36 +18,34 @@ const DescriptionContainer = ({ sx }: Props) => {
     useYouTubeDescriptionFetcher(videoId);
 
   return (
-    <ResponsiveContainer sx={sx} title="Current Track Description">
-      {description ? (
-        description?.split('\n').map((line, i, lines) => (
-          <Typography
-            sx={{
-              px: 2,
-              py: 1,
-              pt: i == 0 ? 2 : null,
-              pb: i == lines.length - 1 ? 2 : null,
-            }}
-            variant="body2"
-            key={i}
-          >
-            {line}
-          </Typography>
-        ))
-      ) : description === '' ? (
-        <Typography
-          sx={{
-            p: 2,
-          }}
-        >
-          No description found.
+    <ResponsiveContainer
+      sx={sx}
+      contentWrapperSxWide={{ px: 2, py: 1 }}
+      title="Current Track Description"
+    >
+      <>
+        <Typography variant="caption">
+          (from{' '}
+          <Link href={track.url} target="_blank" underline="none">
+            Practice Track video on YouTube
+          </Link>
+          )
         </Typography>
-      ) : (
-        <SuspenseContainer
-          status={!descriptionError ? 'loading' : 'error'}
-          errors={[descriptionError]}
-        />
-      )}
+        {description ? (
+          description?.split('\n').map((line, i) => (
+            <Typography variant="body2" py={0.5} key={i}>
+              {line}
+            </Typography>
+          ))
+        ) : description === '' ? (
+          <Typography>No description found.</Typography>
+        ) : (
+          <SuspenseContainer
+            status={!descriptionError ? 'loading' : 'error'}
+            errors={[descriptionError]}
+          />
+        )}
+      </>
     </ResponsiveContainer>
   );
 };

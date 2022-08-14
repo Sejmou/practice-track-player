@@ -12,7 +12,13 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-type Props = { title: string; children: React.ReactNode; sx?: SxProps };
+type Props = {
+  title: string;
+  children: React.ReactNode;
+  sx?: SxProps;
+  contentWrapperSxNarrow?: SxProps;
+  contentWrapperSxWide?: SxProps;
+};
 
 /**
  * A responsive container that displays a given title and content (via children) as
@@ -20,7 +26,13 @@ type Props = { title: string; children: React.ReactNode; sx?: SxProps };
  *
  * Automatically turns them into an Accordion on narrow viewports.
  */
-const ResponsiveContainer = ({ title, children, sx }: Props) => {
+const ResponsiveContainer = ({
+  title,
+  children,
+  sx,
+  contentWrapperSxNarrow,
+  contentWrapperSxWide,
+}: Props) => {
   const theme = useTheme();
   const narrowViewport = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -30,7 +42,11 @@ const ResponsiveContainer = ({ title, children, sx }: Props) => {
         <Typography>{title}</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Box sx={{ maxHeight: 250, overflow: 'auto' }}>{children}</Box>
+        <Box
+          sx={{ maxHeight: 250, overflow: 'auto', ...contentWrapperSxNarrow }}
+        >
+          {children}
+        </Box>
       </AccordionDetails>
     </Accordion>
   ) : (
@@ -38,7 +54,11 @@ const ResponsiveContainer = ({ title, children, sx }: Props) => {
       <Typography variant="h4" sx={{ mb: 1, ml: 1 }}>
         {title}
       </Typography>
-      <Paper sx={{ maxHeight: '250px', overflow: 'auto' }}>{children}</Paper>
+      <Paper
+        sx={{ maxHeight: '250px', overflow: 'auto', ...contentWrapperSxWide }}
+      >
+        {children}
+      </Paper>
     </Box>
   );
 };
