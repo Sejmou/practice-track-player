@@ -1,22 +1,17 @@
 import { useMusicalContext } from '@frontend/context/musical-context';
 import {
-  Paper,
   List,
   ListItemButton,
   ListItemText,
-  Typography,
-  Box,
   ListItemIcon,
-  useTheme,
-  useMediaQuery,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
+  SxProps,
 } from '@mui/material';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import ResponsiveContainer from '@components/layout/ResponsiveContainer';
 
-const SongList = () => {
+type Props = { sx?: SxProps };
+
+const SongList = ({ sx }: Props) => {
   const { songs, currentSong, setCurrentSong } = useMusicalContext();
 
   const songList = (
@@ -43,7 +38,9 @@ const SongList = () => {
   );
 
   return (
-    <ResponsiveContainer title="All Songs">{songList}</ResponsiveContainer>
+    <ResponsiveContainer sx={sx} title="All Songs">
+      {songList}
+    </ResponsiveContainer>
   );
 };
 

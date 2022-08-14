@@ -1,67 +1,35 @@
 import path from 'path';
-import { promises as fs, createReadStream, stat } from 'fs';
+import { promises as fs, createReadStream } from 'fs';
 
-import { Musical, MusicalBaseData, MusicalValidator } from '@models';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { getSubstringAfterFirstSubstringOccurence } from '@util';
 
-const musicals = new Map<string, Musical>();
-let musicalsInitialized = false;
+export class BaseError extends Error {
+  message: string;
 
-// TODO: find smarter solution for pre-loading JSON files into memory than current Map approach
-async function loadMusicals() {
-  if (!musicalsInitialized) {
-    const jsonDirectory = path.join(process.cwd(), 'backend/json');
-    const folderContents = await fs.readdir(jsonDirectory, 'utf8');
-
-    for (const file of folderContents) {
-      if (!file.endsWith('.json')) {
-        console.warn('skipping unexpected file:', file);
-        continue;
-      }
-      try {
-        const json = await fs.readFile(path.join(jsonDirectory, file), 'utf8');
-        const parsedJson = JSON.parse(json);
-        const musical = MusicalValidator.parse(parsedJson);
-        const musicalPath = path.parse(file).name;
-        musicals.set(musicalPath, musical);
-      } catch (error) {
-        console.error('Error while processing JSON:\n', error);
-      }
-    }
-
-    musicalsInitialized = true;
+  constructor(message: string) {
+    super(message);
+    this.message = message;
+    console.log(this.stack);
   }
 }
 
-export async function getMusical(id: string) {
-  await loadMusicals();
-  return musicals.get(id);
+export class ServerFileNotFoundError extends BaseError {
+  constructor(fileName: string, folderName: string) {
+    super(`File '${fileName}' not found in '${folderName}'!`);
+  }
 }
 
-export async function getAllMusicalIds() {
-  await loadMusicals();
-  return Array.from(musicals.keys());
+export class ResourceNotFoundError extends BaseError {
+  constructor(id: string) {
+    super(`No resource with id '${id}' found!`);
+  }
 }
 
-export async function getAllMusicals() {
-  await loadMusicals();
-  return Array.from(musicals.entries());
-}
-
-export async function getAllMusicalBaseData(): Promise<MusicalBaseData[]> {
-  await loadMusicals();
-  const entries = Array.from(musicals.entries());
-  return entries.map(([id, musical]) => ({
-    id,
-    title: musical.title,
-  }));
-}
-
-export async function getSongData(musicalId: string, songNo: string) {
-  await loadMusicals();
-  const musical = musicals.get(musicalId);
-  if (!musical) return;
-  return musical.songs.find(song => song.no === songNo);
+export class InvalidQueryParamError extends BaseError {
+  constructor(message: string) {
+    super(message);
+  }
 }
 
 export async function handleLocalFileRequest(
@@ -84,39 +52,31 @@ export async function handleLocalFileRequest(
 
     readStream.pipe(res);
   } catch (error) {
-    console.warn('An error occurred while getting the data', error);
-    res.status(404).end();
+    if (error instanceof ServerFileNotFoundError) {
+      res.status(404).end();
+    } else if (error instanceof InvalidQueryParamError) {
+      res.status(403).end();
+    } else {
+      throw error;
+    }
   }
 }
 
-export function extractQueryParamAsString(
-  req: NextApiRequest,
-  paramName: string
-) {
-  const paramValue = req.query[paramName];
-  if (!paramValue) {
-    throw Error(`No value for ${paramName} found!`);
-  }
-  if (typeof paramValue !== 'string') {
-    throw Error(`Multiple values for ${paramName} provided!`);
-  }
-  return paramValue;
-}
-
+/**
+ * Finds the local (== server-internal) path to a file
+ *
+ * @param name
+ * @param folderName
+ * @param fileExt
+ * @returns
+ */
 export async function findFile(
   name: string,
   folderName: string,
   fileExt: string
 ) {
-  const dataFolderPath = path.join(process.cwd(), `./public/${folderName}/`);
-  console.log('__dirname', __dirname);
-  console.log('process.cwd()', process.cwd());
-  console.log('data folder path', dataFolderPath);
+  const dataFolderPath = path.join(process.cwd(), `./public/${folderName}`);
   const folderContent = await fs.readdir(dataFolderPath);
-  console.log('stuff in data folder:');
-  for (const f of folderContent) {
-    console.log(' ', f);
-  }
   const fileNames = folderContent
     .filter(file => {
       const ext = path.extname(file).slice(1); // path.extname() includes the '.'
@@ -125,12 +85,55 @@ export async function findFile(
     .map(file => path.parse(file).name);
 
   for (const f of fileNames) {
-    const stat = await fs.stat(`${dataFolderPath}/${f}.${fileExt}`);
-    console.log('file:', f, 'size:', stat.size);
     if (f === name) {
       return `${dataFolderPath}/${f}.${fileExt}`;
     }
   }
 
-  throw Error(`No file called '${name}' found in '${dataFolderPath}'!`);
+  throw new ServerFileNotFoundError(name, folderName);
+}
+
+/**
+ * Searches for a file in a provided subfolder of the server's public folder and
+ * returns its public URL (can be used by clients)
+ *
+ * @param name
+ * @param folderName
+ * @param fileExt
+ * @returns
+ */
+export async function findClientFilePath(
+  name: string,
+  folderName: string,
+  fileExt: string
+) {
+  const serverFilePath = await findFile(name, folderName, fileExt);
+  // all files (and subfolders + their files) from public folder are available publicly
+  // -> send this public URL to client
+  const publicPath = getSubstringAfterFirstSubstringOccurence(
+    serverFilePath,
+    '/public'
+  );
+  return publicPath;
+}
+
+// used for testing purposes to emulate slow API response: https://stackoverflow.com/a/39914235/13727176
+export function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export function extractQueryParamAsString(
+  req: NextApiRequest,
+  paramName: string
+) {
+  const paramValue = req.query[paramName];
+  if (!paramValue) {
+    throw new InvalidQueryParamError(`No value for ${paramName} found!`);
+  }
+  if (typeof paramValue !== 'string') {
+    throw new InvalidQueryParamError(
+      `Multiple values for ${paramName} provided!`
+    );
+  }
+  return paramValue;
 }

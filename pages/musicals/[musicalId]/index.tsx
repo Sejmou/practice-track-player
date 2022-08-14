@@ -3,7 +3,7 @@ import Head from 'next/head';
 
 import TrackList from '@components/Musical/TrackList';
 import SongList from '@components/Musical/SongList';
-import { getAllMusicalIds, getMusical } from '@backend';
+import { getAllMusicalIds, getMusical } from '@backend/musical-data';
 import { Musical } from '@models';
 import {
   Box,
@@ -16,18 +16,31 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { MusicalProvider } from '@frontend/context/musical-context';
-import SongPlayer from '@components/SongPlayer/SongPlayer';
+import MusicalSongPlayer from '@components/Musical/MusicalSongPlayer';
+import DescriptionContainer from '@components/Musical/DescriptionContainer';
 
 type Props = { musical: Musical };
 
 const tracksAndSongsContainerStyles: SxProps = {
   display: 'grid',
   gridAutoColumns: 'minmax(0, 1fr)',
-  gridTemplateColumns: {
-    xs: '1fr',
-    sm: '1fr 1fr',
+  gridTemplateAreas: {
+    xs: '"tl" "d" "sl"',
+    md: '"d tl" "sl sl"',
   },
-  gap: { sm: '10px' },
+  gap: { md: '10px' },
+};
+
+const trackListStyles: SxProps = {
+  gridArea: 'tl',
+};
+
+const songListStyles: SxProps = {
+  gridArea: 'sl',
+};
+
+const descriptionContainerStyles: SxProps = {
+  gridArea: 'd',
 };
 
 const MusicalPage: NextPage<Props> = ({ musical }) => {
@@ -45,17 +58,18 @@ const MusicalPage: NextPage<Props> = ({ musical }) => {
         <Typography variant={narrowViewport ? 'h6' : 'h4'}>
           {musical.title}
         </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Stack direction="row" spacing={1}>
           <Button>
             <Link href="/musicals">Back to Overview</Link>
           </Button>
-        </Box>
+        </Stack>
       </Box>
       <Stack spacing={1}>
-        <SongPlayer waveformDataStrategy="fetch pre-computed waveform data from server" />
+        <MusicalSongPlayer />
         <Box sx={tracksAndSongsContainerStyles}>
-          <TrackList />
-          <SongList />
+          <TrackList sx={trackListStyles} />
+          <DescriptionContainer sx={descriptionContainerStyles} />
+          <SongList sx={songListStyles} />
         </Box>
       </Stack>
     </MusicalProvider>

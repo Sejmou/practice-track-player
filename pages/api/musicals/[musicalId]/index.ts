@@ -2,7 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { Musical } from '@models';
-import { getMusical } from '@backend';
+import { getMusical } from '@backend/musical-data';
 
 export default async function handler(
   req: NextApiRequest,

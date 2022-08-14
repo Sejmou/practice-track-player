@@ -35,3 +35,10 @@ export const SourceDataValidator = z.object({
 });
 
 export type SourceData = z.infer<typeof SourceDataValidator>;
+
+export const TimeStampValidator = z.object({
+  seconds: z.number().min(0),
+  label: z.string(),
+});
+
+export type TimeStamp = z.infer<typeof TimeStampValidator>;

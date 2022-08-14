@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Peaks from 'peaks.js';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Theme, withTheme } from '@mui/material';
 
 import { createPointMarker, createSegmentMarker } from './MarkerFactories';
 import { createSegmentLabel } from './SegmentLabelFactory';
@@ -56,6 +56,14 @@ type Props = {
    * If supplied, neither waveformDataBuffer nor audioContext are required
    */
   audioBuffer?: AudioBuffer;
+  /**
+   * CSS color string for waveform zoom view color
+   */
+  waveformZoomviewColor?: string;
+  /**
+   * called when peaks instance is ready
+   */
+  onPeaksReady?: (peaks: Peaks.PeaksInstance) => void;
 };
 
 // this file and all related files were adapted from https://github.com/chrisn/peaksjs-react-example
@@ -74,7 +82,7 @@ class WaveformView extends Component<Props> {
   zoomviewWaveformRef: any;
   overviewWaveformRef: any;
   // audioElementRef: any;
-  peaks: any;
+  peaks: Peaks.PeaksInstance | null | undefined;
 
   render() {
     return (
@@ -96,11 +104,13 @@ class WaveformView extends Component<Props> {
   renderButtons() {
     return (
       <Box>
-        <Button onClick={this.zoomIn}>Zoom in</Button>&nbsp;
-        <Button onClick={this.zoomOut}>Zoom out</Button>&nbsp;
-        <Button onClick={this.addSegment}>Add Segment</Button>&nbsp;
-        <Button onClick={this.addPoint}>Add Point</Button>&nbsp;
-        <Button onClick={this.logMarkers}>Log segments/points</Button>
+        <Button onClick={this.zoomIn.bind(this)}>Zoom in</Button>&nbsp;
+        <Button onClick={this.zoomOut.bind(this)}>Zoom out</Button>&nbsp;
+        <Button onClick={this.addSegment.bind(this)}>Add Segment</Button>&nbsp;
+        <Button onClick={this.addPoint.bind(this)}>Add Point</Button>&nbsp;
+        <Button onClick={this.logMarkers.bind(this)}>
+          Log segments/points
+        </Button>
       </Box>
     );
   }
@@ -146,6 +156,7 @@ class WaveformView extends Component<Props> {
       createSegmentMarker: createSegmentMarker,
       createSegmentLabel: createSegmentLabel,
       createPointMarker: createPointMarker,
+      // zoomWaveformColor: this.props.waveformZoomviewColor, // doesn't work for some reason
     };
 
     const options: Peaks.PeaksOptions = {
@@ -219,7 +230,14 @@ class WaveformView extends Component<Props> {
 
   onPeaksReady() {
     // Do something when the Peaks instance is ready for use
-    console.log('Peaks.js is ready');
+    if (this.peaks) {
+      const zoomview = this.peaks?.views.getView('zoomview');
+      if (this.props.waveformZoomviewColor) {
+        zoomview?.setWaveformColor(this.props.waveformZoomviewColor);
+      }
+      console.log('Peaks.js is ready');
+      this.props.onPeaksReady?.(this.peaks);
+    }
   }
 }
 

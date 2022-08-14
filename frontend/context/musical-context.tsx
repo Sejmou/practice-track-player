@@ -38,6 +38,7 @@ const useMusicalController = (musical: Musical) => {
       setCurrentSong(songs[songIdx]);
       setCurrentTrack(songs[songIdx].tracks[0]);
       updateNextPreviousAvailability(songIdx);
+      setLastSeekedTime(0);
     },
     [songs, updateNextPreviousAvailability]
   );
@@ -53,6 +54,7 @@ const useMusicalController = (musical: Musical) => {
         return;
       }
       setCurrentTrack(tracks[trackIdx]);
+      setLastSeekedTime(0);
     },
     [tracks, currentSong]
   );
@@ -64,6 +66,7 @@ const useMusicalController = (musical: Musical) => {
       setCurrentSong(nextSong);
       updateNextPreviousAvailability(currentSongIdx + 1);
       setCurrentTrack(nextSong.tracks[0]);
+      setLastSeekedTime(0);
     }
   }, [currentSong, songs, updateNextPreviousAvailability]);
 
@@ -74,8 +77,15 @@ const useMusicalController = (musical: Musical) => {
       setCurrentSong(previousSong);
       updateNextPreviousAvailability(currentSongIdx - 1);
       setCurrentTrack(previousSong.tracks[0]);
+      setLastSeekedTime(0);
     }
   }, [currentSong, songs, updateNextPreviousAvailability]);
+
+  const [lastSeekedTime, setLastSeekedTime] = useState(0);
+
+  const seekCurrentTrack = useCallback((seconds: number) => {
+    setLastSeekedTime(seconds);
+  }, []);
 
   return {
     songs,
@@ -88,6 +98,8 @@ const useMusicalController = (musical: Musical) => {
     previousSongAvailable,
     nextSongAvailable,
     setCurrentTrack: changeTrackHandler,
+    lastSeekedTime,
+    seekCurrentTrack,
   };
 };
 
@@ -109,6 +121,8 @@ const MusicalContext = createContext<ReturnType<typeof useMusicalController>>({
   previousSongAvailable: false,
   nextSongAvailable: false,
   setCurrentTrack: () => {},
+  lastSeekedTime: 0,
+  seekCurrentTrack: () => {},
 });
 
 export const MusicalProvider = ({
