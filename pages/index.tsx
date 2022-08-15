@@ -20,6 +20,10 @@ const cardContainerStyles: SxProps = {
     md: '"1fr 1fr"',
   },
   gap: 1,
+  '.MuiCard-root': {
+    display: 'flex',
+    flexDirection: 'column',
+  },
 };
 
 const Home: NextPage = () => {
@@ -33,7 +37,16 @@ const Home: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Typography variant="h2">Welcome!</Typography>
+      <Typography variant="h2" pb={2}>
+        Welcome!
+      </Typography>
+      <Typography variant="subtitle1" pb={2} maxWidth={800}>
+        This website features a purpose-built audio player for music practice
+        featuring a waveform view for the currently playing track, controls for
+        playback speed, jumping to sections etc., allowing you you to learn
+        tracks by ear at maximum speed! It is also very useful for transcribing
+        pieces of music.
+      </Typography>
       <Box sx={cardContainerStyles}>
         <Card>
           <CardContent>
@@ -46,7 +59,7 @@ const Home: NextPage = () => {
               >
                 musicalpracticetracks.com
               </Link>
-              &nbsp; in an audio player, directly in your browser :)
+              &nbsp; in a convenient audio player, directly in your browser :)
             </Typography>
           </CardContent>
           <CardActions>
@@ -57,12 +70,13 @@ const Home: NextPage = () => {
         </Card>
         <Card>
           <CardContent>
-            <Typography variant="h5">Audio Player</Typography>
+            <Typography variant="h5">Play your own tracks</Typography>
             <Typography>
-              Play your own audio files, directly in your browser :)
+              Select audio files stored on your computer and play them with the
+              practice track player 👌
             </Typography>
           </CardContent>
-          <CardActions>
+          <CardActions sx={{ mt: 'auto' }}>
             <Button size="small">
               <InternalLink href="/player">Try it out now!</InternalLink>
             </Button>

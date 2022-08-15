@@ -1,23 +1,24 @@
 import {
-  BottomNavigation,
   Box,
   Container,
   IconButton,
   Link,
-  Paper,
   Typography,
   useTheme,
 } from '@mui/material';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 
-import classes from './Footer.module.css';
-
 type Props = {};
 const Footer = (props: Props) => {
   const theme = useTheme();
   return (
-    <footer className={classes.footer}>
+    <footer
+      style={{
+        position: 'sticky',
+        paddingTop: '1em',
+      }}
+    >
       <Container
         sx={{
           display: 'flex',

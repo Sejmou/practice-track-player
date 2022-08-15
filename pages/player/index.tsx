@@ -9,12 +9,6 @@ import { Song, SourceData } from '@models';
 type Props = {};
 
 const containerStyles: SxProps = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '100%',
-  top: 0,
-  left: 0,
   // minHeight: {
   //   xs: 473,
   //   md: 517,
@@ -100,7 +94,10 @@ const Player: NextPage = (props: Props) => {
       </Head>
       <Box sx={containerStyles}>
         {songData.length === 0 ? (
-          <Button onClick={requestFileAccess}>
+          <Button
+            sx={{ mx: 'auto', display: 'block' }}
+            onClick={requestFileAccess}
+          >
             Select file(s) from local folder
           </Button>
         ) : (

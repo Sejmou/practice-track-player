@@ -32,7 +32,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           minHeight="100vh"
         >
           <Header />
-          <Container sx={{ pt: 2 }}>
+          <Container sx={{ pt: 2, marginBottom: 'auto' }}>
             <Component {...pageProps} />
           </Container>
           <Footer />
