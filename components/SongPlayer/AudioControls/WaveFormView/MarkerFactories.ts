@@ -4,11 +4,9 @@ import CustomSegmentMarker from './CustomSegmentMarker';
 import { CreatePointMarkerOptions, CreateSegmentMarkerOptions } from 'peaks.js';
 
 export function createPointMarker(options: CreatePointMarkerOptions) {
-  console.log('creating');
   if (options.view === 'zoomview') {
     return new CustomPointMarker(options);
   } else {
-    console.log('creating');
     return new SimplePointMarker(options);
   }
 }

@@ -86,6 +86,24 @@ const useMusicalController = (musical: Musical) => {
     }
   }, [currentSong, songs, updateNextPreviousAvailability]);
 
+  const goToNextTrack = useCallback(() => {
+    const trackIdx = tracks.findIndex(t => t.name === currentTrack.name);
+    const nextTrack = tracks[trackIdx + 1];
+    if (nextTrack) {
+      setCurrentTrack(nextTrack);
+      setLastSeekedTime(0);
+    }
+  }, [currentTrack.name, tracks]);
+
+  const goToPreviousTrack = useCallback(() => {
+    const trackIdx = tracks.findIndex(t => t.name === currentTrack.name);
+    const previousTrack = tracks[trackIdx - 1];
+    if (previousTrack) {
+      setCurrentTrack(previousTrack);
+      setLastSeekedTime(0);
+    }
+  }, [currentTrack.name, tracks]);
+
   const [lastSeekedTime, setLastSeekedTime] = useState(0);
 
   const seekCurrentTrack = useCallback((seconds: number) => {
@@ -113,6 +131,8 @@ const useMusicalController = (musical: Musical) => {
     seekCurrentTrack,
     currentTimeStamps,
     setCurrentTimeStamps,
+    goToNextTrack,
+    goToPreviousTrack,
   };
 };
 
@@ -138,6 +158,8 @@ const MusicalContext = createContext<ReturnType<typeof useMusicalController>>({
   seekCurrentTrack: () => {},
   currentTimeStamps: [],
   setCurrentTimeStamps: () => {},
+  goToNextTrack: () => {},
+  goToPreviousTrack: () => {},
 });
 
 export const MusicalProvider = ({
