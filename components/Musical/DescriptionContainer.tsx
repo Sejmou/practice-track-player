@@ -2,15 +2,20 @@ import ResponsiveContainer from '@components/layout/ResponsiveContainer';
 import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
 import { useMusicalContext } from '@frontend/context/musical-context';
 import { useYouTubeDescriptionFetcher } from '@frontend/hooks/use-audio-data-fetcher';
-import { Button, Link, SxProps, Typography } from '@mui/material';
+import { MusicalSongTrackTimeStamp } from '@models';
+import { Link, SxProps, Typography } from '@mui/material';
 import { getSubstringAfterFirstSubstringOccurence } from '@util';
 import moment from 'moment';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 type Props = { sx?: SxProps };
 
 const DescriptionContainer = ({ sx }: Props) => {
-  const { currentTrack: track, seekCurrentTrack } = useMusicalContext();
+  const {
+    currentTrack: track,
+    seekCurrentTrack,
+    setCurrentTimeStamps,
+  } = useMusicalContext();
   const videoId = useMemo(() => {
     const videoUrlSearch = new URL(track.url).search;
     const params = new URLSearchParams(videoUrlSearch);
@@ -19,11 +24,22 @@ const DescriptionContainer = ({ sx }: Props) => {
   const { data: description, error: descriptionError } =
     useYouTubeDescriptionFetcher(videoId);
 
-  const content = description
-    ? description.split('\n').map((l, i) => {
+  const { timeStamps, paragraphs } = useMemo(() => {
+    const timeStamps: MusicalSongTrackTimeStamp[] = [];
+
+    const paragraphs =
+      description?.split('\n').map((l, i) => {
         const timeStampData = extractTimeStamp(l);
         if (timeStampData) {
           const { timeStampString, seconds, restOfLine } = timeStampData;
+          const firstLetterIdx = restOfLine.match('[a-zA-Z]')?.index; // https://stackoverflow.com/a/59575890/13727176
+
+          timeStamps.push({
+            time: seconds,
+            labelText: firstLetterIdx
+              ? restOfLine.substring(firstLetterIdx, restOfLine.length)
+              : (timeStamps.length + 1).toString(),
+          });
           return (
             <Typography variant="body2" py={0.5} key={i}>
               <Link
@@ -46,8 +62,14 @@ const DescriptionContainer = ({ sx }: Props) => {
             </Typography>
           );
         }
-      })
-    : '';
+      }) || [];
+
+    return { timeStamps, paragraphs };
+  }, [description, seekCurrentTrack]);
+
+  useEffect(() => {
+    setCurrentTimeStamps(timeStamps);
+  }, [setCurrentTimeStamps, timeStamps]);
 
   return (
     <ResponsiveContainer
@@ -64,7 +86,7 @@ const DescriptionContainer = ({ sx }: Props) => {
           )
         </Typography>
         {description ? (
-          content
+          paragraphs
         ) : description === '' ? (
           <Typography>No description found.</Typography>
         ) : (

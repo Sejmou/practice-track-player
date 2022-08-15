@@ -2,6 +2,7 @@ import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
 
 import { Song, SourceData } from '@models';
 import AudioControls from './AudioControls/AudioControls';
+import { WaveformViewPoint } from './AudioControls/WaveFormView/WaveformView';
 
 type Props = {
   song: Song;
@@ -35,6 +36,10 @@ type Props = {
    *
    */
   seekTime?: number;
+  /**
+   * Notable points in time for the current song; displayed in the WaveformView of the player
+   */
+  points?: WaveformViewPoint[];
 };
 
 const SongPlayer = ({
@@ -47,6 +52,7 @@ const SongPlayer = ({
   onNextSong,
   onPreviousSong,
   seekTime,
+  points,
 }: Props) => {
   const theme = useTheme();
   const narrowViewport = useMediaQuery(theme.breakpoints.down('md'));
@@ -75,6 +81,7 @@ const SongPlayer = ({
         nextAvailable={nextSongAvailable}
         previousAvailable={previousSongAvailable}
         waveformDataBuffer={waveformData}
+        points={points}
         seekTime={seekTime}
       />
     </Box>

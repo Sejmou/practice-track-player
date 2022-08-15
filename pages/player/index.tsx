@@ -12,9 +12,7 @@ const containerStyles: SxProps = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  position: 'absolute',
-  height: '100vh',
-  width: '100vw',
+  height: '100%',
   top: 0,
   left: 0,
   // minHeight: {

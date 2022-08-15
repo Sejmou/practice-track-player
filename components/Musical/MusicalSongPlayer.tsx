@@ -8,6 +8,7 @@ import {
   useServerWaveformDataFetcher,
   useYouTubeAudioSrcDataFetcher,
 } from '@frontend/hooks/use-audio-data-fetcher';
+import { MusicalSongTrackTimeStamp } from '@models';
 
 const MusicalSongPlayer = () => {
   const {
@@ -18,6 +19,7 @@ const MusicalSongPlayer = () => {
     goToNextSong,
     goToPreviousSong,
     lastSeekedTime,
+    currentTimeStamps: timestamps,
   } = useMusicalContext();
 
   const videoId = useMemo(() => {
@@ -66,6 +68,7 @@ const MusicalSongPlayer = () => {
           onNextSong={goToNextSong}
           onPreviousSong={goToPreviousSong}
           seekTime={lastSeekedTime}
+          points={timestamps}
         />
       ) : (
         <>

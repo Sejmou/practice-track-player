@@ -1,13 +1,14 @@
 import { Label, Tag } from 'konva/lib/shapes/Label';
 import { Line } from 'konva/lib/shapes/Line';
 import { Text } from 'konva/lib/shapes/Text';
+import { CreatePointMarkerOptions } from 'peaks.js';
 
 class CustomPointMarker {
-  constructor(options: any) {
+  constructor(options: CreatePointMarkerOptions) {
     this.options = options;
   }
 
-  private options: any;
+  private options: CreatePointMarkerOptions;
   private group: any;
   private label: any;
   private tag: any;
@@ -26,7 +27,7 @@ class CustomPointMarker {
       fill: this.options.color,
       stroke: this.options.color,
       strokeWidth: 1,
-      pointerDirection: 'down',
+      pointerDirection: 'left',
       pointerWidth: 10,
       pointerHeight: 10,
       lineJoin: 'round',

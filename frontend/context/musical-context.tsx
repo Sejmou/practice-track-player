@@ -6,7 +6,12 @@ import React, {
   useCallback,
 } from 'react';
 
-import { Musical, MusicalSong, SongTrack } from '@models';
+import {
+  Musical,
+  MusicalSong,
+  MusicalSongTrack,
+  MusicalSongTrackTimeStamp,
+} from '@models';
 
 const useMusicalController = (musical: Musical) => {
   const songs = musical.songs;
@@ -44,7 +49,7 @@ const useMusicalController = (musical: Musical) => {
   );
 
   const changeTrackHandler = useCallback(
-    (track: SongTrack) => {
+    (track: MusicalSongTrack) => {
       const trackIdx = tracks.findIndex(t => t.name === track.name);
       if (trackIdx === -1) {
         console.warn(
@@ -89,6 +94,10 @@ const useMusicalController = (musical: Musical) => {
     setLastSeekedTime(seconds + Math.random() * 0.001);
   }, []);
 
+  const [currentTimeStamps, setCurrentTimeStamps] = useState<
+    MusicalSongTrackTimeStamp[]
+  >([]);
+
   return {
     songs,
     tracks,
@@ -102,6 +111,8 @@ const useMusicalController = (musical: Musical) => {
     setCurrentTrack: changeTrackHandler,
     lastSeekedTime,
     seekCurrentTrack,
+    currentTimeStamps,
+    setCurrentTimeStamps,
   };
 };
 
@@ -125,6 +136,8 @@ const MusicalContext = createContext<ReturnType<typeof useMusicalController>>({
   setCurrentTrack: () => {},
   lastSeekedTime: 0,
   seekCurrentTrack: () => {},
+  currentTimeStamps: [],
+  setCurrentTimeStamps: () => {},
 });
 
 export const MusicalProvider = ({

@@ -16,6 +16,7 @@ import { PeaksInstance } from 'peaks.js';
 import WaveformViewZoomControls from './WaveformViewZoomControls';
 import React from 'react';
 import { useKeyboardShortcuts } from '@frontend/hooks/use-keyboard-shortcuts';
+import { WaveformViewPoint } from './WaveFormView/WaveformView';
 
 const WaveFormView = dynamic(() => import('./WaveFormView/WaveformView'), {
   ssr: false,
@@ -65,6 +66,7 @@ type Props = {
    *
    */
   seekTime?: number;
+  points?: WaveformViewPoint[];
 };
 
 const AudioControls = React.forwardRef<HTMLDivElement, Props>(
@@ -80,6 +82,7 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
       onNext,
       onPrevious,
       seekTime,
+      points,
     }: Props,
     ref
   ) => {
@@ -95,10 +98,10 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
     const maxPlaybackRate = 1;
     const minPlaybackRate = 0.5;
 
-    const handlePeaksLoaded = (peaks: PeaksInstance) => {
+    const handlePeaksLoaded = useCallback((peaks: PeaksInstance) => {
       setPeaks(peaks);
       setZoomLevel(peaks.zoom.getZoom());
-    };
+    }, []);
 
     const handleMetadataLoaded = () => {
       setIsReady(true);
@@ -233,15 +236,12 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
         {(audioRef.current && (
           <WaveFormView
             audioElement={audioRef.current}
-            audioUrl={audioElSrcData.src}
             waveformDataBuffer={waveformDataBuffer}
-            audioContentType={audioElSrcData.type}
-            setSegments={() => {}}
-            setPoints={() => {}}
             audioContext={audioContext}
             audioBuffer={audioBuffer}
             waveformZoomviewColor={primaryColor}
             onPeaksReady={handlePeaksLoaded}
+            points={points}
           />
         )) || <Box minHeight={309}></Box>}
         <Box sx={controlsContainerStyles}>
