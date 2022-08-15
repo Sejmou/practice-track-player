@@ -1,12 +1,15 @@
-import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
+import {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useCallback,
+  KeyboardEvent,
+} from 'react';
 import dynamic from 'next/dynamic';
 import { Box, SxProps, useTheme } from '@mui/material';
 
 import { SourceData } from '@models';
-import {
-  KeyboardShortcuts,
-  KeyboardShortcut,
-} from '@frontend/keyboard-shortcuts';
 import PlaybackRateSlider from './PlaybackRateSlider';
 import BasicControls from './BasicControls';
 import { PeaksInstance } from 'peaks.js';
@@ -15,8 +18,6 @@ import WaveformViewZoomControls from './WaveformViewZoomControls';
 const WaveFormView = dynamic(() => import('./WaveFormView/WaveformView'), {
   ssr: false,
 });
-
-const shortcuts = new KeyboardShortcuts();
 
 const controlsContainerStyles: SxProps = {
   display: 'grid',
@@ -80,12 +81,20 @@ const AudioControls = ({
   const [isReady, setIsReady] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const sliderRef = useRef<HTMLInputElement>(null);
   const [peaks, setPeaks] = useState<PeaksInstance>();
   const [zoomLevel, setZoomLevel] = useState(0);
 
-  const peaksLoadedHandler = (peaks: PeaksInstance) => {
+  const maxPlaybackRate = 1;
+  const minPlaybackRate = 0.5;
+
+  const handlePeaksLoaded = (peaks: PeaksInstance) => {
     setPeaks(peaks);
     setZoomLevel(peaks.zoom.getZoom());
+  };
+
+  const handleMetadataLoaded = () => {
+    setIsReady(true);
   };
 
   const handlePlayPauseToggle = () => {
@@ -139,6 +148,55 @@ const AudioControls = ({
     setIsPlaying(false);
   }, [onNext]);
 
+  const handlePlaybackRateChange = useCallback(
+    (pbr: number) => setPlaybackRate(pbr),
+    []
+  );
+
+  const handlePlaybackRateIncrease = useCallback(() => {
+    setPlaybackRate(prev => Math.min(prev + 0.05, 1));
+  }, []);
+
+  const handlePlaybackRateDecrease = useCallback(() => {
+    setPlaybackRate(prev => Math.max(prev - 0.05, 0.5));
+  }, []);
+
+  const keyBindings = useMemo(
+    () =>
+      new Map<string, () => void>([
+        [' ', handlePlayPauseToggle],
+        ['ArrowLeft', handleBackward5],
+        ['ArrowRight', handleForward5],
+        ['+', handlePlaybackRateIncrease],
+        ['-', handlePlaybackRateDecrease],
+      ]),
+    [
+      handleBackward5,
+      handleForward5,
+      handlePlaybackRateDecrease,
+      handlePlaybackRateIncrease,
+    ]
+  );
+
+  const handleKeydown = (event: KeyboardEvent<any>) => {
+    const sliderInputFocused =
+      event.target === sliderRef.current?.querySelector('input');
+    if (
+      sliderInputFocused &&
+      (event.key == 'ArrowRight' || event.key == 'ArrowLeft')
+    ) {
+      // slider focused, left and right arrows should be treated as usual to allow changing playback speed with them
+      // return to prevent our keyboard handlers from triggering
+      return;
+    }
+
+    const keyBinding = keyBindings.get(event.key);
+    if (keyBinding) {
+      event.preventDefault();
+      keyBinding();
+    }
+  };
+
   const zoomOutEnabled = useMemo(() => {
     if (!peaks) {
       return false;
@@ -166,14 +224,6 @@ const AudioControls = ({
   }, [playbackRate]);
 
   useEffect(() => {
-    shortcuts.set([
-      new KeyboardShortcut({ code: 'Space' }, () => {
-        handlePlayPauseToggle();
-      }),
-    ]);
-  }, []);
-
-  useEffect(() => {
     if (isPlaying) {
       audioRef.current?.play();
     } else {
@@ -187,16 +237,18 @@ const AudioControls = ({
     }
   }, [seekTime]);
 
-  const metadataLoadedHandler = () => {
-    setIsReady(true);
-  };
-
   const theme = useTheme();
   const primaryColor = useMemo(() => theme.palette.primary.main, [theme]);
 
   return (
-    <div
-      onKeyDownCapture={keyboardEvent => shortcuts.applyMatching(keyboardEvent)}
+    <Box
+      onKeyDownCapture={handleKeydown}
+      tabIndex={-1} // unfortunately, we have to set this for handler to work: https://stackoverflow.com/a/44434971/13727176
+      sx={{
+        ':focus': {
+          outline: 'none',
+        },
+      }}
     >
       {(audioRef.current && (
         <WaveFormView
@@ -209,7 +261,7 @@ const AudioControls = ({
           audioContext={audioContext}
           audioBuffer={audioBuffer}
           waveformZoomviewColor={primaryColor}
-          onPeaksReady={peaksLoadedHandler}
+          onPeaksReady={handlePeaksLoaded}
         />
       )) || <Box minHeight={309}></Box>}
       <Box sx={controlsContainerStyles}>
@@ -228,20 +280,23 @@ const AudioControls = ({
           onPrevious={handlePrevious}
           onForward5={handleForward5}
           onBackward5={handleBackward5}
-          onPlayPause={() => setIsPlaying(prev => !prev)}
+          onPlayPause={handlePlayPauseToggle}
           sx={basicControlsStyles}
         />
         <PlaybackRateSlider
+          ref={sliderRef}
           sx={playbackRatePickerStyles}
           playbackRate={playbackRate}
-          onPlaybackRateChange={pbr => setPlaybackRate(pbr)}
+          min={minPlaybackRate}
+          max={maxPlaybackRate}
+          onPlaybackRateChange={handlePlaybackRateChange}
         />
       </Box>
       {/* As we have no controls attribute on the audio element, it is invisible, which is what we want here */}
-      <audio ref={audioRef} onLoadedMetadata={metadataLoadedHandler}>
+      <audio ref={audioRef} onLoadedMetadata={handleMetadataLoaded}>
         <source src={audioElSrcData.src} />
       </audio>
-    </div>
+    </Box>
   );
 };
 export default AudioControls;

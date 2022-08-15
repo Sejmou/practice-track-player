@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { MusicalBaseData } from '@models';
+
 import {
   Typography,
   Link,

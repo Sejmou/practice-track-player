@@ -84,7 +84,9 @@ const useMusicalController = (musical: Musical) => {
   const [lastSeekedTime, setLastSeekedTime] = useState(0);
 
   const seekCurrentTrack = useCallback((seconds: number) => {
-    setLastSeekedTime(seconds);
+    // setting to slightly larger value than provided seconds to always "trigger change detection"
+    // especially, also when seeking to same number of seconds as before
+    setLastSeekedTime(seconds + Math.random() * 0.001);
   }, []);
 
   return {

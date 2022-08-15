@@ -151,7 +151,7 @@ class WaveformView extends Component<Props> {
     const optionalOptions: Peaks.OptionalOptions = {
       // mediaElement: this.audioElementRef.current,
       mediaElement: this.props.audioElement,
-      keyboard: true,
+      keyboard: false, // we control keybindings from parent
       logger: console.error.bind(console),
       createSegmentMarker: createSegmentMarker,
       createSegmentLabel: createSegmentLabel,

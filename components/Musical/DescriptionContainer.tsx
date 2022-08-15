@@ -49,8 +49,6 @@ const DescriptionContainer = ({ sx }: Props) => {
       })
     : '';
 
-  console.log(content);
-
   return (
     <ResponsiveContainer
       sx={sx}

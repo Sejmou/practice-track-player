@@ -12,7 +12,7 @@ const Musicals: NextPage<Props> = ({ musicalsBaseData }) => {
   return (
     <>
       <Head>
-        <title>Practice Tracks Player</title>
+        <title>Musical Practice Tracks</title>
         <meta
           name="description"
           content="An overview of all the musicals for which practice tracks are available"
