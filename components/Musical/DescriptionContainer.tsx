@@ -71,6 +71,8 @@ const DescriptionContainer = ({ sx }: Props) => {
     setCurrentTimeStamps(timeStamps);
   }, [setCurrentTimeStamps, timeStamps]);
 
+  const errorMsg = !!descriptionError ? 'Could not load description :/' : '';
+
   return (
     <ResponsiveContainer
       sx={sx}
@@ -85,14 +87,12 @@ const DescriptionContainer = ({ sx }: Props) => {
           </Link>
           )
         </Typography>
-        {description ? (
+        {paragraphs.length > 0 ? (
           paragraphs
-        ) : description === '' ? (
-          <Typography>No description found.</Typography>
         ) : (
           <SuspenseContainer
             status={!descriptionError ? 'loading' : 'error'}
-            errors={[descriptionError]}
+            errors={[errorMsg]}
           />
         )}
       </>
