@@ -18,6 +18,10 @@ type Props = {
    */
   waveformData?: ArrayBuffer;
   /**
+   * Used by Player's WaveformView to compute and display the waveform of the audio referenced in the audioElSrcData
+   */
+  audioContext?: AudioContext;
+  /**
    * Audio buffer containing the decoded audio samples
    *
    * Player's WaveformView uses it to display the waveform of the audio
@@ -45,6 +49,7 @@ type Props = {
 const SongPlayer = ({
   song,
   audioElSrcData,
+  audioContext,
   waveformData,
   audioBuffer,
   previousSongAvailable,
@@ -75,11 +80,12 @@ const SongPlayer = ({
       </Box>
       <AudioControls
         audioElSrcData={audioElSrcData}
-        audioBuffer={audioBuffer}
         onNext={onNextSong}
         onPrevious={onPreviousSong}
         nextAvailable={nextSongAvailable}
         previousAvailable={previousSongAvailable}
+        audioContext={audioContext}
+        audioBuffer={audioBuffer}
         waveformDataBuffer={waveformData}
         points={points}
         seekTime={seekTime}

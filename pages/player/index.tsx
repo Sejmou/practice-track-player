@@ -9,10 +9,9 @@ import { Song, SourceData } from '@models';
 type Props = {};
 
 const containerStyles: SxProps = {
-  // minHeight: {
-  //   xs: 473,
-  //   md: 517,
-  // },
+  flex: '1',
+  display: 'flex',
+  flexDirection: 'column',
 };
 
 type SongData = {
@@ -94,17 +93,15 @@ const Player: NextPage = (props: Props) => {
       </Head>
       <Box sx={containerStyles}>
         {songData.length === 0 ? (
-          <Button
-            sx={{ mx: 'auto', display: 'block' }}
-            onClick={requestFileAccess}
-          >
+          <Button sx={{ m: 'auto' }} onClick={requestFileAccess}>
             Select file(s) from local folder
           </Button>
         ) : (
           <SongPlayer
             song={songData[currSongIdx].song}
             audioElSrcData={songData[currSongIdx].sourceData}
-            audioBuffer={songData[currSongIdx].audioBuffer}
+            audioContext={audioContext}
+            // audioBuffer={songData[currSongIdx].audioBuffer}
             onNextSong={nextSongHandler}
             onPreviousSong={previousSongHandler}
             nextSongAvailable={nextAvailable}

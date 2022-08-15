@@ -37,7 +37,9 @@ type Props = {
    *
    * Caution: if the server serving the audio file (under audioUrl) is not on same origin and does not support CORS, this approach will fail!
    *
-   * If supplied, neither waveformDataBuffer nor audioBuffer are required
+   * If supplied, audioUrl is also required for "change detection" to work
+   *
+   * However, neither waveformDataBuffer nor audioBuffer are required
    */
   audioContext?: AudioContext;
   /**
@@ -58,11 +60,10 @@ type Props = {
   onPeaksReady?: (peaks: Peaks.PeaksInstance) => void;
   points?: WaveformViewPoint[];
   /**
-   * NOT USED ATM
-   *
    * URL pointing to the audio file whose waveform data should be displayed by peaks.js
    *
-   * See https://github.com/bbc/peaks.js#generating-waveform-data for details on how peaks.js actually generates and displays the audio waveform
+   * Required when using audioContext for waveform data generation
+   *
    */
   audioUrl?: string;
   /**
@@ -84,6 +85,7 @@ type Props = {
 // so, the code that made all of this kinda work is very ugly and hacky lol
 const WaveformView = ({
   audioElement,
+  audioUrl,
   waveformDataBuffer,
   audioContext,
   audioBuffer,
@@ -95,8 +97,6 @@ const WaveformView = ({
   const overviewWaveformRef = useRef<HTMLDivElement>(null);
   // audioElementRef: any;
   const [peaks, setPeaks] = useState<PeaksInstance | null>(null);
-
-  console.log('called');
 
   useEffect(() => {
     const viewContainerOptions: Peaks.ViewContainerOptions = {
@@ -162,7 +162,8 @@ const WaveformView = ({
   }, [
     audioBuffer,
     audioContext,
-    // audioElement,
+    audioElement,
+    audioUrl, // when using audioContext for waveform data creation, change would not be detected with the given deps array; so, as a workaround this is added as dep to make sure change in audio file is reflected in component
     onPeaksReady,
     // peaks,
     waveformDataBuffer,

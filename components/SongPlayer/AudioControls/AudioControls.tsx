@@ -237,6 +237,7 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
           <WaveFormView
             audioElement={audioRef.current}
             waveformDataBuffer={waveformDataBuffer}
+            audioUrl={audioElSrcData.src}
             audioContext={audioContext}
             audioBuffer={audioBuffer}
             waveformZoomviewColor={primaryColor}

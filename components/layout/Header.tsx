@@ -13,14 +13,15 @@ import {
   Stack,
   Button,
   Container,
+  SxProps,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useState, KeyboardEvent } from 'react';
 import { useRouter } from 'next/router';
 import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 
-type Props = {};
-const Header = (props: Props) => {
+type Props = { sx: SxProps };
+const Header = ({ sx }: Props) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const router = useRouter();
@@ -52,7 +53,7 @@ const Header = (props: Props) => {
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   return (
-    <AppBar position="sticky" color="inherit">
+    <AppBar position="sticky" color="inherit" sx={sx}>
       <Container maxWidth="xl">
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Button
