@@ -12,6 +12,7 @@ import {
   useYouTubeAudioSrcDataFetcher,
 } from '@frontend/hooks/use-audio-data-fetcher';
 import { copyAndDispatchKeyboardEvent } from '@frontend';
+import { useSongPlayerKeyboardShortcuts } from '@frontend/hooks/use-songplayer-kb-shortcuts';
 
 const MusicalSongPlayer = () => {
   const {
@@ -23,8 +24,6 @@ const MusicalSongPlayer = () => {
     goToPreviousSong,
     lastSeekedTime,
   } = useMusicalContext();
-
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const videoId = useMemo(() => {
     const videoUrlSearch = new URL(track.url).search;
@@ -62,22 +61,7 @@ const MusicalSongPlayer = () => {
 
   const songPlayerRef = useRef<SongPlayerHandle>(null);
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      // in all cases, prevent default behavior of hitting space bar (== page scroll)
-      if (event.key === ' ') event.preventDefault();
-
-      // forward all Keyboard events to the SongPlayer (if we have the ref)
-      songPlayerRef.current?.handleKeyDown(event);
-    };
-
-    document.body.addEventListener('keydown', handleKeyDown, true);
-
-    // remove listener
-    return () => {
-      document.body.removeEventListener('keydown', handleKeyDown, true);
-    };
-  }, []);
+  useSongPlayerKeyboardShortcuts(songPlayerRef);
 
   return (
     <Box minHeight={narrowViewport ? 517 : 470}>

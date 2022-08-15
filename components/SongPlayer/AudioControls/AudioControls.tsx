@@ -194,7 +194,7 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
       ]
     );
 
-    const handleKeydown = (event: KeyboardEvent<any>) => {
+    const handleKeydown = (event: KeyboardEvent) => {
       const sliderInputFocused =
         event.target === sliderRef.current?.querySelector('input');
       if (
