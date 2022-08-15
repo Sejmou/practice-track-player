@@ -27,7 +27,7 @@ const PlaybackRateSlider = React.forwardRef<HTMLInputElement, Props>(
         <SpeedIcon color="primary" />
         <Typography>{playbackRate.toFixed(2)}x</Typography>
         <Slider
-          ref={ref}
+          ref={ref} // forwardRef; used to forward KeyboardEvents from parent component
           sx={{ ml: '16px !important' }}
           value={playbackRate}
           min={min}

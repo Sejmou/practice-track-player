@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { Box, useMediaQuery, useTheme } from '@mui/material';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Box, keyframes, useMediaQuery, useTheme } from '@mui/material';
 
 import { useMusicalContext } from '@frontend/context/musical-context';
 import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
@@ -9,6 +9,7 @@ import {
   useServerWaveformDataFetcher,
   useYouTubeAudioSrcDataFetcher,
 } from '@frontend/hooks/use-audio-data-fetcher';
+import { copyAndDispatchKeyboardEvent } from '@frontend';
 
 const MusicalSongPlayer = () => {
   const {
@@ -20,6 +21,8 @@ const MusicalSongPlayer = () => {
     goToPreviousSong,
     lastSeekedTime,
   } = useMusicalContext();
+
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const videoId = useMemo(() => {
     const videoUrlSearch = new URL(track.url).search;
@@ -55,11 +58,49 @@ const MusicalSongPlayer = () => {
   // required for setting minHeight to prevent height glitch while loading peaks.js WaveformView
   const narrowViewport = useMediaQuery(theme.breakpoints.down('sm'));
 
+  const songPlayerContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let activeElement: HTMLElement | null =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === ' ') event.preventDefault();
+      console.log('handling keydown');
+      // console.log(songPlayerContainerRef.current);
+      songPlayerContainerRef.current?.focus();
+    };
+
+    const detectFocus = () => {
+      console.log(document.activeElement);
+      const newActiveEl = document.activeElement;
+      if (
+        newActiveEl instanceof HTMLElement &&
+        newActiveEl !== songPlayerContainerRef.current
+      ) {
+        newActiveEl.addEventListener('keydown', handleKeyDown, true);
+        activeElement?.removeEventListener('keydown', handleKeyDown, true);
+      }
+    };
+
+    window.addEventListener('focus', detectFocus, true);
+    detectFocus();
+
+    // remove listeners
+    return () => {
+      window.removeEventListener('focus', detectFocus, true);
+      activeElement?.removeEventListener('keydown', handleKeyDown, true);
+    };
+  }, []);
+
   return (
     <Box minHeight={narrowViewport ? 517 : 470}>
       {dataReady ? (
         <SongPlayer
           song={song}
+          ref={songPlayerContainerRef}
           audioElSrcData={audioElSrcData}
           waveformData={waveformData}
           previousSongAvailable={previousSongAvailable}

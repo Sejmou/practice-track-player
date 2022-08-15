@@ -1,7 +1,10 @@
-import { Song, SourceData } from '@models';
 import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
+import React from 'react';
+import { useRef } from 'react';
 
+import { Song, SourceData } from '@models';
 import AudioControls from './AudioControls/AudioControls';
+import { copyAndDispatchKeyboardEvent } from '@frontend';
 
 type Props = {
   song: Song;
@@ -37,43 +40,86 @@ type Props = {
   seekTime?: number;
 };
 
-const SongPlayer = ({
-  song,
-  audioElSrcData,
-  waveformData,
-  audioBuffer,
-  previousSongAvailable,
-  nextSongAvailable,
-  onNextSong,
-  onPreviousSong,
-  seekTime,
-}: Props) => {
-  const theme = useTheme();
-  const narrowViewport = useMediaQuery(theme.breakpoints.down('md'));
+const SongPlayer = React.forwardRef<HTMLDivElement, Props>(
+  (
+    {
+      song,
+      audioElSrcData,
+      waveformData,
+      audioBuffer,
+      previousSongAvailable,
+      nextSongAvailable,
+      onNextSong,
+      onPreviousSong,
+      seekTime,
+    }: Props,
+    ref
+  ) => {
+    const theme = useTheme();
+    const narrowViewport = useMediaQuery(theme.breakpoints.down('md'));
+    const controlsContainerRef = useRef<HTMLDivElement>(null);
 
-  return (
-    <Box>
+    const handleKeyDown = (ev: React.KeyboardEvent) => {
+      if (ev.target === controlsContainerRef.current) {
+        // event is actually one we dispatched ourselves (see next if)
+        // event is apparently not really dispatched only on child?
+        // instead, it gets triggered from body downwards again?
+        return;
+      }
+      // try to forward keydown event to controls
+      if (controlsContainerRef.current) {
+        copyAndDispatchKeyboardEvent(
+          ev.nativeEvent,
+          controlsContainerRef.current
+        );
+      }
+      if (ev.key === ' ') {
+        // in any case, prevent default behavior of hitting space key ( == scrolling page)
+        ev.preventDefault();
+      }
+    };
+
+    return (
       <Box
-        sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+        ref={ref} // forwardRef; used to forward KeyboardEvents from parent component
+        onKeyDownCapture={handleKeyDown}
+        tabIndex={-1} // unfortunately, we have to set this for handler to work: https://stackoverflow.com/a/44434971/13727176
+        sx={{
+          ':focus': {
+            outline: 'none', // remove outline added due to tabIndex
+          },
+        }}
       >
-        <Typography variant={narrowViewport ? 'body2' : 'body1'}>
-          Current Song:
-        </Typography>
-        <Typography variant={narrowViewport ? 'h6' : 'h5'}>
-          {song.no}. {song.title}
-        </Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Typography variant={narrowViewport ? 'body2' : 'body1'}>
+            Current Song:
+          </Typography>
+          <Typography variant={narrowViewport ? 'h6' : 'h5'}>
+            {song.no}. {song.title}
+          </Typography>
+        </Box>
+        <AudioControls
+          ref={controlsContainerRef}
+          audioElSrcData={audioElSrcData}
+          audioBuffer={audioBuffer}
+          onNext={onNextSong}
+          onPrevious={onPreviousSong}
+          nextAvailable={nextSongAvailable}
+          previousAvailable={previousSongAvailable}
+          waveformDataBuffer={waveformData}
+          seekTime={seekTime}
+        />
       </Box>
-      <AudioControls
-        audioElSrcData={audioElSrcData}
-        audioBuffer={audioBuffer}
-        onNext={onNextSong}
-        onPrevious={onPreviousSong}
-        nextAvailable={nextSongAvailable}
-        previousAvailable={previousSongAvailable}
-        waveformDataBuffer={waveformData}
-        seekTime={seekTime}
-      />
-    </Box>
-  );
-};
+    );
+  }
+);
+
+SongPlayer.displayName = 'SongPlayer';
+
 export default SongPlayer;

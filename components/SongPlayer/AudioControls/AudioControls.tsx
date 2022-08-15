@@ -14,6 +14,7 @@ import PlaybackRateSlider from './PlaybackRateSlider';
 import BasicControls from './BasicControls';
 import { PeaksInstance } from 'peaks.js';
 import WaveformViewZoomControls from './WaveformViewZoomControls';
+import React from 'react';
 
 const WaveFormView = dynamic(() => import('./WaveFormView/WaveformView'), {
   ssr: false,
@@ -64,239 +65,267 @@ type Props = {
    */
   seekTime?: number;
 };
-const AudioControls = ({
-  // TODO: improve perfomance of this; current code is probably not very efficient I guess
-  audioContext,
-  audioElSrcData,
-  audioBuffer,
-  waveformDataBuffer,
-  nextAvailable,
-  previousAvailable,
-  onNext,
-  onPrevious,
-  seekTime,
-}: Props) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  // isReady state is actually irrelevant, I'm just abusing useState to trigger a rerender once the audio element's metadata is loaded
-  const [isReady, setIsReady] = useState(false);
-  const [playbackRate, setPlaybackRate] = useState(1);
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const sliderRef = useRef<HTMLInputElement>(null);
-  const [peaks, setPeaks] = useState<PeaksInstance>();
-  const [zoomLevel, setZoomLevel] = useState(0);
 
-  const maxPlaybackRate = 1;
-  const minPlaybackRate = 0.5;
+const AudioControls = React.forwardRef<HTMLDivElement, Props>(
+  (
+    {
+      // TODO: improve perfomance of this; current code is probably not very efficient I guess
+      audioContext,
+      audioElSrcData,
+      audioBuffer,
+      waveformDataBuffer,
+      nextAvailable,
+      previousAvailable,
+      onNext,
+      onPrevious,
+      seekTime,
+    }: Props,
+    ref
+  ) => {
+    const [isPlaying, setIsPlaying] = useState(false);
+    // isReady state is actually irrelevant, I'm just abusing useState to trigger a rerender once the audio element's metadata is loaded
+    const [isReady, setIsReady] = useState(false);
+    const [playbackRate, setPlaybackRate] = useState(1);
+    const audioRef = useRef<HTMLAudioElement>(null);
+    const sliderRef = useRef<HTMLInputElement>(null);
+    const [peaks, setPeaks] = useState<PeaksInstance>();
+    const [zoomLevel, setZoomLevel] = useState(0);
 
-  const handlePeaksLoaded = (peaks: PeaksInstance) => {
-    setPeaks(peaks);
-    setZoomLevel(peaks.zoom.getZoom());
-  };
+    const maxPlaybackRate = 1;
+    const minPlaybackRate = 0.5;
 
-  const handleMetadataLoaded = () => {
-    setIsReady(true);
-  };
-
-  const handlePlayPauseToggle = () => {
-    setIsPlaying(previous => !previous);
-  };
-
-  const handleZoomIn = () => {
-    if (peaks) {
-      peaks.zoom.zoomIn();
+    const handlePeaksLoaded = (peaks: PeaksInstance) => {
+      setPeaks(peaks);
       setZoomLevel(peaks.zoom.getZoom());
-    }
-  };
+    };
 
-  const handleZoomOut = () => {
-    if (peaks) {
-      peaks.zoom.zoomOut();
-      setZoomLevel(peaks.zoom.getZoom());
-    }
-  };
+    const handleMetadataLoaded = () => {
+      setIsReady(true);
+    };
 
-  const handlePrevious = useCallback(() => {
-    if (audioRef.current && audioRef.current.currentTime > 1) {
-      // picked some arbitrary value a little bit larger than 0 to allow for going to previous song by double-clicking
-      audioRef.current.currentTime = 0;
-    } else {
-      onPrevious();
+    const handlePlayPauseToggle = () => {
+      setIsPlaying(previous => !previous);
+    };
+
+    const handleZoomIn = () => {
+      if (peaks) {
+        peaks.zoom.zoomIn();
+        setZoomLevel(peaks.zoom.getZoom());
+      }
+    };
+
+    const handleZoomOut = () => {
+      if (peaks) {
+        peaks.zoom.zoomOut();
+        setZoomLevel(peaks.zoom.getZoom());
+      }
+    };
+
+    const handlePrevious = useCallback(() => {
+      if (audioRef.current && audioRef.current.currentTime > 1) {
+        // picked some arbitrary value a little bit larger than 0 to allow for going to previous song by double-clicking
+        audioRef.current.currentTime = 0;
+      } else {
+        onPrevious();
+        setIsPlaying(false);
+      }
+    }, [onPrevious]);
+
+    const handleBackward5 = useCallback(() => {
+      if (audioRef.current) {
+        audioRef.current.currentTime = Math.max(
+          audioRef.current.currentTime - 5,
+          0
+        );
+      }
+    }, []);
+
+    const handleForward5 = useCallback(() => {
+      if (audioRef.current) {
+        audioRef.current.currentTime = Math.min(
+          audioRef.current.currentTime + 5,
+          audioRef.current.duration
+        );
+      }
+    }, []);
+
+    const handleNext = useCallback(() => {
+      onNext();
       setIsPlaying(false);
-    }
-  }, [onPrevious]);
+    }, [onNext]);
 
-  const handleBackward5 = useCallback(() => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = Math.max(
-        audioRef.current.currentTime - 5,
-        0
-      );
-    }
-  }, []);
+    const handlePlaybackRateChange = useCallback(
+      (pbr: number) => setPlaybackRate(pbr),
+      []
+    );
 
-  const handleForward5 = useCallback(() => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = Math.min(
-        audioRef.current.currentTime + 5,
-        audioRef.current.duration
-      );
-    }
-  }, []);
+    const handlePlaybackRateIncrease = useCallback(() => {
+      setPlaybackRate(prev => Math.min(prev + 0.05, 1));
+    }, []);
 
-  const handleNext = useCallback(() => {
-    onNext();
-    setIsPlaying(false);
-  }, [onNext]);
+    const handlePlaybackRateDecrease = useCallback(() => {
+      setPlaybackRate(prev => Math.max(prev - 0.05, 0.5));
+    }, []);
 
-  const handlePlaybackRateChange = useCallback(
-    (pbr: number) => setPlaybackRate(pbr),
-    []
-  );
+    const keyBindings = useMemo(
+      () =>
+        new Map<string, () => void>([
+          [createKeybindingMapKey({ key: ' ' }), handlePlayPauseToggle],
+          [createKeybindingMapKey({ key: 'ArrowLeft' }), handleBackward5],
+          [createKeybindingMapKey({ key: 'ArrowRight' }), handleForward5],
+          [createKeybindingMapKey({ key: '-' }), handlePlaybackRateDecrease],
+          [createKeybindingMapKey({ key: '+' }), handlePlaybackRateIncrease],
+          [
+            createKeybindingMapKey({ key: 'ArrowLeft', ctrlKey: true }),
+            handlePrevious,
+          ],
+          [
+            createKeybindingMapKey({ key: 'ArrowRight', ctrlKey: true }),
+            handleNext,
+          ],
+        ]),
+      [
+        handleBackward5,
+        handleForward5,
+        handlePlaybackRateDecrease,
+        handlePlaybackRateIncrease,
+        handlePrevious,
+        handleNext,
+      ]
+    );
 
-  const handlePlaybackRateIncrease = useCallback(() => {
-    setPlaybackRate(prev => Math.min(prev + 0.05, 1));
-  }, []);
+    const handleKeydown = (event: KeyboardEvent<any>) => {
+      const sliderInputFocused =
+        event.target === sliderRef.current?.querySelector('input');
+      if (
+        sliderInputFocused &&
+        (event.key == 'ArrowRight' || event.key == 'ArrowLeft')
+      ) {
+        // slider focused, left and right arrows should be treated as usual to allow changing playback speed with them
+        // return to prevent our keyboard handlers from triggering
+        return;
+      }
 
-  const handlePlaybackRateDecrease = useCallback(() => {
-    setPlaybackRate(prev => Math.max(prev - 0.05, 0.5));
-  }, []);
+      const keyBinding = keyBindings.get(createKeybindingMapKey(event));
+      if (keyBinding) {
+        event.preventDefault();
+        keyBinding();
+      }
+    };
 
-  const keyBindings = useMemo(
-    () =>
-      new Map<string, () => void>([
-        [' ', handlePlayPauseToggle],
-        ['ArrowLeft', handleBackward5],
-        ['ArrowRight', handleForward5],
-        ['+', handlePlaybackRateIncrease],
-        ['-', handlePlaybackRateDecrease],
-      ]),
-    [
-      handleBackward5,
-      handleForward5,
-      handlePlaybackRateDecrease,
-      handlePlaybackRateIncrease,
-    ]
-  );
+    const zoomOutEnabled = useMemo(() => {
+      if (!peaks) {
+        return false;
+      }
+      return zoomLevel < 3;
+    }, [peaks, zoomLevel]);
 
-  const handleKeydown = (event: KeyboardEvent<any>) => {
-    const sliderInputFocused =
-      event.target === sliderRef.current?.querySelector('input');
-    if (
-      sliderInputFocused &&
-      (event.key == 'ArrowRight' || event.key == 'ArrowLeft')
-    ) {
-      // slider focused, left and right arrows should be treated as usual to allow changing playback speed with them
-      // return to prevent our keyboard handlers from triggering
-      return;
-    }
+    const zoomInEnabled = useMemo(() => {
+      if (!peaks) {
+        return false;
+      }
+      return zoomLevel > 0;
+    }, [peaks, zoomLevel]);
 
-    const keyBinding = keyBindings.get(event.key);
-    if (keyBinding) {
-      event.preventDefault();
-      keyBinding();
-    }
-  };
+    useEffect(() => {
+      if (audioRef.current) {
+        audioRef.current.src = audioElSrcData.src;
+      }
+    }, [audioElSrcData]);
 
-  const zoomOutEnabled = useMemo(() => {
-    if (!peaks) {
-      return false;
-    }
-    return zoomLevel < 3;
-  }, [peaks, zoomLevel]);
+    useEffect(() => {
+      if (audioRef.current) {
+        audioRef.current.playbackRate = playbackRate;
+      }
+    }, [playbackRate]);
 
-  const zoomInEnabled = useMemo(() => {
-    if (!peaks) {
-      return false;
-    }
-    return zoomLevel > 0;
-  }, [peaks, zoomLevel]);
+    useEffect(() => {
+      if (isPlaying) {
+        audioRef.current?.play();
+      } else {
+        audioRef.current?.pause();
+      }
+    }, [isPlaying]);
 
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.src = audioElSrcData.src;
-    }
-  }, [audioElSrcData]);
+    useEffect(() => {
+      if (audioRef.current && seekTime) {
+        audioRef.current.currentTime = seekTime;
+      }
+    }, [seekTime]);
 
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.playbackRate = playbackRate;
-    }
-  }, [playbackRate]);
+    const theme = useTheme();
+    const primaryColor = useMemo(() => theme.palette.primary.main, [theme]);
 
-  useEffect(() => {
-    if (isPlaying) {
-      audioRef.current?.play();
-    } else {
-      audioRef.current?.pause();
-    }
-  }, [isPlaying]);
-
-  useEffect(() => {
-    if (audioRef.current && seekTime) {
-      audioRef.current.currentTime = seekTime;
-    }
-  }, [seekTime]);
-
-  const theme = useTheme();
-  const primaryColor = useMemo(() => theme.palette.primary.main, [theme]);
-
-  return (
-    <Box
-      onKeyDownCapture={handleKeydown}
-      tabIndex={-1} // unfortunately, we have to set this for handler to work: https://stackoverflow.com/a/44434971/13727176
-      sx={{
-        ':focus': {
-          outline: 'none',
-        },
-      }}
-    >
-      {(audioRef.current && (
-        <WaveFormView
-          audioElement={audioRef.current}
-          audioUrl={audioElSrcData.src}
-          waveformDataBuffer={waveformDataBuffer}
-          audioContentType={audioElSrcData.type}
-          setSegments={() => {}}
-          setPoints={() => {}}
-          audioContext={audioContext}
-          audioBuffer={audioBuffer}
-          waveformZoomviewColor={primaryColor}
-          onPeaksReady={handlePeaksLoaded}
-        />
-      )) || <Box minHeight={309}></Box>}
-      <Box sx={controlsContainerStyles}>
-        <WaveformViewZoomControls
-          onZoomIn={handleZoomIn}
-          onZoomOut={handleZoomOut}
-          zoomInEnabled={zoomInEnabled}
-          zoomOutEnabled={zoomOutEnabled}
-          sx={zoomControlsStyles}
-        />
-        <BasicControls
-          previousAvailable={previousAvailable}
-          nextAvailable={nextAvailable}
-          playing={isPlaying}
-          onNext={handleNext}
-          onPrevious={handlePrevious}
-          onForward5={handleForward5}
-          onBackward5={handleBackward5}
-          onPlayPause={handlePlayPauseToggle}
-          sx={basicControlsStyles}
-        />
-        <PlaybackRateSlider
-          ref={sliderRef}
-          sx={playbackRatePickerStyles}
-          playbackRate={playbackRate}
-          min={minPlaybackRate}
-          max={maxPlaybackRate}
-          onPlaybackRateChange={handlePlaybackRateChange}
-        />
+    return (
+      <Box
+        ref={ref} // forwardRef; used to forward KeyboardEvents from parent component
+        onKeyDownCapture={handleKeydown}
+        tabIndex={-1} // unfortunately, we have to set this for handler to work: https://stackoverflow.com/a/44434971/13727176
+        sx={{
+          ':focus': {
+            outline: 'none', // remove outline added due to tabIndex
+          },
+        }}
+      >
+        {(audioRef.current && (
+          <WaveFormView
+            audioElement={audioRef.current}
+            audioUrl={audioElSrcData.src}
+            waveformDataBuffer={waveformDataBuffer}
+            audioContentType={audioElSrcData.type}
+            setSegments={() => {}}
+            setPoints={() => {}}
+            audioContext={audioContext}
+            audioBuffer={audioBuffer}
+            waveformZoomviewColor={primaryColor}
+            onPeaksReady={handlePeaksLoaded}
+          />
+        )) || <Box minHeight={309}></Box>}
+        <Box sx={controlsContainerStyles}>
+          <WaveformViewZoomControls
+            onZoomIn={handleZoomIn}
+            onZoomOut={handleZoomOut}
+            zoomInEnabled={zoomInEnabled}
+            zoomOutEnabled={zoomOutEnabled}
+            sx={zoomControlsStyles}
+          />
+          <BasicControls
+            previousAvailable={previousAvailable}
+            nextAvailable={nextAvailable}
+            playing={isPlaying}
+            onNext={handleNext}
+            onPrevious={handlePrevious}
+            onForward5={handleForward5}
+            onBackward5={handleBackward5}
+            onPlayPause={handlePlayPauseToggle}
+            sx={basicControlsStyles}
+          />
+          <PlaybackRateSlider
+            ref={sliderRef}
+            sx={playbackRatePickerStyles}
+            playbackRate={playbackRate}
+            min={minPlaybackRate}
+            max={maxPlaybackRate}
+            onPlaybackRateChange={handlePlaybackRateChange}
+          />
+        </Box>
+        {/* As we have no controls attribute on the audio element, it is invisible, which is what we want here */}
+        <audio ref={audioRef} onLoadedMetadata={handleMetadataLoaded}>
+          <source src={audioElSrcData.src} />
+        </audio>
       </Box>
-      {/* As we have no controls attribute on the audio element, it is invisible, which is what we want here */}
-      <audio ref={audioRef} onLoadedMetadata={handleMetadataLoaded}>
-        <source src={audioElSrcData.src} />
-      </audio>
-    </Box>
-  );
-};
+    );
+  }
+);
+
+AudioControls.displayName = 'AudioControls';
+
 export default AudioControls;
+
+function createKeybindingMapKey(
+  props: Pick<KeyboardEvent, 'key'> &
+    Partial<Pick<KeyboardEvent, 'altKey' | 'ctrlKey' | 'metaKey' | 'shiftKey'>>
+) {
+  const { key, altKey, ctrlKey, metaKey, shiftKey } = props;
+  return [key, !!altKey, !!ctrlKey, !!metaKey, !!shiftKey].join();
+}
