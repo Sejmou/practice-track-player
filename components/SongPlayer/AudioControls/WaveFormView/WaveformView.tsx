@@ -173,6 +173,9 @@ class WaveformView extends Component<Props> {
     }
 
     Peaks.init(options, (err, peaks) => {
+      if (err) {
+        console.error('An error occurred while initializing Peaks.js', err);
+      }
       this.peaks = peaks;
       this.onPeaksReady();
     });
