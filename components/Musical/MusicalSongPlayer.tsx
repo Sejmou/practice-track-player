@@ -1,18 +1,13 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Box, keyframes, useMediaQuery, useTheme } from '@mui/material';
+import { useMemo } from 'react';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
 
 import { useMusicalContext } from '@frontend/context/musical-context';
 import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
-import SongPlayer, {
-  SongPlayerHandle,
-} from '@components/SongPlayer/SongPlayer';
+import SongPlayer from '@components/SongPlayer/SongPlayer';
 import {
-  useServerAudioSrcDataFetcher,
   useServerWaveformDataFetcher,
   useYouTubeAudioSrcDataFetcher,
 } from '@frontend/hooks/use-audio-data-fetcher';
-import { copyAndDispatchKeyboardEvent } from '@frontend';
-import { useSongPlayerKeyboardShortcuts } from '@frontend/hooks/use-songplayer-kb-shortcuts';
 
 const MusicalSongPlayer = () => {
   const {
@@ -59,16 +54,11 @@ const MusicalSongPlayer = () => {
   // required for setting minHeight to prevent height glitch while loading peaks.js WaveformView
   const narrowViewport = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const songPlayerRef = useRef<SongPlayerHandle>(null);
-
-  useSongPlayerKeyboardShortcuts(songPlayerRef);
-
   return (
     <Box minHeight={narrowViewport ? 517 : 470}>
       {dataReady ? (
         <SongPlayer
           song={song}
-          ref={songPlayerRef}
           audioElSrcData={audioElSrcData}
           waveformData={waveformData}
           previousSongAvailable={previousSongAvailable}

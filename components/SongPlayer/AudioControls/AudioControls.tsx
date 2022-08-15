@@ -15,6 +15,7 @@ import BasicControls from './BasicControls';
 import { PeaksInstance } from 'peaks.js';
 import WaveformViewZoomControls from './WaveformViewZoomControls';
 import React from 'react';
+import { useKeyboardShortcuts } from '@frontend/hooks/use-keyboard-shortcuts';
 
 const WaveFormView = dynamic(() => import('./WaveFormView/WaveformView'), {
   ssr: false,
@@ -167,51 +168,22 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
       setPlaybackRate(prev => Math.max(prev - 0.05, 0.5));
     }, []);
 
-    const keyBindings = useMemo(
-      () =>
-        new Map<string, () => void>([
-          [createKeybindingMapKey({ key: ' ' }), handlePlayPauseToggle],
-          [createKeybindingMapKey({ key: 'ArrowLeft' }), handleBackward5],
-          [createKeybindingMapKey({ key: 'ArrowRight' }), handleForward5],
-          [createKeybindingMapKey({ key: '-' }), handlePlaybackRateDecrease],
-          [createKeybindingMapKey({ key: '+' }), handlePlaybackRateIncrease],
-          [
-            createKeybindingMapKey({ key: 'ArrowLeft', ctrlKey: true }),
-            handlePrevious,
-          ],
-          [
-            createKeybindingMapKey({ key: 'ArrowRight', ctrlKey: true }),
-            handleNext,
-          ],
-        ]),
+    useKeyboardShortcuts([
       [
-        handleBackward5,
-        handleForward5,
-        handlePlaybackRateDecrease,
-        handlePlaybackRateIncrease,
-        handlePrevious,
-        handleNext,
-      ]
-    );
-
-    const handleKeydown = (event: KeyboardEvent) => {
-      const sliderInputFocused =
-        event.target === sliderRef.current?.querySelector('input');
-      if (
-        sliderInputFocused &&
-        (event.key == 'ArrowRight' || event.key == 'ArrowLeft')
-      ) {
-        // slider focused, left and right arrows should be treated as usual to allow changing playback speed with them
-        // return to prevent our keyboard handlers from triggering
-        return;
-      }
-
-      const keyBinding = keyBindings.get(createKeybindingMapKey(event));
-      if (keyBinding) {
-        event.preventDefault();
-        keyBinding();
-      }
-    };
+        { key: ' ' },
+        event => {
+          // spacebar causes page scroll per default -> we don't want that!
+          handlePlayPauseToggle();
+          event.preventDefault();
+        },
+      ],
+      [{ key: 'ArrowLeft' }, handleBackward5],
+      [{ key: 'ArrowRight' }, handleForward5],
+      [{ key: '-' }, handlePlaybackRateDecrease],
+      [{ key: '+' }, handlePlaybackRateIncrease],
+      [{ key: 'ArrowLeft', ctrlKey: true }, handlePrevious],
+      [{ key: 'ArrowRight', ctrlKey: true }, handleNext],
+    ]);
 
     const zoomOutEnabled = useMemo(() => {
       if (!peaks) {
@@ -257,16 +229,7 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
     const primaryColor = useMemo(() => theme.palette.primary.main, [theme]);
 
     return (
-      <Box
-        ref={ref} // forwardRef; used to forward KeyboardEvents from parent component
-        onKeyDownCapture={handleKeydown}
-        tabIndex={-1} // unfortunately, we have to set this for handler to work: https://stackoverflow.com/a/44434971/13727176
-        sx={{
-          ':focus': {
-            outline: 'none', // remove outline added due to tabIndex
-          },
-        }}
-      >
+      <Box>
         {(audioRef.current && (
           <WaveFormView
             audioElement={audioRef.current}
