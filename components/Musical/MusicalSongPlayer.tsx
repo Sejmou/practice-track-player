@@ -3,7 +3,9 @@ import { Box, keyframes, useMediaQuery, useTheme } from '@mui/material';
 
 import { useMusicalContext } from '@frontend/context/musical-context';
 import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
-import SongPlayer from '@components/SongPlayer/SongPlayer';
+import SongPlayer, {
+  SongPlayerHandle,
+} from '@components/SongPlayer/SongPlayer';
 import {
   useServerAudioSrcDataFetcher,
   useServerWaveformDataFetcher,
@@ -58,40 +60,22 @@ const MusicalSongPlayer = () => {
   // required for setting minHeight to prevent height glitch while loading peaks.js WaveformView
   const narrowViewport = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const songPlayerContainerRef = useRef<HTMLDivElement>(null);
+  const songPlayerRef = useRef<SongPlayerHandle>(null);
 
   useEffect(() => {
-    let activeElement: HTMLElement | null =
-      document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null;
-
     const handleKeyDown = (event: KeyboardEvent) => {
+      // in all cases, prevent default behavior of hitting space bar (== page scroll)
       if (event.key === ' ') event.preventDefault();
-      console.log('handling keydown');
-      // console.log(songPlayerContainerRef.current);
-      songPlayerContainerRef.current?.focus();
+
+      // forward all Keyboard events to the SongPlayer (if we have the ref)
+      songPlayerRef.current?.handleKeyDown(event);
     };
 
-    const detectFocus = () => {
-      console.log(document.activeElement);
-      const newActiveEl = document.activeElement;
-      if (
-        newActiveEl instanceof HTMLElement &&
-        newActiveEl !== songPlayerContainerRef.current
-      ) {
-        newActiveEl.addEventListener('keydown', handleKeyDown, true);
-        activeElement?.removeEventListener('keydown', handleKeyDown, true);
-      }
-    };
+    document.body.addEventListener('keydown', handleKeyDown, true);
 
-    window.addEventListener('focus', detectFocus, true);
-    detectFocus();
-
-    // remove listeners
+    // remove listener
     return () => {
-      window.removeEventListener('focus', detectFocus, true);
-      activeElement?.removeEventListener('keydown', handleKeyDown, true);
+      document.body.removeEventListener('keydown', handleKeyDown, true);
     };
   }, []);
 
@@ -100,7 +84,7 @@ const MusicalSongPlayer = () => {
       {dataReady ? (
         <SongPlayer
           song={song}
-          ref={songPlayerContainerRef}
+          ref={songPlayerRef}
           audioElSrcData={audioElSrcData}
           waveformData={waveformData}
           previousSongAvailable={previousSongAvailable}
