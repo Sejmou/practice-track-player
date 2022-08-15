@@ -23,7 +23,6 @@ const SuspenseContainer = ({
   loadingMessage,
   fallbackActionButtonData,
 }: Props) => {
-  console.log('errors', errors);
   return (
     <Box
       sx={{

@@ -8,7 +8,6 @@ import {
   useServerWaveformDataFetcher,
   useYouTubeAudioSrcDataFetcher,
 } from '@frontend/hooks/use-audio-data-fetcher';
-import { MusicalSongTrackTimeStamp } from '@models';
 
 const MusicalSongPlayer = () => {
   const {
