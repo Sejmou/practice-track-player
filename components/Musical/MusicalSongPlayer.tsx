@@ -8,6 +8,7 @@ import {
   useServerWaveformDataFetcher,
   useYouTubeAudioSrcDataFetcher,
 } from '@frontend/hooks/use-audio-data-fetcher';
+import { useKeyboardShortcuts } from '@frontend/hooks/use-keyboard-shortcuts';
 
 const MusicalSongPlayer = () => {
   const {
@@ -20,6 +21,11 @@ const MusicalSongPlayer = () => {
     lastSeekedTime,
     currentTimeStamps: timestamps,
   } = useMusicalContext();
+
+  useKeyboardShortcuts([
+    [{ key: 'ArrowLeft', ctrlKey: true }, goToPreviousSong],
+    [{ key: 'ArrowRight', ctrlKey: true }, goToNextSong],
+  ]);
 
   const videoId = useMemo(() => {
     const videoUrlSearch = new URL(track.url).search;
