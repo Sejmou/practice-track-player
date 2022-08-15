@@ -1,6 +1,5 @@
 import Head from 'next/head';
 import { NextPage } from 'next/types';
-import InternalLink from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { Button, SxProps } from '@mui/material';
 import { Box } from '@mui/material';
@@ -37,9 +36,21 @@ const Player: NextPage = (props: Props) => {
     setAudioContext(new AudioContext());
   }, []);
 
-  console.log('audio ctx', audioContext);
-
   const [songData, setSongData] = useState<SongData[]>([]);
+  const [currSongIdx, setCurrSongIdx] = useState(0);
+  const [nextAvailable, setNextAvailable] = useState(false);
+
+  useEffect(() => {
+    setNextAvailable(currSongIdx < songData.length - 1);
+  }, [currSongIdx, songData.length]);
+
+  const nextSongHandler = useCallback(() => {
+    setCurrSongIdx(prev => Math.min(prev + 1, songData.length - 1));
+  }, [songData]);
+
+  const previousSongHandler = useCallback(() => {
+    setCurrSongIdx(prev => Math.max(prev - 1, 0));
+  }, []);
 
   const requestFileAccess = useCallback(async () => {
     if (!audioContext) return;
@@ -68,7 +79,7 @@ const Player: NextPage = (props: Props) => {
         file: f,
         song: {
           title: f.name,
-          no: i.toString(),
+          no: (i + 1).toString(),
         },
         sourceData: {
           src: URL.createObjectURL(f),
@@ -96,11 +107,12 @@ const Player: NextPage = (props: Props) => {
           </Button>
         ) : (
           <SongPlayer
-            song={songData[0].song}
-            audioElSrcData={songData[0].sourceData}
-            audioBuffer={songData[0].audioBuffer}
-            onNextSong={() => {}}
-            onPreviousSong={() => {}}
+            song={songData[currSongIdx].song}
+            audioElSrcData={songData[currSongIdx].sourceData}
+            audioBuffer={songData[currSongIdx].audioBuffer}
+            onNextSong={nextSongHandler}
+            onPreviousSong={previousSongHandler}
+            nextSongAvailable={nextAvailable}
           />
         )}
       </Box>
