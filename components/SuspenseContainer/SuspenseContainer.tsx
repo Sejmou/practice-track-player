@@ -23,6 +23,7 @@ const SuspenseContainer = ({
   loadingMessage,
   fallbackActionButtonData,
 }: Props) => {
+  console.log('errors', errors);
   return (
     <Box
       sx={{
@@ -47,9 +48,12 @@ const SuspenseContainer = ({
           <Typography>{loadingMessage}</Typography>
         ) : (
           <>
-            {errors.map((err, i) => (
-              <Typography key={i}>{err}</Typography>
-            ))}
+            {errors.length > 0
+              ? errors.map((err, i) => {
+                  if (typeof err !== 'string') return;
+                  return <Typography key={i}>{err}</Typography>;
+                })
+              : ''}
             {fallbackActionButtonData && (
               <Button onClick={fallbackActionButtonData.action}>
                 {fallbackActionButtonData.label}
