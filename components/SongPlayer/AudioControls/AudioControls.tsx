@@ -184,6 +184,8 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
       [{ key: 'ArrowRight' }, handleForward5],
       [{ key: '-' }, handlePlaybackRateDecrease],
       [{ key: '+' }, handlePlaybackRateIncrease],
+      [{ key: '-', ctrlKey: true }, handleZoomOut], // TODO: implement with mouse wheel scroll
+      [{ key: '+', ctrlKey: true }, handleZoomIn],
       [{ key: 'ArrowLeft', ctrlKey: true }, handlePrevious],
       [{ key: 'ArrowRight', ctrlKey: true }, handleNext],
     ]);
