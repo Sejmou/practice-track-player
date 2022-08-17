@@ -142,7 +142,11 @@ const WaveformView = ({
 
     Peaks.init(options, (err, peaks) => {
       if (err) {
-        console.error('An error occurred while initializing Peaks.js', err);
+        console.error(
+          'An error occurred while initializing Peaks.js',
+          err instanceof MediaError ? 'code: ' + err.code : '',
+          err.message
+        );
       }
       if (peaks) {
         const zoomview = peaks.views.getView('zoomview');
