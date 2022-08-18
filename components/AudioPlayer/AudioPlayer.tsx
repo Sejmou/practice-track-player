@@ -62,8 +62,8 @@ const AudioPlayer = ({
   waveformData,
   audioBuffer,
   nextDisabled: nextDisabledProp,
-  onNext: onNext,
-  onPrevious: onPrevious,
+  onNext,
+  onPrevious,
   seekTime,
   points,
 }: Props) => {
