@@ -208,6 +208,7 @@ function getPeaksAudioOptions({
   audioContext: AudioContext | undefined;
 }): Peaks.AudioOptions | undefined {
   if (waveformDataBuffer) {
+    console.log('WaveformView using waveform data buffer');
     return {
       waveformData: {
         arraybuffer: waveformDataBuffer,
@@ -215,6 +216,7 @@ function getPeaksAudioOptions({
     };
   }
   if (audioBuffer) {
+    console.log('WaveformView using AudioBuffer');
     return {
       webAudio: {
         audioBuffer,
@@ -222,6 +224,7 @@ function getPeaksAudioOptions({
     };
   }
   if (audioContext) {
+    console.log('WaveformView using AudioContext');
     return {
       webAudio: {
         audioContext,

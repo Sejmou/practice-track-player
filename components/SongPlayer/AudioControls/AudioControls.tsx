@@ -90,7 +90,7 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
     // isReady state is actually irrelevant, I'm just abusing useState to trigger a rerender once the audio element's metadata is loaded
     const [isReady, setIsReady] = useState(false);
     const [playbackRate, setPlaybackRate] = useState(1);
-    const audioRef = useRef<HTMLAudioElement>(null);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
     const sliderRef = useRef<HTMLInputElement>(null);
     const [peaks, setPeaks] = useState<PeaksInstance>();
     const [zoomLevel, setZoomLevel] = useState(0);
@@ -217,9 +217,14 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
     }, [peaks, zoomLevel]);
 
     useEffect(() => {
-      if (audioRef.current) {
-        audioRef.current.src = audioElSrcData.src;
-      }
+      const audio = new Audio(audioElSrcData.src);
+      audio.load();
+      audio.addEventListener('canplaythrough', () =>
+        console.log('can play through')
+      );
+      audio.addEventListener('loadedmetadata', handleMetadataLoaded);
+
+      audioRef.current = audio;
     }, [audioElSrcData]);
 
     useEffect(() => {
@@ -287,10 +292,6 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
             onPlaybackRateChange={handlePlaybackRateChange}
           />
         </Box>
-        {/* As we have no controls attribute on the audio element, it is invisible, which is what we want here */}
-        <audio ref={audioRef} onLoadedMetadata={handleMetadataLoaded}>
-          <source src={audioElSrcData.src} />
-        </audio>
       </Box>
     );
   }
