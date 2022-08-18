@@ -4,7 +4,25 @@ import Peaks, { PeaksInstance } from 'peaks.js';
 import { createPointMarker, createSegmentMarker } from './MarkerFactories';
 import { createSegmentLabel } from './SegmentLabelFactory';
 
-import classes from './WaveformView.module.css';
+import { Box, SxProps } from '@mui/material';
+
+const viewContainerStyles: SxProps = {
+  backgroundColor: '#fff',
+  lineHeight: 0,
+  boxShadow: '3px 3px 20px #919191',
+};
+
+const zoomviewContainerStyles: SxProps = {
+  ...viewContainerStyles,
+  height: '200px',
+  my: '24px',
+};
+
+const overviewContainerStyles: SxProps = {
+  ...viewContainerStyles,
+  height: '85px',
+  mb: '24px',
+};
 
 export type WaveformViewPoint = { labelText: string; time: number };
 
@@ -95,7 +113,6 @@ const WaveformView = ({
 }: Props) => {
   const zoomviewWaveformRef = useRef<HTMLDivElement>(null);
   const overviewWaveformRef = useRef<HTMLDivElement>(null);
-  // audioElementRef: any;
   const [peaks, setPeaks] = useState<PeaksInstance | null>(null);
 
   useEffect(() => {
@@ -174,6 +191,15 @@ const WaveformView = ({
     // waveformZoomviewColor,
   ]); // TODO: figure out what meaningful dependencies are
 
+  const [audioReady, setAudioReady] = useState(false);
+
+  useEffect(() => {
+    setAudioReady(false);
+    audioElement.addEventListener('load', () => {
+      setAudioReady(true);
+    });
+  }, [audioElement]);
+
   useEffect(() => {
     if (points && peaks) {
       peaks.points.removeAll();
@@ -183,16 +209,10 @@ const WaveformView = ({
   }, [points, peaks]);
 
   return (
-    <div>
-      <div
-        className={classes['zoomview-container']}
-        ref={zoomviewWaveformRef}
-      ></div>
-      <div
-        className={classes['overview-container']}
-        ref={overviewWaveformRef}
-      ></div>
-    </div>
+    <Box>
+      <Box sx={zoomviewContainerStyles} ref={zoomviewWaveformRef}></Box>
+      <Box sx={overviewContainerStyles} ref={overviewWaveformRef}></Box>
+    </Box>
   );
 };
 
