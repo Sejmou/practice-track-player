@@ -20,7 +20,17 @@ const baseFetcher = async (url: string) => {
   return res;
 };
 
-const jsonFetcher = (url: string) => baseFetcher(url).then(data => data.json());
+const jsonFetcher = (url: string) =>
+  baseFetcher(url).then(async data => {
+    try {
+      const json = await data.json();
+      return json;
+    } catch (error) {
+      const msg = 'Could not decode API response - not valid JSON!';
+      console.error(msg + '\n', error);
+      throw Error('Could not decode API response - not valid JSON!');
+    }
+  });
 
 const binaryDataFetcher = (url: string) =>
   baseFetcher(url).then(data => data.arrayBuffer());
@@ -59,6 +69,13 @@ export const useYouTubeDescriptionFetcher = (videoId: string) => {
 export const useServerAudioSrcDataFetcher = (fileId: string) => {
   return useSWRImmutable<SourceData, any>(
     '/api/server/mp3-src-data/' + fileId,
+    jsonFetcher
+  );
+};
+
+export const useGoogleDriveAudioSrcDataFetcher = (fileId: string) => {
+  return useSWRImmutable<SourceData, any>(
+    '/api/google-drive/mp3-src-data/' + fileId,
     jsonFetcher
   );
 };

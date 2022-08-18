@@ -6,7 +6,7 @@ import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
 import SongPlayer from '@components/SongPlayer/SongPlayer';
 import {
   useServerWaveformDataFetcher,
-  useYouTubeAudioSrcDataFetcher,
+  useGoogleDriveAudioSrcDataFetcher,
 } from '@frontend/hooks/use-audio-data-fetcher';
 import { useKeyboardShortcuts } from '@frontend/hooks/use-keyboard-shortcuts';
 
@@ -34,8 +34,7 @@ const MusicalSongPlayer = () => {
   }, [track]);
 
   const { data: audioElSrcData, error: audioElSrcError } =
-    useYouTubeAudioSrcDataFetcher(videoId);
-  // useServerAudioSrcDataFetcher(videoId);
+    useGoogleDriveAudioSrcDataFetcher(videoId);
 
   const { data: waveformData, error: waveformDataError } =
     useServerWaveformDataFetcher(videoId);
