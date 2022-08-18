@@ -32,7 +32,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           sx={{
             minHeight: '100%',
             flex: '1',
-            py: 1,
+            py: 2,
             display: 'flex',
             flexDirection: 'column',
           }}
