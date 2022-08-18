@@ -3,7 +3,7 @@ import { NextPage } from 'next/types';
 import { useCallback, useEffect, useState } from 'react';
 import { Button, SxProps } from '@mui/material';
 import { Box } from '@mui/material';
-import SongPlayer from '@components/SongPlayer/SongPlayer';
+import AudioPlayer from '@components/AudioPlayer/AudioPlayer';
 import { Song, SourceData } from '@models';
 
 type Props = {};
@@ -97,14 +97,13 @@ const Player: NextPage = (props: Props) => {
             Select file(s) from local folder
           </Button>
         ) : (
-          <SongPlayer
-            song={songData[currSongIdx].song}
+          <AudioPlayer
+            mainTitle={songData[currSongIdx].song.title}
             audioElSrcData={songData[currSongIdx].sourceData}
             audioContext={audioContext}
             // audioBuffer={songData[currSongIdx].audioBuffer}
-            onNextSong={nextSongHandler}
-            onPreviousSong={previousSongHandler}
-            nextSongAvailable={nextAvailable}
+            onNext={nextSongHandler}
+            onPrevious={previousSongHandler}
           />
         )}
       </Box>

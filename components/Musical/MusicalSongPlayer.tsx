@@ -3,7 +3,7 @@ import { Box, useMediaQuery, useTheme } from '@mui/material';
 
 import { useMusicalContext } from '@frontend/context/musical-context';
 import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
-import SongPlayer from '@components/SongPlayer/SongPlayer';
+import AudioPlayer from '@components/AudioPlayer/AudioPlayer';
 import {
   useServerWaveformDataFetcher,
   useGoogleDriveAudioSrcDataFetcher,
@@ -63,14 +63,14 @@ const MusicalSongPlayer = () => {
   return (
     <Box minHeight={narrowViewport ? 517 : 470}>
       {dataReady ? (
-        <SongPlayer
-          song={song}
+        <AudioPlayer
+          mainTitle={`${song.no}. ${song.title}`}
+          subTitle={track.name}
           audioElSrcData={audioElSrcData}
           waveformData={waveformData}
-          previousSongAvailable={previousSongAvailable}
-          nextSongAvailable={nextSongAvailable}
-          onNextSong={goToNextSong}
-          onPreviousSong={goToPreviousSong}
+          nextAvailable={nextSongAvailable}
+          onNext={goToNextSong}
+          onPrevious={goToPreviousSong}
           seekTime={lastSeekedTime}
           points={timestamps}
         />

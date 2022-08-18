@@ -1,11 +1,12 @@
 import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
 
-import { Song, SourceData } from '@models';
+import { SourceData } from '@models';
 import AudioControls from './AudioControls/AudioControls';
 import { WaveformViewPoint } from './AudioControls/WaveFormView/WaveformView';
 
 type Props = {
-  song: Song;
+  mainTitle: string;
+  subTitle?: string;
   /**
    * src and content type information for the <audio/> element that is used internally by the player
    */
@@ -29,10 +30,10 @@ type Props = {
    * Either this or waveformData is required!
    */
   audioBuffer?: AudioBuffer;
-  previousSongAvailable?: boolean;
-  nextSongAvailable?: boolean;
-  onNextSong: () => void;
-  onPreviousSong: () => void;
+  previousAvailable?: boolean;
+  nextAvailable?: boolean;
+  onNext: () => void;
+  onPrevious: () => void;
   /**
    * The number of seconds the player should seek to
    *
@@ -41,21 +42,22 @@ type Props = {
    */
   seekTime?: number;
   /**
-   * Notable points in time for the current song; displayed in the WaveformView of the player
+   * Notable points in time for the current audio; displayed in the WaveformView of the player
    */
   points?: WaveformViewPoint[];
 };
 
-const SongPlayer = ({
-  song,
+const AudioPlayer = ({
+  mainTitle,
+  subTitle,
   audioElSrcData,
   audioContext,
   waveformData,
   audioBuffer,
-  previousSongAvailable,
-  nextSongAvailable,
-  onNextSong,
-  onPreviousSong,
+  previousAvailable,
+  nextAvailable,
+  onNext: onNext,
+  onPrevious: onPrevious,
   seekTime,
   points,
 }: Props) => {
@@ -69,21 +71,24 @@ const SongPlayer = ({
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
+          mb: 2,
         }}
       >
-        <Typography variant={narrowViewport ? 'body2' : 'body1'}>
-          Current Song:
+        <Typography variant={narrowViewport ? 'h6' : 'h5'}>
+          {mainTitle}
         </Typography>
-        <Typography variant={narrowViewport ? 'h6' : 'h5'} mb={2}>
-          {song.no}. {song.title}
-        </Typography>
+        {subTitle && (
+          <Typography variant={narrowViewport ? 'subtitle2' : 'subtitle1'}>
+            {subTitle}
+          </Typography>
+        )}
       </Box>
       <AudioControls
         audioElSrcData={audioElSrcData}
-        onNext={onNextSong}
-        onPrevious={onPreviousSong}
-        nextAvailable={nextSongAvailable}
-        previousAvailable={previousSongAvailable}
+        onNext={onNext}
+        onPrevious={onPrevious}
+        nextAvailable={nextAvailable}
+        previousAvailable={previousAvailable}
         audioContext={audioContext}
         audioBuffer={audioBuffer}
         waveformDataBuffer={waveformData}
@@ -94,6 +99,6 @@ const SongPlayer = ({
   );
 };
 
-SongPlayer.displayName = 'SongPlayer';
+AudioPlayer.displayName = 'AudioPlayer';
 
-export default SongPlayer;
+export default AudioPlayer;
