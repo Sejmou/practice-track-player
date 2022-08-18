@@ -1,25 +1,44 @@
 import { z } from 'zod';
 
-export const SongTrackValidator = z.object({
+export const MusicalSongTrackSegmentValidator = z.object({
+  startTime: z.number(),
+  endTime: z.number(),
+  labelText: z.string(),
+});
+export type MusicalSongTrackSegment = z.infer<
+  typeof MusicalSongTrackSegmentValidator
+>;
+
+export const MusicalSongTrackTimeStampValidator = z.object({
+  time: z.number(),
+  labelText: z.string(),
+});
+export type MusicalSongTrackTimeStamp = z.infer<
+  typeof MusicalSongTrackTimeStampValidator
+>;
+
+export const MusicalSongTrackValidator = z.object({
   name: z.string(),
   url: z.string().url().startsWith('https://www.youtube.com/watch?v='),
+  segments: z.array(MusicalSongTrackSegmentValidator).optional(),
+  timestamps: z.array(MusicalSongTrackTimeStampValidator).optional(),
 });
-export type SongTrack = z.infer<typeof SongTrackValidator>;
+export type MusicalSongTrack = z.infer<typeof MusicalSongTrackValidator>;
 
-const SongBaseValidator = z.object({
+const SongValidator = z.object({
   no: z.string(),
   title: z.string(),
 });
-export type SongBase = z.infer<typeof SongBaseValidator>;
-
-export const SongValidator = SongBaseValidator.extend({
-  tracks: z.array(SongTrackValidator),
-});
 export type Song = z.infer<typeof SongValidator>;
+
+export const MusicalSongValidator = SongValidator.extend({
+  tracks: z.array(MusicalSongTrackValidator),
+});
+export type MusicalSong = z.infer<typeof MusicalSongValidator>;
 
 export const MusicalValidator = z.object({
   title: z.string(),
-  songs: z.array(SongValidator),
+  songs: z.array(MusicalSongValidator),
 });
 export type Musical = z.infer<typeof MusicalValidator>;
 

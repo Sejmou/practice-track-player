@@ -3,23 +3,28 @@ import { Box, useMediaQuery, useTheme } from '@mui/material';
 
 import { useMusicalContext } from '@frontend/context/musical-context';
 import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
-import SongPlayer from '@components/SongPlayer/SongPlayer';
+import AudioPlayer from '@components/AudioPlayer/AudioPlayer';
 import {
-  useServerAudioSrcDataFetcher,
   useServerWaveformDataFetcher,
-  useYouTubeAudioSrcDataFetcher,
+  useGoogleDriveAudioSrcDataFetcher,
 } from '@frontend/hooks/use-audio-data-fetcher';
+import { useKeyboardShortcuts } from '@frontend/hooks/use-keyboard-shortcuts';
 
 const MusicalSongPlayer = () => {
   const {
     currentSong: song,
     currentTrack: track,
-    previousSongAvailable,
     nextSongAvailable,
     goToNextSong,
     goToPreviousSong,
     lastSeekedTime,
+    currentTimeStamps: timestamps,
   } = useMusicalContext();
+
+  useKeyboardShortcuts([
+    [{ key: 'ArrowLeft', ctrlKey: true }, goToPreviousSong],
+    [{ key: 'ArrowRight', ctrlKey: true }, goToNextSong],
+  ]);
 
   const videoId = useMemo(() => {
     const videoUrlSearch = new URL(track.url).search;
@@ -28,8 +33,7 @@ const MusicalSongPlayer = () => {
   }, [track]);
 
   const { data: audioElSrcData, error: audioElSrcError } =
-    useYouTubeAudioSrcDataFetcher(videoId);
-  // useServerAudioSrcDataFetcher(videoId);
+    useGoogleDriveAudioSrcDataFetcher(videoId);
 
   const { data: waveformData, error: waveformDataError } =
     useServerWaveformDataFetcher(videoId);
@@ -58,15 +62,16 @@ const MusicalSongPlayer = () => {
   return (
     <Box minHeight={narrowViewport ? 517 : 470}>
       {dataReady ? (
-        <SongPlayer
-          song={song}
+        <AudioPlayer
+          mainTitle={`${song.no}. ${song.title}`}
+          subTitle={track.name}
           audioElSrcData={audioElSrcData}
           waveformData={waveformData}
-          previousSongAvailable={previousSongAvailable}
-          nextSongAvailable={nextSongAvailable}
-          onNextSong={goToNextSong}
-          onPreviousSong={goToPreviousSong}
+          nextDisabled={!nextSongAvailable}
+          onNext={goToNextSong}
+          onPrevious={goToPreviousSong}
           seekTime={lastSeekedTime}
+          points={timestamps}
         />
       ) : (
         <>

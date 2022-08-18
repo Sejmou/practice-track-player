@@ -11,11 +11,23 @@ import MusicNoteIcon from '@mui/icons-material/MusicNote';
 
 import { useMusicalContext } from '@frontend/context/musical-context';
 import ResponsiveContainer from '@components/layout/ResponsiveContainer';
+import { useKeyboardShortcuts } from '@frontend/hooks/use-keyboard-shortcuts';
 
 type Props = { sx?: SxProps };
 
 const TrackList = ({ sx }: Props) => {
-  const { tracks, currentTrack, setCurrentTrack } = useMusicalContext();
+  const {
+    tracks,
+    currentTrack,
+    setCurrentTrack,
+    goToNextTrack,
+    goToPreviousTrack,
+  } = useMusicalContext();
+
+  useKeyboardShortcuts([
+    [{ key: 'ArrowDown', ctrlKey: true }, goToNextTrack],
+    [{ key: 'ArrowUp', ctrlKey: true }, goToPreviousTrack],
+  ]);
 
   const trackList = (
     <List>

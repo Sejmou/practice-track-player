@@ -20,7 +20,17 @@ const baseFetcher = async (url: string) => {
   return res;
 };
 
-const jsonFetcher = (url: string) => baseFetcher(url).then(data => data.json());
+const jsonFetcher = (url: string) =>
+  baseFetcher(url).then(async data => {
+    try {
+      const json = await data.json();
+      return json;
+    } catch (error) {
+      const msg = 'Could not decode API response - not valid JSON!';
+      console.error(msg + '\n', error);
+      throw Error('Could not decode API response - not valid JSON!');
+    }
+  });
 
 const binaryDataFetcher = (url: string) =>
   baseFetcher(url).then(data => data.arrayBuffer());
@@ -31,7 +41,15 @@ const audioBufferFetcher = (url: string, ctx: AudioContext) =>
 export const useYouTubeAudioSrcDataFetcher = (videoId: string) => {
   return useSWRImmutable<SourceData, any>(
     '/api/yt-audio/audio-el-data/' + videoId,
-    jsonFetcher,
+    async (url: string) => {
+      const webMSupport =
+        new Audio().canPlayType('audio/webm; codecs="opus"') === 'probably';
+
+      console.log(webMSupport);
+      const reqUrl = url + (!webMSupport ? '?noWebM=true' : '');
+      console.log(reqUrl);
+      return jsonFetcher(reqUrl);
+    },
     {
       shouldRetryOnError: false, // we must not spam the API, otherwise YouTube blocks the server!
     }
@@ -51,6 +69,13 @@ export const useYouTubeDescriptionFetcher = (videoId: string) => {
 export const useServerAudioSrcDataFetcher = (fileId: string) => {
   return useSWRImmutable<SourceData, any>(
     '/api/server/mp3-src-data/' + fileId,
+    jsonFetcher
+  );
+};
+
+export const useGoogleDriveAudioSrcDataFetcher = (fileId: string) => {
+  return useSWRImmutable<SourceData, any>(
+    '/api/google-drive/mp3-src-data/' + fileId,
     jsonFetcher
   );
 };

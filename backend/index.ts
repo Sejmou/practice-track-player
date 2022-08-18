@@ -124,16 +124,35 @@ export function sleep(ms: number) {
 
 export function extractQueryParamAsString(
   req: NextApiRequest,
-  paramName: string
+  paramName: string,
+  required = true
 ) {
   const paramValue = req.query[paramName];
   if (!paramValue) {
-    throw new InvalidQueryParamError(`No value for ${paramName} found!`);
+    if (required)
+      throw new InvalidQueryParamError(
+        `No value for query parameter '${paramName}' provided!`
+      );
+    else return '';
   }
   if (typeof paramValue !== 'string') {
     throw new InvalidQueryParamError(
-      `Multiple values for ${paramName} provided!`
+      `Multiple values for query parameter '${paramName}' provided!`
     );
   }
   return paramValue;
+}
+
+export function extractQueryParamAsBoolean(
+  req: NextApiRequest,
+  paramName: string,
+  required = true
+) {
+  const paramValue = req.query[paramName];
+  const provided = !!paramValue;
+  if (required && !provided)
+    throw new InvalidQueryParamError(
+      `Query parameter '${paramName}' not provided!`
+    );
+  return provided;
 }

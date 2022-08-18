@@ -6,7 +6,12 @@ import React, {
   useCallback,
 } from 'react';
 
-import { Musical, Song, SongTrack } from '@models';
+import {
+  Musical,
+  MusicalSong,
+  MusicalSongTrack,
+  MusicalSongTrackTimeStamp,
+} from '@models';
 
 const useMusicalController = (musical: Musical) => {
   const songs = musical.songs;
@@ -27,7 +32,7 @@ const useMusicalController = (musical: Musical) => {
   );
 
   const changeSongHandler = useCallback(
-    (song: Song) => {
+    (song: MusicalSong) => {
       const songIdx = songs.findIndex(s => s.no === song.no);
       if (songIdx === -1) {
         console.warn(
@@ -44,7 +49,7 @@ const useMusicalController = (musical: Musical) => {
   );
 
   const changeTrackHandler = useCallback(
-    (track: SongTrack) => {
+    (track: MusicalSongTrack) => {
       const trackIdx = tracks.findIndex(t => t.name === track.name);
       if (trackIdx === -1) {
         console.warn(
@@ -81,6 +86,24 @@ const useMusicalController = (musical: Musical) => {
     }
   }, [currentSong, songs, updateNextPreviousAvailability]);
 
+  const goToNextTrack = useCallback(() => {
+    const trackIdx = tracks.findIndex(t => t.name === currentTrack.name);
+    const nextTrack = tracks[trackIdx + 1];
+    if (nextTrack) {
+      setCurrentTrack(nextTrack);
+      setLastSeekedTime(0);
+    }
+  }, [currentTrack.name, tracks]);
+
+  const goToPreviousTrack = useCallback(() => {
+    const trackIdx = tracks.findIndex(t => t.name === currentTrack.name);
+    const previousTrack = tracks[trackIdx - 1];
+    if (previousTrack) {
+      setCurrentTrack(previousTrack);
+      setLastSeekedTime(0);
+    }
+  }, [currentTrack.name, tracks]);
+
   const [lastSeekedTime, setLastSeekedTime] = useState(0);
 
   const seekCurrentTrack = useCallback((seconds: number) => {
@@ -88,6 +111,10 @@ const useMusicalController = (musical: Musical) => {
     // especially, also when seeking to same number of seconds as before
     setLastSeekedTime(seconds + Math.random() * 0.001);
   }, []);
+
+  const [currentTimeStamps, setCurrentTimeStamps] = useState<
+    MusicalSongTrackTimeStamp[]
+  >([]);
 
   return {
     songs,
@@ -102,6 +129,10 @@ const useMusicalController = (musical: Musical) => {
     setCurrentTrack: changeTrackHandler,
     lastSeekedTime,
     seekCurrentTrack,
+    currentTimeStamps,
+    setCurrentTimeStamps,
+    goToNextTrack,
+    goToPreviousTrack,
   };
 };
 
@@ -125,6 +156,10 @@ const MusicalContext = createContext<ReturnType<typeof useMusicalController>>({
   setCurrentTrack: () => {},
   lastSeekedTime: 0,
   seekCurrentTrack: () => {},
+  currentTimeStamps: [],
+  setCurrentTimeStamps: () => {},
+  goToNextTrack: () => {},
+  goToPreviousTrack: () => {},
 });
 
 export const MusicalProvider = ({

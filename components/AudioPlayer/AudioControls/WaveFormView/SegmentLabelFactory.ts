@@ -1,10 +1,11 @@
 import { Label, Tag } from 'konva/lib/shapes/Label';
 import { Text } from 'konva/lib/shapes/Text';
+import { CreateSegmentLabelOptions } from 'peaks.js';
 
-export function createSegmentLabel(options: any) {
-  if (options.view === 'overview') {
-    return {};
-  }
+export function createSegmentLabel(options: CreateSegmentLabelOptions) {
+  // if (options.view === 'overview') {
+  //   return {};
+  // }
 
   const label = new Label({
     x: 12,

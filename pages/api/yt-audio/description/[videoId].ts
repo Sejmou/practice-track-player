@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import 'dotenv/config';
 
 export default async function handler(
   req: NextApiRequest,

@@ -1,10 +1,10 @@
-import { Button, CircularProgress, Typography } from '@mui/material';
+import { Button, CircularProgress, SxProps, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 
 type Props = {
   height?: number | string;
   loadingMessage?: string;
-  errors: string[];
+  errors?: string[];
   status: 'error' | 'loading';
   /**
    * If provided, a button is displayed under the error messages.
@@ -15,14 +15,18 @@ type Props = {
     label: string;
     action: () => void;
   };
+  sx?: SxProps;
 };
 const SuspenseContainer = ({
   height,
   status,
-  errors,
+  errors: passedErrors,
   loadingMessage,
   fallbackActionButtonData,
+  sx,
 }: Props) => {
+  const errors = passedErrors ? passedErrors : [];
+
   return (
     <Box
       sx={{
@@ -32,6 +36,7 @@ const SuspenseContainer = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        ...sx,
       }}
     >
       <Box
@@ -47,9 +52,12 @@ const SuspenseContainer = ({
           <Typography>{loadingMessage}</Typography>
         ) : (
           <>
-            {errors.map((err, i) => (
-              <Typography key={i}>{err}</Typography>
-            ))}
+            {errors.length > 0
+              ? errors.map((err, i) => {
+                  if (typeof err !== 'string') return;
+                  return <Typography key={i}>{err}</Typography>;
+                })
+              : ''}
             {fallbackActionButtonData && (
               <Button onClick={fallbackActionButtonData.action}>
                 {fallbackActionButtonData.label}

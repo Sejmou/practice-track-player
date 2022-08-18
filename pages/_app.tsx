@@ -23,21 +23,24 @@ const theme = createTheme({
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider theme={theme}>
-      <div style={{ minHeight: '100%' }}>
+      <Box
+        sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}
+      >
         <CssBaseline />
-        <Box
-          display="flex"
-          flexDirection="column"
-          justifyContent="space-between"
-          minHeight="100vh"
+        <Header sx={{ flex: '0 1 auto' }} />
+        <Container
+          sx={{
+            minHeight: '100%',
+            flex: '1',
+            py: 2,
+            display: 'flex',
+            flexDirection: 'column',
+          }}
         >
-          <Header />
-          <Container sx={{ pt: 2 }}>
-            <Component {...pageProps} />
-          </Container>
-          <Footer />
-        </Box>
-      </div>
+          <Component {...pageProps} />
+        </Container>
+        <Footer sx={{ flex: '0 1 auto' }} />
+      </Box>
     </ThemeProvider>
   );
 }
