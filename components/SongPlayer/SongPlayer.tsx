@@ -74,7 +74,7 @@ const SongPlayer = ({
         <Typography variant={narrowViewport ? 'body2' : 'body1'}>
           Current Song:
         </Typography>
-        <Typography variant={narrowViewport ? 'h6' : 'h5'}>
+        <Typography variant={narrowViewport ? 'h6' : 'h5'} mb={2}>
           {song.no}. {song.title}
         </Typography>
       </Box>

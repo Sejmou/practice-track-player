@@ -5,6 +5,7 @@ import { createPointMarker, createSegmentMarker } from './MarkerFactories';
 import { createSegmentLabel } from './SegmentLabelFactory';
 
 import { Box, SxProps } from '@mui/material';
+import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
 
 const viewContainerStyles: SxProps = {
   backgroundColor: '#fff',
@@ -15,13 +16,12 @@ const viewContainerStyles: SxProps = {
 const zoomviewContainerStyles: SxProps = {
   ...viewContainerStyles,
   height: '200px',
-  my: '24px',
+  mb: 2,
 };
 
 const overviewContainerStyles: SxProps = {
   ...viewContainerStyles,
   height: '85px',
-  mb: '24px',
 };
 
 export type WaveformViewPoint = { labelText: string; time: number };
@@ -191,15 +191,6 @@ const WaveformView = ({
     // waveformZoomviewColor,
   ]); // TODO: figure out what meaningful dependencies are
 
-  const [audioReady, setAudioReady] = useState(false);
-
-  useEffect(() => {
-    setAudioReady(false);
-    audioElement.addEventListener('load', () => {
-      setAudioReady(true);
-    });
-  }, [audioElement]);
-
   useEffect(() => {
     if (points && peaks) {
       peaks.points.removeAll();
@@ -208,10 +199,40 @@ const WaveformView = ({
     }
   }, [points, peaks]);
 
+  const containerVisibility: SxProps = {
+    visibility: !!peaks ? null : 'hidden',
+  };
+
   return (
-    <Box>
-      <Box sx={zoomviewContainerStyles} ref={zoomviewWaveformRef}></Box>
-      <Box sx={overviewContainerStyles} ref={overviewWaveformRef}></Box>
+    <Box
+      sx={{
+        position: 'relative',
+        top: 0,
+        left: 0,
+        minHeight: '309px',
+      }}
+    >
+      <Box
+        sx={{ ...zoomviewContainerStyles, ...containerVisibility }}
+        ref={zoomviewWaveformRef}
+      ></Box>
+      <Box
+        sx={{ ...overviewContainerStyles, ...containerVisibility }}
+        ref={overviewWaveformRef}
+      ></Box>
+      {!peaks && (
+        <SuspenseContainer
+          sx={{
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+          }}
+          status="loading"
+          loadingMessage="Loading audio waveform"
+        />
+      )}
     </Box>
   );
 };

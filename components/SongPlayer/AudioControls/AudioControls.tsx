@@ -17,6 +17,7 @@ import WaveformViewZoomControls from './WaveformViewZoomControls';
 import React from 'react';
 import { useKeyboardShortcuts } from '@frontend/hooks/use-keyboard-shortcuts';
 import { WaveformViewPoint } from './WaveFormView/WaveformView';
+import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
 
 const WaveFormView = dynamic(() => import('./WaveFormView/WaveformView'), {
   ssr: false,
@@ -30,6 +31,7 @@ const controlsContainerStyles: SxProps = {
     xs: '"zoom pbr pbr" "basic basic basic"',
     sm: '"zoom basic  pbr"',
   },
+  mt: 1,
 };
 
 const basicControlsStyles: SxProps = {
@@ -263,7 +265,13 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
             onPeaksReady={handlePeaksLoaded}
             points={points}
           />
-        )) || <Box minHeight={309}></Box>}
+        )) || (
+          <SuspenseContainer
+            height={'309px'}
+            status="loading"
+            loadingMessage="Loading audio"
+          />
+        )}
         <Box sx={controlsContainerStyles}>
           <WaveformViewZoomControls
             onZoomIn={handleZoomIn}
