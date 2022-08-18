@@ -14,7 +14,6 @@ const MusicalSongPlayer = () => {
   const {
     currentSong: song,
     currentTrack: track,
-    previousSongAvailable,
     nextSongAvailable,
     goToNextSong,
     goToPreviousSong,
@@ -68,7 +67,7 @@ const MusicalSongPlayer = () => {
           subTitle={track.name}
           audioElSrcData={audioElSrcData}
           waveformData={waveformData}
-          nextAvailable={nextSongAvailable}
+          nextDisabled={!nextSongAvailable}
           onNext={goToNextSong}
           onPrevious={goToPreviousSong}
           seekTime={lastSeekedTime}

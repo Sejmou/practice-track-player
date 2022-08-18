@@ -101,6 +101,7 @@ const Player: NextPage = (props: Props) => {
             mainTitle={songData[currSongIdx].song.title}
             audioElSrcData={songData[currSongIdx].sourceData}
             audioContext={audioContext}
+            nextDisabled={currSongIdx === songData.length - 1}
             // audioBuffer={songData[currSongIdx].audioBuffer}
             onNext={nextSongHandler}
             onPrevious={previousSongHandler}

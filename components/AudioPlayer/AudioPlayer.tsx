@@ -30,8 +30,15 @@ type Props = {
    * Either this or waveformData is required!
    */
   audioBuffer?: AudioBuffer;
-  previousAvailable?: boolean;
-  nextAvailable?: boolean;
+  /**
+   * Whether the "next" button should be disabled
+   *
+   * Defaults to false
+   *
+   * Note: previousDisabled prop does not exist on purpose
+   * - jumping to beginning of track with previous button should always be possible!
+   */
+  nextDisabled?: boolean;
   onNext: () => void;
   onPrevious: () => void;
   /**
@@ -54,8 +61,7 @@ const AudioPlayer = ({
   audioContext,
   waveformData,
   audioBuffer,
-  previousAvailable,
-  nextAvailable,
+  nextDisabled: nextDisabledProp,
   onNext: onNext,
   onPrevious: onPrevious,
   seekTime,
@@ -63,6 +69,9 @@ const AudioPlayer = ({
 }: Props) => {
   const theme = useTheme();
   const narrowViewport = useMediaQuery(theme.breakpoints.down('md'));
+
+  const nextDisabled =
+    nextDisabledProp !== undefined ? nextDisabledProp : false;
 
   return (
     <Box>
@@ -87,8 +96,7 @@ const AudioPlayer = ({
         audioElSrcData={audioElSrcData}
         onNext={onNext}
         onPrevious={onPrevious}
-        nextAvailable={nextAvailable}
-        previousAvailable={previousAvailable}
+        nextDisabled={nextDisabled}
         audioContext={audioContext}
         audioBuffer={audioBuffer}
         waveformDataBuffer={waveformData}

@@ -7,8 +7,7 @@ import Replay5Icon from '@mui/icons-material/Replay5';
 import Forward5Icon from '@mui/icons-material/Forward5';
 
 type Props = {
-  previousAvailable?: boolean;
-  nextAvailable?: boolean;
+  nextDisabled?: boolean;
   playing: boolean;
   onNext: () => void;
   onPrevious: () => void;
@@ -18,8 +17,7 @@ type Props = {
   sx?: SxProps;
 };
 const BasicControls = ({
-  previousAvailable,
-  nextAvailable,
+  nextDisabled: nextDisabledProp,
   playing,
   onNext,
   onPrevious,
@@ -28,6 +26,9 @@ const BasicControls = ({
   onBackward5,
   sx,
 }: Props) => {
+  const nextDisabled =
+    nextDisabledProp !== undefined ? nextDisabledProp : false;
+
   return (
     <Box
       sx={{
@@ -49,7 +50,7 @@ const BasicControls = ({
         </IconButton>
         <IconButton
           size="large"
-          disabled={!nextAvailable}
+          disabled={nextDisabled}
           onClick={onNext}
           color="primary"
         >

@@ -57,8 +57,7 @@ type Props = {
    * either this or audioBuffer is required if src of audioElSrcData does not support CORS!
    */
   waveformDataBuffer?: ArrayBuffer;
-  nextAvailable?: boolean;
-  previousAvailable?: boolean;
+  nextDisabled?: boolean;
   onNext: () => void;
   onPrevious: () => void;
   /**
@@ -79,8 +78,7 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
       audioElSrcData,
       audioBuffer,
       waveformDataBuffer,
-      nextAvailable,
-      previousAvailable,
+      nextDisabled: nextDisabledProp,
       onNext,
       onPrevious,
       seekTime,
@@ -88,6 +86,8 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
     }: Props,
     ref
   ) => {
+    const nextDisabled =
+      nextDisabledProp !== undefined ? nextDisabledProp : false;
     const [isPlaying, setIsPlaying] = useState(false);
     // isReady state is actually irrelevant, I'm just abusing useState to trigger a rerender once the audio element's metadata is loaded
     const [isReady, setIsReady] = useState(false);
@@ -281,8 +281,7 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
             sx={zoomControlsStyles}
           />
           <BasicControls
-            previousAvailable={previousAvailable}
-            nextAvailable={nextAvailable}
+            nextDisabled={nextDisabled}
             playing={isPlaying}
             onNext={handleNext}
             onPrevious={handlePrevious}
