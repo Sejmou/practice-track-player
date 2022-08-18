@@ -133,6 +133,7 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
         audioRef.current.currentTime = 0;
       } else {
         onPrevious();
+        audioRef.current?.pause();
         setIsPlaying(false);
       }
     }, [onPrevious]);
@@ -157,6 +158,7 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
 
     const handleNext = useCallback(() => {
       onNext();
+      audioRef.current?.pause();
       setIsPlaying(false);
     }, [onNext]);
 
