@@ -109,8 +109,29 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
       setIsReady(true);
     };
 
+    const handlePlay = async () => {
+      console.log('handle play');
+      const audioEl = audioRef.current;
+      if (audioEl) {
+        await audioEl.play();
+        navigator.mediaSession.playbackState = 'playing';
+        setIsPlaying(true);
+      }
+    };
+
+    const handlePause = () => {
+      console.log('handle pause');
+      const audioEl = audioRef.current;
+      if (audioEl) {
+        audioEl.pause();
+        navigator.mediaSession.playbackState = 'paused';
+        setIsPlaying(false);
+      }
+    };
+
     const handlePlayPauseToggle = () => {
-      setIsPlaying(previous => !previous);
+      if (isPlaying) handlePause();
+      else handlePlay();
     };
 
     const handleZoomIn = () => {
@@ -133,8 +154,6 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
         audioRef.current.currentTime = 0;
       } else {
         onPrevious();
-        audioRef.current?.pause();
-        setIsPlaying(false);
       }
     }, [onPrevious]);
 
@@ -158,8 +177,6 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
 
     const handleNext = useCallback(() => {
       onNext();
-      audioRef.current?.pause();
-      setIsPlaying(false);
     }, [onNext]);
 
     const handlePlaybackRateChange = useCallback(
@@ -229,7 +246,12 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
       audio.addEventListener('loadedmetadata', handleMetadataLoaded);
 
       audioRef.current = audio;
-    }, [audioElSrcData]);
+
+      return () => {
+        audioRef.current?.pause();
+        setIsPlaying(false);
+      };
+    }, [audioElSrcData.src]);
 
     useEffect(() => {
       if (audioRef.current) {
@@ -238,18 +260,36 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
     }, [playbackRate]);
 
     useEffect(() => {
-      if (isPlaying) {
-        audioRef.current?.play();
-      } else {
-        audioRef.current?.pause();
-      }
-    }, [isPlaying]);
-
-    useEffect(() => {
       if (audioRef.current && seekTime) {
         audioRef.current.currentTime = seekTime;
       }
     }, [seekTime]);
+
+    useEffect(() => {
+      const actionHandlers: [
+        action: MediaSessionAction,
+        handler: MediaSessionActionHandler
+      ][] = [
+        ['play', handlePlay],
+        ['pause', handlePause],
+        ['nexttrack', handleNext],
+        ['previoustrack', handlePrevious],
+        ['seekbackward', handleBackward5],
+        ['seekforward', handleForward5],
+      ];
+
+      for (const [action, handler] of actionHandlers) {
+        try {
+          navigator.mediaSession.setActionHandler(action, handler);
+        } catch (error) {
+          console.log(
+            `The media session action "${action}" is not supported yet.`
+          );
+        }
+      }
+    }, [handleBackward5, handleForward5, handleNext, handlePrevious]);
+
+    console.log(isPlaying);
 
     const theme = useTheme();
     const primaryColor = useMemo(() => theme.palette.primary.main, [theme]);
@@ -309,11 +349,3 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
 AudioControls.displayName = 'AudioControls';
 
 export default AudioControls;
-
-function createKeybindingMapKey(
-  props: Pick<KeyboardEvent, 'key'> &
-    Partial<Pick<KeyboardEvent, 'altKey' | 'ctrlKey' | 'metaKey' | 'shiftKey'>>
-) {
-  const { key, altKey, ctrlKey, metaKey, shiftKey } = props;
-  return [key, !!altKey, !!ctrlKey, !!metaKey, !!shiftKey].join();
-}
