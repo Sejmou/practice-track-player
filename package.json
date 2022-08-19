@@ -18,6 +18,7 @@
     "dotenv": "^16.0.1",
     "konva": "^8.3.11",
     "moment": "^2.29.4",
+    "music-metadata-browser": "^2.5.8",
     "next": "12.2.4",
     "node-fetch": "^3.2.10",
     "peaks.js": "^2.0.3",

@@ -11,7 +11,7 @@ import ResponsiveContainer from '@components/layout/ResponsiveContainer';
 
 type Props = { sx?: SxProps };
 
-const SongList = ({ sx }: Props) => {
+const MusicalSongList = ({ sx }: Props) => {
   const { songs, currentSong, setCurrentSong } = useMusicalContext();
 
   const songList = (
@@ -44,4 +44,4 @@ const SongList = ({ sx }: Props) => {
   );
 };
 
-export default SongList;
+export default MusicalSongList;

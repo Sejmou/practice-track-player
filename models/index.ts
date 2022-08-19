@@ -26,8 +26,11 @@ export const MusicalSongTrackValidator = z.object({
 export type MusicalSongTrack = z.infer<typeof MusicalSongTrackValidator>;
 
 const SongValidator = z.object({
-  no: z.string(),
   title: z.string(),
+  artist: z.string().optional(),
+  releaseDate: z.date().optional(),
+  album: z.string().optional(),
+  no: z.string().optional(),
 });
 export type Song = z.infer<typeof SongValidator>;
 

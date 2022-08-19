@@ -2,7 +2,7 @@ import type { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import Head from 'next/head';
 
 import TrackList from '@components/Musical/TrackList';
-import SongList from '@components/Musical/SongList';
+import MusicalSongList from '@components/Musical/MusicalSongList';
 import { getAllMusicalIds, getMusical } from '@backend/musical-data';
 import { Musical } from '@models';
 import {
@@ -69,7 +69,7 @@ const MusicalPage: NextPage<Props> = ({ musical }) => {
         <Box sx={tracksAndSongsContainerStyles}>
           <TrackList sx={trackListStyles} />
           <DescriptionContainer sx={descriptionContainerStyles} />
-          <SongList sx={songListStyles} />
+          <MusicalSongList sx={songListStyles} />
         </Box>
       </Stack>
     </MusicalProvider>
