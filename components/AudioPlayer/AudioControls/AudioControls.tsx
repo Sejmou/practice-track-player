@@ -13,7 +13,7 @@ import { WaveformViewPoint } from './WaveFormView/WaveformView';
 import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
 import LoopControls from './LoopControls';
 
-import rgba from 'color-rgba';
+import tinycolor from 'tinycolor2';
 
 const WaveFormView = dynamic(() => import('./WaveFormView/WaveformView'), {
   ssr: false,
@@ -130,11 +130,13 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
     useEffect(() => {
       if (peaks) {
         const segment = peaks.segments.getSegment('Loop');
-        const [r, g, b] = rgba(primaryColor)!;
-        const inactiveColor = `rgba(${r}, ${g}, ${b}, 0.2)`;
+        const inactiveColor = tinycolor(primaryColor)
+          .setAlpha(0.5)
+          .toRgbString();
+        const activeColor = tinycolor(primaryColor).darken().toRgbString();
         if (segment) {
           segment.update({
-            color: loopActive ? primaryColor : inactiveColor,
+            color: loopActive ? activeColor : inactiveColor,
           });
         }
       }
