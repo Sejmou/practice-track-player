@@ -1,13 +1,6 @@
-import {
-  useEffect,
-  useState,
-  useRef,
-  useMemo,
-  useCallback,
-  KeyboardEvent,
-} from 'react';
+import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
-import { Box, SxProps, useTheme } from '@mui/material';
+import { Box, Stack, SxProps, useTheme } from '@mui/material';
 
 import { SourceData } from '@models';
 import PlaybackRateSlider from './PlaybackRateSlider';
@@ -18,6 +11,9 @@ import React from 'react';
 import { useKeyboardShortcuts } from '@frontend/hooks/use-keyboard-shortcuts';
 import { WaveformViewPoint } from './WaveFormView/WaveformView';
 import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
+import LoopControls from './LoopControls';
+
+import rgba from 'color-rgba';
 
 const WaveFormView = dynamic(() => import('./WaveFormView/WaveformView'), {
   ssr: false,
@@ -42,7 +38,7 @@ const playbackRatePickerStyles: SxProps = {
   gridArea: 'pbr',
 };
 
-const zoomControlsStyles: SxProps = {
+const waveformViewControlsStyles: SxProps = {
   gridArea: 'zoom',
 };
 
@@ -97,6 +93,9 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
     const [peaks, setPeaks] = useState<PeaksInstance>();
     const [zoomLevel, setZoomLevel] = useState(0);
 
+    const theme = useTheme();
+    const primaryColor = useMemo(() => theme.palette.primary.main, [theme]);
+
     const maxPlaybackRate = 1;
     const minPlaybackRate = 0.5;
 
@@ -109,18 +108,53 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
       setIsReady(true);
     };
 
-    const handlePlay = async () => {
-      console.log('handle play');
+    const [loopActive, setLoopActive] = useState(false);
+    const handleLoopActiveChange = () => {
+      if (peaks) {
+        if (peaks.segments.getSegments().length === 0) {
+          peaks.segments.add({
+            startTime: peaks.player.getCurrentTime(),
+            endTime: Math.min(
+              peaks.player.getCurrentTime() + 10,
+              peaks.player.getDuration()
+            ),
+            labelText: 'Loop',
+            id: 'Loop',
+            editable: true,
+          });
+        }
+      }
+      setLoopActive(prev => !prev);
+    };
+
+    useEffect(() => {
+      if (peaks) {
+        const segment = peaks.segments.getSegment('Loop');
+        const [r, g, b] = rgba(primaryColor)!;
+        const inactiveColor = `rgba(${r}, ${g}, ${b}, 0.2)`;
+        if (segment) {
+          segment.update({
+            color: loopActive ? primaryColor : inactiveColor,
+          });
+        }
+      }
+    }, [peaks, loopActive, primaryColor]);
+
+    const handlePlay = useCallback(async () => {
       const audioEl = audioRef.current;
       if (audioEl) {
-        await audioEl.play();
+        if (loopActive && peaks) {
+          const segment = peaks.segments.getSegment('Loop');
+          if (segment) peaks.player.playSegment(segment, true);
+        } else {
+          await audioEl.play();
+        }
         navigator.mediaSession.playbackState = 'playing';
         setIsPlaying(true);
       }
-    };
+    }, [loopActive, peaks]);
 
     const handlePause = () => {
-      console.log('handle pause');
       const audioEl = audioRef.current;
       if (audioEl) {
         audioEl.pause();
@@ -287,12 +321,13 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
           );
         }
       }
-    }, [handleBackward5, handleForward5, handleNext, handlePrevious]);
-
-    console.log(isPlaying);
-
-    const theme = useTheme();
-    const primaryColor = useMemo(() => theme.palette.primary.main, [theme]);
+    }, [
+      handleBackward5,
+      handleForward5,
+      handleNext,
+      handlePlay,
+      handlePrevious,
+    ]);
 
     return (
       <Box>
@@ -315,13 +350,23 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
           />
         )}
         <Box sx={controlsContainerStyles}>
-          <WaveformViewZoomControls
-            onZoomIn={handleZoomIn}
-            onZoomOut={handleZoomOut}
-            zoomInEnabled={zoomInEnabled}
-            zoomOutEnabled={zoomOutEnabled}
-            sx={zoomControlsStyles}
-          />
+          <Stack
+            direction="row"
+            spacing={1}
+            justifyContent="center"
+            sx={waveformViewControlsStyles}
+          >
+            <WaveformViewZoomControls
+              onZoomIn={handleZoomIn}
+              onZoomOut={handleZoomOut}
+              zoomInEnabled={zoomInEnabled}
+              zoomOutEnabled={zoomOutEnabled}
+            />
+            <LoopControls
+              loopActive={loopActive}
+              loopActiveChange={handleLoopActiveChange}
+            />
+          </Stack>
           <BasicControls
             nextDisabled={nextDisabled}
             playing={isPlaying}
