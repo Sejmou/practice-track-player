@@ -113,13 +113,27 @@ const Player: NextPage = (props: Props) => {
               onNext={nextSongHandler}
               onPrevious={previousSongHandler}
             />
-            <SongList
-              songs={songData.map(d => d.song)}
-              currentSong={songData[currSongIdx].song}
-              handleSongChange={song =>
-                setCurrSongIdx(songData.findIndex(d => d.song === song))
-              }
-            />
+            {songData.length > 1 && (
+              <SongList
+                songs={songData.map(d => d.song)}
+                currentSong={songData[currSongIdx].song}
+                handleSongChange={song =>
+                  setCurrSongIdx(songData.findIndex(d => d.song === song))
+                }
+              />
+            )}
+            <Stack direction="row">
+              <Button sx={{ m: 'auto' }} component="label">
+                Pick other file(s)
+                <input
+                  hidden
+                  accept="audio/*"
+                  type="file"
+                  multiple
+                  onChange={fileChangeHandler}
+                />
+              </Button>
+            </Stack>
           </Stack>
         )}
       </Box>
