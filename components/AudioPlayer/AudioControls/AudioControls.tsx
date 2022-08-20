@@ -24,8 +24,8 @@ const controlsContainerStyles: SxProps = {
   width: '100%',
   gridAutoColumns: 'minmax(0, 1fr)', // this makes columns exactly the same width https://stackoverflow.com/a/61240964/13727176
   gridTemplateAreas: {
-    xs: '"zoom pbr pbr" "basic basic basic"',
-    sm: '"zoom basic  pbr"',
+    xs: '"wave pbr pbr" "basic basic basic"',
+    sm: '"wave basic  pbr"',
   },
   mt: 1,
 };
@@ -39,7 +39,7 @@ const playbackRatePickerStyles: SxProps = {
 };
 
 const waveformViewControlsStyles: SxProps = {
-  gridArea: 'zoom',
+  gridArea: 'wave',
 };
 
 type Props = {

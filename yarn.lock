@@ -2468,7 +2468,7 @@ yocto-queue@^0.1.0:
 
 ytdl-core@^4.11.0:
   version "4.11.0"
-  resolved "https://registry.npmjs.org/ytdl-core/-/ytdl-core-4.11.0.tgz"
+  resolved "https://registry.yarnpkg.com/ytdl-core/-/ytdl-core-4.11.0.tgz#79a3ea94d9d662b4b3acecdb1372ed3f1a9ea9db"
   integrity sha512-Q3hCLiUA9AOGQXzPvno14GN+HgF9wsO1ZBHlj0COTcyxjIyFpWvMfii0UC4/cAbVaIjEdbWB71GdcGuc4J1Lmw==
   dependencies:
     m3u8stream "^0.8.6"

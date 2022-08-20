@@ -18,7 +18,7 @@ export default async function handler(
   try {
     console.log('fetching data from URL', url);
 
-    const urlRes = await fetch(url);
+    const urlRes = await fetch(url, { highWaterMark: Math.pow(2, 16) });
     if (!urlRes.ok)
       throw new Error(`unexpected response: ${urlRes.statusText}`);
     const resBody = urlRes.body;

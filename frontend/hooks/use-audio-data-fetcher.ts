@@ -38,9 +38,9 @@ const binaryDataFetcher = (url: string) =>
 const audioBufferFetcher = (url: string, ctx: AudioContext) =>
   binaryDataFetcher(url).then(buffer => ctx.decodeAudioData(buffer));
 
-export const useYouTubeAudioSrcDataFetcher = (videoId: string) => {
+export const useYouTubeAudioSrcDataFetcher = (videoId: string | null) => {
   return useSWRImmutable<SourceData, any>(
-    '/api/yt-audio/audio-el-data/' + videoId,
+    videoId ? '/api/yt-audio/audio-el-data/' + videoId : null,
     async (url: string) => {
       const webMSupport =
         new Audio().canPlayType('audio/webm; codecs="opus"') === 'probably';
@@ -80,18 +80,25 @@ export const useGoogleDriveAudioSrcDataFetcher = (fileId: string) => {
   );
 };
 
-export const useAudioBufferFetcher = (url: string) => {
+export const useAudioBufferFetcher = (url: string | null) => {
   const [audioContext, setAudioContext] = useState<AudioContext>();
   useEffect(() => {
     setAudioContext(new AudioContext());
   }, []);
 
+  console.log('here');
+
   const response = useSWRImmutable<AudioBuffer, any>(
-    [url, audioContext],
+    url ? [url, audioContext] : null,
     audioBufferFetcher
   );
 
   return response;
+};
+
+export const useProxyAudioBufferFetcher = (url: string | null) => {
+  const proxyUrl = url ? '/api/proxy?url=' + encodeURIComponent(url) : null;
+  return useAudioBufferFetcher(proxyUrl);
 };
 
 export const useBinaryWaveformDataFetcher = (url: string) => {

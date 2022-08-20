@@ -18,7 +18,7 @@ export default async function handler(
     noWebM ? '(no webm support)' : ''
   );
   try {
-    const info = await ytdl.getInfo(videoId);
+    const info = await ytdl.getBasicInfo(videoId); // for some reason, getInfo() fails, but getBasicInfo works!?
     const availableAudioFormats = info.formats.filter(
       f =>
         f.mimeType?.startsWith('audio') &&

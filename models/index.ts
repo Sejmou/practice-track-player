@@ -64,3 +64,15 @@ export const TimeStampValidator = z.object({
 });
 
 export type TimeStamp = z.infer<typeof TimeStampValidator>;
+
+export const YouTubeVideoDataValidator = z.object({
+  videoId: z.string(),
+  title: z.string(),
+  description: z.string(),
+  channelTitle: z.string(),
+});
+
+export type YouTubeVideoData = z.infer<typeof YouTubeVideoDataValidator>;
+
+export const YouTubePlaylistDataValidator = z.array(YouTubeVideoDataValidator);
+export type YouTubePlaylistData = z.infer<typeof YouTubePlaylistDataValidator>;
