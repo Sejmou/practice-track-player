@@ -96,7 +96,7 @@ const Player: NextPage = (props: Props) => {
             Select file(s) from your device
             <input
               hidden
-              accept="audio/*"
+              accept="audio/mpeg, audio/aac, audio/mp4, audio/ogg, audio/opus, audio/wav, audio/webm, audio/3gp, audio/3g2"
               type="file"
               multiple
               onChange={fileChangeHandler}
@@ -127,7 +127,7 @@ const Player: NextPage = (props: Props) => {
                 Pick other file(s)
                 <input
                   hidden
-                  accept="audio/*"
+                  accept="audio/mpeg, audio/aac, audio/mp4, audio/ogg, audio/opus, audio/wav, audio/webm, audio/3gp, audio/3g2"
                   type="file"
                   multiple
                   onChange={fileChangeHandler}

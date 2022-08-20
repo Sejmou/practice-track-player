@@ -151,7 +151,8 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
         } else {
           await audioEl.play();
         }
-        navigator.mediaSession.playbackState = 'playing';
+        if (navigator?.mediaSession?.playbackState)
+          navigator.mediaSession.playbackState = 'playing';
         setIsPlaying(true);
       }
     }, [loopActive, peaks]);
@@ -160,7 +161,8 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
       const audioEl = audioRef.current;
       if (audioEl) {
         audioEl.pause();
-        navigator.mediaSession.playbackState = 'paused';
+        if (navigator?.mediaSession?.playbackState)
+          navigator.mediaSession.playbackState = 'paused';
         setIsPlaying(false);
       }
     };
