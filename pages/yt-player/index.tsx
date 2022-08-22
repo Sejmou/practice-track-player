@@ -30,7 +30,6 @@ import {
   YouTubeVideoDataValidator,
 } from '@models';
 import YouTube, { YouTubeProps, YouTubeEvent } from 'react-youtube';
-import { useKeyboardShortcuts } from '@frontend/hooks/use-keyboard-shortcuts';
 import {
   useYouTubePlayerControls,
   YouTubePlayer,
@@ -89,7 +88,6 @@ const YouTubePlayerPage: NextPage = (props: Props) => {
     },
     [resizePlayer]
   );
-  console.log(youTubePlayerOpts);
 
   useLayoutEffect(() => {
     window.addEventListener('resize', resizePlayer);
@@ -141,9 +139,6 @@ const YouTubePlayerPage: NextPage = (props: Props) => {
       const input = ev.target.value;
       const { videoId, playlistId, playlistIndex } = getYouTubeVideoData(input);
       const inputInvalid = !videoId && !playlistId;
-
-      console.log({ videoId, playlistId, playlistIndex });
-      console.log(inputInvalid);
       setVideoLinkError(inputInvalid);
 
       // too lazy to write useSWR hook for that, should be fine anyway
@@ -173,8 +168,6 @@ const YouTubePlayerPage: NextPage = (props: Props) => {
   const handleLinkBlur = () => {
     setLinkInputTouched(true);
   };
-
-  useEffect(() => {}, [videoData, currVideoIdx]);
 
   const playerDataReady = videoData.length > 0;
 

@@ -1,4 +1,5 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { clamp } from '@util';
+import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 
 export type BaseMediaControlsProps = {
   /**
@@ -10,12 +11,9 @@ export type BaseMediaControlsProps = {
    */
   onPrevious: () => void;
   /**
-   * The number of seconds any controls for seeking the media should be seeked to
-   *
-   * Provide as input to any control displaying/interacting with the current seekTime
-   *
+   * The number of seconds the media should initially be seeked to
    */
-  seekTime?: number;
+  initialSeekTime?: number;
   /**
    * Whether keyboard shortcuts for the controls should be added. Defaults to true
    */
@@ -23,11 +21,11 @@ export type BaseMediaControlsProps = {
   /**
    * minimum media playback rate; defaults to 0.5
    */
-  minPlaybackRate: number;
+  minPlaybackRate?: number;
   /**
    * maximum media playback rate; defaults to 1
    */
-  maxPlaybackRate: number;
+  maxPlaybackRate?: number;
 };
 
 export type BasicMediaControlsReturnValues = {
@@ -38,31 +36,56 @@ export type BasicMediaControlsReturnValues = {
   handlePrevious: () => void;
   handleForward5: () => void;
   handleBackward5: () => void;
+  handleSeek: (newTime: number) => void;
+  handlePlaybackRateChange: (newPlaybackRate: number) => void;
+  playbackRate: number;
+  currentTime: number;
 };
 
-export function useMediaControlsBase(
-  props: BaseMediaControlsProps
-): Required<BaseMediaControlsProps> & {
+export function useMediaControlsBase(props: BaseMediaControlsProps): Required<
+  Omit<BaseMediaControlsProps, 'initialSeekTime'>
+> & {
   playbackRate: number;
   setPlaybackRate: Dispatch<SetStateAction<number>>;
   isPlaying: boolean;
   setIsPlaying: Dispatch<SetStateAction<boolean>>;
+  handlePlaybackRateChange: (newPlaybackRate: number) => void;
+  lastSeekTime: number;
+  setLastSeekTime: (newTime: number) => void;
+  currentTime: number;
+  setCurrentTime: (newTime: number) => void;
 } {
   const { onNext, onPrevious } = props;
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
 
+  const maxPlaybackRate = props.maxPlaybackRate ?? 1;
+  const minPlaybackRate = props.minPlaybackRate ?? 0.5;
+
+  const handlePlaybackRateChange = useCallback(
+    (pbr: number) =>
+      setPlaybackRate(clamp(pbr, minPlaybackRate, maxPlaybackRate)),
+    [maxPlaybackRate, minPlaybackRate]
+  );
+
+  const [lastSeekTime, setLastSeekTime] = useState(props.initialSeekTime ?? 0);
+  const [currentTime, setCurrentTime] = useState(props.initialSeekTime ?? 0);
+
   return {
     onNext,
     onPrevious,
-    seekTime: props.seekTime ?? 0,
     addKeyboardShortcuts: props.addKeyboardShortcuts ?? true,
-    maxPlaybackRate: props.maxPlaybackRate ?? 1,
-    minPlaybackRate: props.minPlaybackRate ?? 0.5,
+    maxPlaybackRate,
+    minPlaybackRate,
     playbackRate,
     setPlaybackRate,
     isPlaying,
     setIsPlaying,
+    handlePlaybackRateChange,
+    lastSeekTime,
+    setLastSeekTime,
+    currentTime,
+    setCurrentTime,
   };
 }

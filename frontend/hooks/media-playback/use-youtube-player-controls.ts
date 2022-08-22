@@ -1,3 +1,4 @@
+import { clamp } from '@util';
 import { useCallback, useEffect } from 'react';
 
 import {
@@ -22,9 +23,13 @@ export const useYouTubePlayerControls: (
     onNext,
     onPrevious,
     playbackRate,
-    seekTime,
+    currentTime,
+    setCurrentTime,
+    lastSeekTime,
+    setLastSeekTime,
     setIsPlaying,
     setPlaybackRate,
+    handlePlaybackRateChange,
   } = useMediaControlsBase(props);
 
   const { player } = props;
@@ -77,11 +82,6 @@ export const useYouTubePlayerControls: (
     onNext();
   }, [onNext]);
 
-  const handlePlaybackRateChange = useCallback(
-    (pbr: number) => setPlaybackRate(pbr),
-    [setPlaybackRate]
-  );
-
   const handlePlaybackRateIncrease = useCallback(() => {
     setPlaybackRate(prev => Math.min(prev + 0.05, maxPlaybackRate));
   }, [maxPlaybackRate, setPlaybackRate]);
@@ -114,17 +114,39 @@ export const useYouTubePlayerControls: (
   useEffect(() => {
     if (player) {
       try {
-        // TODO: investigate the error that is thrown further
+        // TODO (if motivated): this errors on first player render, investigate the error that is thrown further
         player.setPlaybackRate(playbackRate);
       } catch (error) {}
     }
   }, [playbackRate, player]);
 
+  const handleSeek = useCallback(
+    (newTime: number) => {
+      if (player) {
+        setLastSeekTime(clamp(newTime, 0, player.getDuration()));
+      }
+    },
+    [player, setLastSeekTime]
+  );
+
   useEffect(() => {
-    if (player && seekTime) {
-      player.seekTo(seekTime, true);
+    if (player) {
+      if (player.getCurrentTime() === lastSeekTime) return;
+      player.seekTo(lastSeekTime, true);
     }
-  }, [player, seekTime]);
+  }, [player, lastSeekTime]);
+
+  useEffect(() => {
+    const updateCurrentTime = () => {
+      if (player) {
+        setCurrentTime(player.getCurrentTime());
+      }
+    };
+    const id = setInterval(updateCurrentTime, 500);
+    return () => {
+      clearInterval(id);
+    };
+  }, [player, setCurrentTime]);
 
   useEffect(() => {
     const actionHandlers: [
@@ -165,6 +187,10 @@ export const useYouTubePlayerControls: (
     handlePrevious,
     handleForward5,
     handleBackward5,
+    handlePlaybackRateChange,
+    handleSeek,
+    currentTime,
+    playbackRate,
   };
 };
 
@@ -208,7 +234,7 @@ export type YouTubePlayer = {
   setLoop: (loopPlaylists: boolean) => void;
   setShuffle: (shufflePlaylist: boolean) => void;
   getVideoLoadedFraction: () => number;
-  getPlayerState: () => number;
+  getPlayerState: () => YouTubePlayerState;
   getCurrentTime: () => number;
   getVideoStartBytes: () => number;
   getVideoBytesLoaded: () => number;

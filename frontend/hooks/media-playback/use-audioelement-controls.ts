@@ -7,6 +7,7 @@ import {
   BasicMediaControlsReturnValues,
   useMediaControlsBase,
 } from '.';
+import { clamp } from '@util';
 
 type BasicAudioControlsProps = BaseMediaControlsProps & {
   /**
@@ -27,9 +28,13 @@ export const useBasicAudioPlaybackControls: (
     onNext,
     onPrevious,
     playbackRate,
-    seekTime,
     setIsPlaying,
     setPlaybackRate,
+    handlePlaybackRateChange,
+    lastSeekTime,
+    setLastSeekTime,
+    currentTime,
+    setCurrentTime,
   } = useMediaControlsBase(props);
 
   const { audioElSrcData } = props;
@@ -63,10 +68,10 @@ export const useBasicAudioPlaybackControls: (
     }
   }, [setIsPlaying]);
 
-  const handlePlayPauseToggle = () => {
+  const handlePlayPauseToggle = useCallback(() => {
     if (isPlaying) handlePause();
     else handlePlay();
-  };
+  }, [handlePause, handlePlay, isPlaying]);
 
   const handlePrevious = useCallback(() => {
     if (audioRef.current && audioRef.current.currentTime > 1) {
@@ -98,11 +103,6 @@ export const useBasicAudioPlaybackControls: (
   const handleNext = useCallback(() => {
     onNext();
   }, [onNext]);
-
-  const handlePlaybackRateChange = useCallback(
-    (pbr: number) => setPlaybackRate(pbr),
-    [setPlaybackRate]
-  );
 
   const handlePlaybackRateIncrease = useCallback(() => {
     setPlaybackRate(prev => Math.min(prev + 0.05, maxPlaybackRate));
@@ -155,11 +155,29 @@ export const useBasicAudioPlaybackControls: (
     }
   }, [playbackRate]);
 
-  useEffect(() => {
-    if (audioRef.current && seekTime) {
-      audioRef.current.currentTime = seekTime;
+  const handleSeek = (newTime: number) => {
+    if (audioRef.current) {
+      setLastSeekTime(clamp(newTime, 0, audioRef.current.duration));
     }
-  }, [seekTime]);
+  };
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = lastSeekTime;
+    }
+  }, [lastSeekTime]);
+
+  useEffect(() => {
+    const updateCurrentTime = () => {
+      if (audioRef.current) {
+        setCurrentTime(audioRef.current.currentTime);
+      }
+    };
+    const id = setInterval(updateCurrentTime, 500);
+    return () => {
+      clearInterval(id);
+    };
+  }, [setCurrentTime]);
 
   useEffect(() => {
     const actionHandlers: [
@@ -200,5 +218,9 @@ export const useBasicAudioPlaybackControls: (
     handlePrevious,
     handleForward5,
     handleBackward5,
+    handlePlaybackRateChange,
+    handleSeek,
+    playbackRate,
+    currentTime,
   };
 };
