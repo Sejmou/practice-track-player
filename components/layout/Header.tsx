@@ -32,7 +32,7 @@ const Header = ({ sx }: Props) => {
       text: 'Musicals',
     },
     { href: '/player', text: 'Play your own tracks' },
-    { href: '/yt-player', text: 'Play YouTube audio' },
+    { href: '/yt-player', text: 'YouTube Player' },
   ];
 
   const handleDrawerKeyEvent = (event: KeyboardEvent<HTMLDivElement>) => {

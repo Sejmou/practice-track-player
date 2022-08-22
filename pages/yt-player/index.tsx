@@ -5,10 +5,14 @@ import {
   FocusEvent,
   useCallback,
   useEffect,
+  useMemo,
+  useRef,
   useState,
 } from 'react';
 import {
+  Button,
   InputAdornment,
+  Link,
   Paper,
   Stack,
   SxProps,
@@ -20,16 +24,19 @@ import AudioPlayer from '@components/AudioPlayer/AudioPlayer';
 import SongList from '@components/SongList/SongList';
 import InsertLinkIcon from '@mui/icons-material/InsertLink';
 import { getURLVideoID } from 'ytdl-core';
+import { useYouTubeAudioSrcDataFetcher } from '@frontend/hooks/use-audio-data-fetcher';
 import {
-  useProxyAudioBufferFetcher,
-  useYouTubeAudioSrcDataFetcher,
-} from '@frontend/hooks/use-audio-data-fetcher';
-import {
-  YouTubePlaylistData,
+  Song,
   YouTubePlaylistDataValidator,
   YouTubeVideoData,
   YouTubeVideoDataValidator,
 } from '@models';
+import YouTube, {
+  YouTubeProps,
+  YouTubePlayer,
+  YouTubeEvent,
+} from 'react-youtube';
+import { useKeyboardShortcuts } from '@frontend/hooks/use-keyboard-shortcuts';
 
 type Props = {};
 
@@ -45,7 +52,7 @@ type YouTubeLinkData = {
   playlistIndex?: string;
 };
 
-const YouTubePlayer: NextPage = (props: Props) => {
+const YouTubePlayerPage: NextPage = (props: Props) => {
   const [audioContext, setAudioContext] = useState<AudioContext>();
   useEffect(() => {
     setAudioContext(new AudioContext());
@@ -57,17 +64,80 @@ const YouTubePlayer: NextPage = (props: Props) => {
   // const [youTubeLinkData, setYouTubeLinkData] = useState<YouTubeLinkData>();
 
   const [videoData, setVideoData] = useState<YouTubeVideoData[]>([]);
+  const [songListData, setSongListData] = useState<Song[]>([]);
   const [currVideoIdx, setCurrVideoIdx] = useState(0);
 
-  const nextHandler = useCallback(() => {
+  const playerContainerRef = useRef<HTMLDivElement>();
+  const [youTubePlayer, setYouTubePlayer] = useState<YouTubePlayer>();
+  console.log(youTubePlayer);
+
+  const [youTubePlayerOpts, setYouTubePlayerOpts] = useState<
+    YouTubeProps['opts']
+  >({ controls: false, playerVars: { controls: 0 } });
+
+  const onPlayerReady = useCallback(
+    (ev: YouTubeEvent) => {
+      if (playerContainerRef.current) {
+        const width = playerContainerRef.current.offsetWidth;
+        const height = (width * 9) / 16; // assuming 16:9 aspect ratio
+        setYouTubePlayerOpts({
+          ...youTubePlayerOpts,
+          width,
+          height,
+        });
+
+        setYouTubePlayer(ev.target);
+      }
+    },
+    [youTubePlayerOpts]
+  );
+  console.log(youTubePlayerOpts);
+
+  const handlePlay = async () => {
+    if (youTubePlayer) {
+      youTubePlayer.playVideo();
+      if (navigator?.mediaSession?.playbackState)
+        navigator.mediaSession.playbackState = 'playing';
+    }
+  };
+
+  const handlePause = () => {
+    if (youTubePlayer) {
+      youTubePlayer.pauseVideo();
+      if (navigator?.mediaSession?.playbackState)
+        navigator.mediaSession.playbackState = 'paused';
+    }
+  };
+
+  const handlePlayPauseToggle = () => {
+    if (youTubePlayer) {
+      if (youTubePlayer.getPlayerState() == 1) handlePause();
+      else handlePlay();
+    }
+  };
+
+  const handleNext = useCallback(() => {
     setCurrVideoIdx(prev => Math.min(prev + 1, videoData.length - 1));
   }, [videoData]);
 
-  const previousHandler = useCallback(() => {
+  const handlePrevious = useCallback(() => {
     setCurrVideoIdx(prev => Math.max(prev - 1, 0));
   }, []);
 
-  const linkInputChangeHandler = useCallback(
+  useKeyboardShortcuts([
+    [
+      { key: ' ' },
+      event => {
+        // spacebar causes page scroll per default -> we don't want that!
+        handlePlayPauseToggle();
+        event.preventDefault();
+      },
+    ],
+    [{ key: 'ArrowLeft', ctrlKey: true }, handlePrevious],
+    [{ key: 'ArrowRight', ctrlKey: true }, handleNext],
+  ]);
+
+  const handleLinkInputChange = useCallback(
     async (
       ev: ChangeEvent<HTMLInputElement> | FocusEvent<HTMLInputElement>
     ) => {
@@ -88,11 +158,17 @@ const YouTubePlayer: NextPage = (props: Props) => {
           .then(res => res.json())
           .then(json => YouTubePlaylistDataValidator.parse(json));
         setVideoData(playlistData);
+        setSongListData(
+          playlistData.map(v => ({ title: v.title, artist: v.channelTitle }))
+        );
       } else if (videoId) {
         const videoData = await fetch(`/api/yt/video-metadata/${videoId}`)
           .then(res => res.json())
           .then(json => YouTubeVideoDataValidator.parse(json));
         setVideoData([videoData]);
+        setSongListData([
+          { title: videoData.title, artist: videoData.channelTitle },
+        ]);
       }
     },
     [audioContext]
@@ -102,27 +178,33 @@ const YouTubePlayer: NextPage = (props: Props) => {
     setLinkInputTouched(true);
   };
 
-  const { data: audioSrcData, error: audioSrcDataError } =
-    useYouTubeAudioSrcDataFetcher(
-      videoData[currVideoIdx]?.videoId ? videoData[currVideoIdx].videoId : null
-    );
+  useEffect(() => {}, [videoData, currVideoIdx]);
 
-  const { data: audioBuffer, error: audioBufferError } =
-    useProxyAudioBufferFetcher(audioSrcData?.src ? audioSrcData.src : null);
-
-  const playerDataReady =
-    !!audioSrcData && !!audioBuffer && videoData.length > 0;
-
-  console.log('errors', audioSrcDataError, audioBufferError);
-  console.log(audioBuffer);
+  const playerDataReady = videoData.length > 0;
 
   const linkInput = (
     <>
       <Typography variant="h3">YouTube Player</Typography>
       <Paper sx={{ p: 1, mt: 1 }}>
-        <Typography variant="subtitle1" my={1}>
-          Play the audio of a YouTube video (or even a whole playlist) in a nice
-          audio player interface 🤘
+        <Typography variant="subtitle1" my={1} maxWidth="650px">
+          Play any YouTube video or playlist, with more controls than
+          YouTube&apos;s own player offers.
+        </Typography>
+        <Typography variant="subtitle1" mb={1} maxWidth="650px">
+          Note: Initially, my goal was to allow you to play the audio of YouTube
+          videos using the same player interface as on the other subsites.
+        </Typography>
+        <Typography variant="subtitle1" mb={1} maxWidth={600}>
+          However, that&apos;s unfortunately very difficult to do without quite
+          extreme hacks. Furthermore, separating audio and video channels for a
+          YouTube video would also violate YouTube&apos;s{' '}
+          <Link
+            href="https://developers.google.com/youtube/terms/developer-policies?hl=en#i.-additional-prohibitions:~:text=separate%2C%20isolate%2C%20or%20modify%20the%20audio%20or%20video%20components%20of%20any%20YouTube%20audiovisual%20content%20made%20available%20as%20part%20of%2C%20or%20in%20connection%20with%2C%20YouTube%20API%20Services.%20For%20example%2C%20you%20must%20not%20apply%20alternate%20audio%20tracks%20to%20videos%3B"
+            target="_blank"
+          >
+            Terms of Use
+          </Link>
+          .
         </Typography>
         <TextField
           label="Paste a YouTube video/playlist link here!"
@@ -142,7 +224,7 @@ const YouTubePlayer: NextPage = (props: Props) => {
             error: videoLinkError && linkInputTourched,
             spellCheck: false,
           }}
-          onChange={linkInputChangeHandler}
+          onChange={handleLinkInputChange}
           onBlur={linkBlurHandler}
         />
       </Paper>
@@ -164,7 +246,7 @@ const YouTubePlayer: NextPage = (props: Props) => {
           linkInput
         ) : (
           <Stack spacing={2}>
-            <AudioPlayer
+            {/* <AudioPlayer
               mainTitle={videoData[currVideoIdx].title}
               subTitle={`uploaded by ${videoData[currVideoIdx].channelTitle}`}
               audioElSrcData={audioSrcData}
@@ -172,27 +254,38 @@ const YouTubePlayer: NextPage = (props: Props) => {
               nextDisabled={currVideoIdx === videoData.length - 1}
               onNext={nextHandler}
               onPrevious={previousHandler}
-            />
+            /> */}
+            <Box ref={playerContainerRef}>
+              <YouTube
+                onReady={onPlayerReady}
+                videoId={videoData[currVideoIdx]?.videoId}
+                opts={youTubePlayerOpts}
+              />
+            </Box>
             {videoData.length > 1 && (
               <SongList
-                songs={videoData}
-                currentSong={videoData[currVideoIdx]}
+                title="Videos"
+                songs={songListData}
+                currentSong={songListData[currVideoIdx]}
                 handleSongChange={song => {
-                  const currVideo = song as YouTubeVideoData;
                   setCurrVideoIdx(
-                    videoData.findIndex(d => d.videoId === currVideo.videoId)
+                    songListData.findIndex(s => s.title === song.title)
                   );
                 }}
               />
             )}
-            <Stack direction="row">{linkInput}</Stack>
+            <Stack direction="column">
+              <Button onClick={() => setVideoData([])}>
+                Pick other video or playlist
+              </Button>
+            </Stack>
           </Stack>
         )}
       </Box>
     </>
   );
 };
-export default YouTubePlayer;
+export default YouTubePlayerPage;
 
 function getYouTubeVideoData(input: string): YouTubeLinkData {
   let videoId;
