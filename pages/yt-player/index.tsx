@@ -83,13 +83,13 @@ const YouTubePlayer: NextPage = (props: Props) => {
       // too lazy to write useSWR hook for that, should be fine anyway
       if (playlistId) {
         const playlistData = await fetch(
-          `/api/yt-audio/playlist-video-metadata/${playlistId}`
+          `/api/yt/playlist-video-metadata/${playlistId}`
         )
           .then(res => res.json())
           .then(json => YouTubePlaylistDataValidator.parse(json));
         setVideoData(playlistData);
       } else if (videoId) {
-        const videoData = await fetch(`/api/yt-audio/video-metadata/${videoId}`)
+        const videoData = await fetch(`/api/yt/video-metadata/${videoId}`)
           .then(res => res.json())
           .then(json => YouTubeVideoDataValidator.parse(json));
         setVideoData([videoData]);

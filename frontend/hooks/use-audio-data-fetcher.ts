@@ -40,7 +40,7 @@ const audioBufferFetcher = (url: string, ctx: AudioContext) =>
 
 export const useYouTubeAudioSrcDataFetcher = (videoId: string | null) => {
   return useSWRImmutable<SourceData, any>(
-    videoId ? '/api/yt-audio/audio-el-data/' + videoId : null,
+    videoId ? '/api/yt/audio-el-data/' + videoId : null,
     async (url: string) => {
       const webMSupport =
         new Audio().canPlayType('audio/webm; codecs="opus"') === 'probably';
@@ -58,7 +58,7 @@ export const useYouTubeAudioSrcDataFetcher = (videoId: string | null) => {
 
 export const useYouTubeDescriptionFetcher = (videoId: string) => {
   return useSWRImmutable<string, any>(
-    '/api/yt-audio/description/' + videoId,
+    '/api/yt/description/' + videoId,
     jsonFetcher,
     {
       shouldRetryOnError: false, // we must not spam the API, otherwise YouTube blocks the server!
