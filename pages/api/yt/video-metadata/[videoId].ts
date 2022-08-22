@@ -13,7 +13,7 @@ export default async function handler(
     );
     const parsedJson = await resJson.json();
     const videoData = YouTubeVideoDataValidator.parse({
-      id: parsedJson.id,
+      videoId: parsedJson.items[0].id,
       ...parsedJson.items[0].snippet,
     });
 
