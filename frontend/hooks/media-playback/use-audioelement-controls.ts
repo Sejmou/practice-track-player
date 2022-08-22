@@ -2,7 +2,11 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 
 import { SourceData } from '@models';
 import { useKeyboardShortcuts } from '@frontend/hooks/use-keyboard-shortcuts';
-import { BaseMediaControlsProps } from '.';
+import {
+  BaseMediaControlsProps,
+  BasicMediaControlsReturnValues,
+  useMediaControlsBase,
+} from '.';
 
 type BasicAudioControlsProps = BaseMediaControlsProps & {
   /**
@@ -12,23 +16,26 @@ type BasicAudioControlsProps = BaseMediaControlsProps & {
 };
 
 // TODO: actually test this lol
-export const useBasicAudioPlaybackControls = ({
-  audioElSrcData,
-  onNext,
-  onPrevious,
-  seekTime,
-  addKeyboardShortcuts: addKeyboardShortcutsProp,
-}: BasicAudioControlsProps) => {
-  const addKeyboardShortcuts = addKeyboardShortcutsProp
-    ? addKeyboardShortcutsProp
-    : true;
-  const [isPlaying, setIsPlaying] = useState(false);
+export const useBasicAudioPlaybackControls: (
+  props: BasicAudioControlsProps
+) => BasicMediaControlsReturnValues = props => {
+  const {
+    addKeyboardShortcuts,
+    isPlaying,
+    maxPlaybackRate,
+    minPlaybackRate,
+    onNext,
+    onPrevious,
+    playbackRate,
+    seekTime,
+    setIsPlaying,
+    setPlaybackRate,
+  } = useMediaControlsBase(props);
+
+  const { audioElSrcData } = props;
+
   // isReady state is actually irrelevant, I'm just abusing useState to trigger a rerender of components using hook once the audio element's metadata is loaded
   const [isReady, setIsReady] = useState(false);
-  const [playbackRate, setPlaybackRate] = useState(1);
-
-  const minPlaybackRate = 0.5;
-  const maxPlaybackRate = 1;
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -44,9 +51,9 @@ export const useBasicAudioPlaybackControls = ({
         navigator.mediaSession.playbackState = 'playing';
       setIsPlaying(true);
     }
-  }, []);
+  }, [setIsPlaying]);
 
-  const handlePause = () => {
+  const handlePause = useCallback(() => {
     const audioEl = audioRef.current;
     if (audioEl) {
       audioEl.pause();
@@ -54,7 +61,7 @@ export const useBasicAudioPlaybackControls = ({
         navigator.mediaSession.playbackState = 'paused';
       setIsPlaying(false);
     }
-  };
+  }, [setIsPlaying]);
 
   const handlePlayPauseToggle = () => {
     if (isPlaying) handlePause();
@@ -94,33 +101,37 @@ export const useBasicAudioPlaybackControls = ({
 
   const handlePlaybackRateChange = useCallback(
     (pbr: number) => setPlaybackRate(pbr),
-    []
+    [setPlaybackRate]
   );
 
   const handlePlaybackRateIncrease = useCallback(() => {
-    setPlaybackRate(prev => Math.min(prev + 0.05, 1));
-  }, []);
+    setPlaybackRate(prev => Math.min(prev + 0.05, maxPlaybackRate));
+  }, [maxPlaybackRate, setPlaybackRate]);
 
   const handlePlaybackRateDecrease = useCallback(() => {
-    setPlaybackRate(prev => Math.max(prev - 0.05, 0.5));
-  }, []);
+    setPlaybackRate(prev => Math.max(prev - 0.05, minPlaybackRate));
+  }, [minPlaybackRate, setPlaybackRate]);
 
-  useKeyboardShortcuts([
-    [
-      { key: ' ' },
-      event => {
-        // spacebar causes page scroll per default -> we don't want that!
-        handlePlayPauseToggle();
-        event.preventDefault();
-      },
-    ],
-    [{ key: 'ArrowLeft' }, handleBackward5],
-    [{ key: 'ArrowRight' }, handleForward5],
-    [{ key: '-' }, handlePlaybackRateDecrease],
-    [{ key: '+' }, handlePlaybackRateIncrease],
-    [{ key: 'ArrowLeft', ctrlKey: true }, handlePrevious],
-    [{ key: 'ArrowRight', ctrlKey: true }, handleNext],
-  ]);
+  useKeyboardShortcuts(
+    addKeyboardShortcuts
+      ? [
+          [
+            { key: ' ' },
+            event => {
+              // spacebar causes page scroll per default -> we don't want that!
+              handlePlayPauseToggle();
+              event.preventDefault();
+            },
+          ],
+          [{ key: 'ArrowLeft' }, handleBackward5],
+          [{ key: 'ArrowRight' }, handleForward5],
+          [{ key: '-' }, handlePlaybackRateDecrease],
+          [{ key: '+' }, handlePlaybackRateIncrease],
+          [{ key: 'ArrowLeft', ctrlKey: true }, handlePrevious],
+          [{ key: 'ArrowRight', ctrlKey: true }, handleNext],
+        ]
+      : []
+  );
 
   useEffect(() => {
     const audio = new Audio(audioElSrcData.src);
@@ -136,7 +147,7 @@ export const useBasicAudioPlaybackControls = ({
       audioRef.current?.pause();
       setIsPlaying(false);
     };
-  }, [audioElSrcData.src]);
+  }, [audioElSrcData.src, setIsPlaying]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -172,7 +183,14 @@ export const useBasicAudioPlaybackControls = ({
         );
       }
     }
-  }, [handleBackward5, handleForward5, handleNext, handlePlay, handlePrevious]);
+  }, [
+    handleBackward5,
+    handleForward5,
+    handleNext,
+    handlePause,
+    handlePlay,
+    handlePrevious,
+  ]);
 
   return {
     handlePlay,

@@ -1,33 +1,33 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 
-import { BaseMediaControlsProps } from '.';
+import {
+  BaseMediaControlsProps,
+  BasicMediaControlsReturnValues,
+  useMediaControlsBase,
+} from '.';
 import { useKeyboardShortcuts } from '../use-keyboard-shortcuts';
 
 type YouTubePlayerControlsProps = BaseMediaControlsProps & {
   player?: YouTubePlayer;
 };
 
-export const useYouTubePlayerControls = ({
-  player,
-  onNext,
-  onPrevious,
-  seekTime,
-  addKeyboardShortcuts: addKeyboardShortcutsProp,
-}: YouTubePlayerControlsProps) => {
-  const addKeyboardShortcuts = addKeyboardShortcutsProp
-    ? addKeyboardShortcutsProp
-    : true;
-  const [isPlaying, setIsPlaying] = useState(false);
-  // isReady state is actually irrelevant, I'm just abusing useState to trigger a rerender of components using hook once the audio element's metadata is loaded
-  const [isReady, setIsReady] = useState(false);
-  const [playbackRate, setPlaybackRate] = useState(1);
+export const useYouTubePlayerControls: (
+  props: YouTubePlayerControlsProps
+) => BasicMediaControlsReturnValues = props => {
+  const {
+    addKeyboardShortcuts,
+    isPlaying,
+    maxPlaybackRate,
+    minPlaybackRate,
+    onNext,
+    onPrevious,
+    playbackRate,
+    seekTime,
+    setIsPlaying,
+    setPlaybackRate,
+  } = useMediaControlsBase(props);
 
-  const minPlaybackRate = 0.5;
-  const maxPlaybackRate = 1;
-
-  const handleMetadataLoaded = () => {
-    setIsReady(true);
-  };
+  const { player } = props;
 
   const handlePlay = useCallback(async () => {
     if (player) {
@@ -36,7 +36,7 @@ export const useYouTubePlayerControls = ({
         navigator.mediaSession.playbackState = 'playing';
       setIsPlaying(true);
     }
-  }, [player]);
+  }, [player, setIsPlaying]);
 
   const handlePause = useCallback(() => {
     if (player) {
@@ -45,7 +45,7 @@ export const useYouTubePlayerControls = ({
         navigator.mediaSession.playbackState = 'paused';
       setIsPlaying(false);
     }
-  }, [player]);
+  }, [player, setIsPlaying]);
 
   const handlePlayPauseToggle = () => {
     if (isPlaying) handlePause();
@@ -79,33 +79,37 @@ export const useYouTubePlayerControls = ({
 
   const handlePlaybackRateChange = useCallback(
     (pbr: number) => setPlaybackRate(pbr),
-    []
+    [setPlaybackRate]
   );
 
   const handlePlaybackRateIncrease = useCallback(() => {
     setPlaybackRate(prev => Math.min(prev + 0.05, maxPlaybackRate));
-  }, []);
+  }, [maxPlaybackRate, setPlaybackRate]);
 
   const handlePlaybackRateDecrease = useCallback(() => {
     setPlaybackRate(prev => Math.max(prev - 0.05, minPlaybackRate));
-  }, []);
+  }, [minPlaybackRate, setPlaybackRate]);
 
-  useKeyboardShortcuts([
-    [
-      { key: ' ' },
-      event => {
-        // spacebar causes page scroll per default -> we don't want that!
-        handlePlayPauseToggle();
-        event.preventDefault();
-      },
-    ],
-    [{ key: 'ArrowLeft' }, handleBackward5],
-    [{ key: 'ArrowRight' }, handleForward5],
-    [{ key: '-' }, handlePlaybackRateDecrease],
-    [{ key: '+' }, handlePlaybackRateIncrease],
-    [{ key: 'ArrowLeft', ctrlKey: true }, handlePrevious],
-    [{ key: 'ArrowRight', ctrlKey: true }, handleNext],
-  ]);
+  useKeyboardShortcuts(
+    addKeyboardShortcuts
+      ? [
+          [
+            { key: ' ' },
+            event => {
+              // spacebar causes page scroll per default -> we don't want that!
+              handlePlayPauseToggle();
+              event.preventDefault();
+            },
+          ],
+          [{ key: 'ArrowLeft' }, handleBackward5],
+          [{ key: 'ArrowRight' }, handleForward5],
+          [{ key: '-' }, handlePlaybackRateDecrease],
+          [{ key: '+' }, handlePlaybackRateIncrease],
+          [{ key: 'ArrowLeft', ctrlKey: true }, handlePrevious],
+          [{ key: 'ArrowRight', ctrlKey: true }, handleNext],
+        ]
+      : []
+  );
 
   useEffect(() => {
     if (player) {
