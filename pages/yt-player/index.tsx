@@ -6,7 +6,6 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -21,23 +20,21 @@ import {
   Typography,
 } from '@mui/material';
 import { Box } from '@mui/material';
-import AudioPlayer from '@components/AudioPlayer/AudioPlayer';
 import SongList from '@components/SongList/SongList';
 import InsertLinkIcon from '@mui/icons-material/InsertLink';
 import { getURLVideoID } from 'ytdl-core';
-import { useYouTubeAudioSrcDataFetcher } from '@frontend/hooks/use-audio-data-fetcher';
 import {
   Song,
   YouTubePlaylistDataValidator,
   YouTubeVideoData,
   YouTubeVideoDataValidator,
 } from '@models';
-import YouTube, {
-  YouTubeProps,
-  YouTubePlayer,
-  YouTubeEvent,
-} from 'react-youtube';
+import YouTube, { YouTubeProps, YouTubeEvent } from 'react-youtube';
 import { useKeyboardShortcuts } from '@frontend/hooks/use-keyboard-shortcuts';
+import {
+  useYouTubePlayerControls,
+  YouTubePlayer,
+} from '@frontend/hooks/media-playback/use-youtube-player-controls';
 
 type Props = {};
 
@@ -62,15 +59,12 @@ const YouTubePlayerPage: NextPage = (props: Props) => {
   const [linkInputTourched, setLinkInputTouched] = useState(false);
   const [videoLinkError, setVideoLinkError] = useState(false);
 
-  // const [youTubeLinkData, setYouTubeLinkData] = useState<YouTubeLinkData>();
-
   const [videoData, setVideoData] = useState<YouTubeVideoData[]>([]);
   const [songListData, setSongListData] = useState<Song[]>([]);
   const [currVideoIdx, setCurrVideoIdx] = useState(0);
 
   const playerContainerRef = useRef<HTMLDivElement>();
   const [youTubePlayer, setYouTubePlayer] = useState<YouTubePlayer>();
-  console.log(youTubePlayer);
 
   const [youTubePlayerOpts, setYouTubePlayerOpts] = useState<
     YouTubeProps['opts']
@@ -133,18 +127,11 @@ const YouTubePlayerPage: NextPage = (props: Props) => {
     setCurrVideoIdx(prev => Math.max(prev - 1, 0));
   }, []);
 
-  useKeyboardShortcuts([
-    [
-      { key: ' ' },
-      event => {
-        // spacebar causes page scroll per default -> we don't want that!
-        handlePlayPauseToggle();
-        event.preventDefault();
-      },
-    ],
-    [{ key: 'ArrowLeft', ctrlKey: true }, handlePrevious],
-    [{ key: 'ArrowRight', ctrlKey: true }, handleNext],
-  ]);
+  useYouTubePlayerControls({
+    player: youTubePlayer,
+    onNext: handleNext,
+    onPrevious: handlePrevious,
+  });
 
   const handleLinkInputChange = useCallback(
     async (
@@ -183,7 +170,7 @@ const YouTubePlayerPage: NextPage = (props: Props) => {
     [audioContext]
   );
 
-  const linkBlurHandler = () => {
+  const handleLinkBlur = () => {
     setLinkInputTouched(true);
   };
 
@@ -234,7 +221,7 @@ const YouTubePlayerPage: NextPage = (props: Props) => {
             spellCheck: false,
           }}
           onChange={handleLinkInputChange}
-          onBlur={linkBlurHandler}
+          onBlur={handleLinkBlur}
         />
       </Paper>
     </>
