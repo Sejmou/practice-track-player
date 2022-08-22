@@ -317,17 +317,17 @@ const validQueryDomains = new Set([
   'music.youtube.com',
   'gaming.youtube.com',
 ]);
-const validPathDomains =
-  /^https?:\/\/(youtu\.be\/|(www\.)?youtube\.com\/(embed|v|shorts)\/)/;
 
+/**
+ * Extracts YouTube link query parameters other than video ID
+ *
+ * returns undefined if not a valid YouTube URL or param not found
+ */
 function getYouTubeQueryParam(link: string, paramName: string) {
   try {
     const parsed = new URL(link.trim());
     let paramValue = parsed.searchParams.get(paramName);
-    if (validPathDomains.test(link.trim()) && !paramValue) {
-      const paths = parsed.pathname.split('/');
-      paramValue = parsed.host === 'youtu.be' ? paths[1] : paths[2];
-    } else if (parsed.hostname && !validQueryDomains.has(parsed.hostname)) {
+    if (parsed.hostname && !validQueryDomains.has(parsed.hostname)) {
       return;
     }
     if (!paramValue) {
