@@ -5,6 +5,7 @@ import {
   FocusEvent,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -75,23 +76,31 @@ const YouTubePlayerPage: NextPage = (props: Props) => {
     YouTubeProps['opts']
   >({ controls: false, playerVars: { controls: 0 } });
 
+  const resizePlayer = useCallback(() => {
+    if (playerContainerRef.current) {
+      const width = playerContainerRef.current.offsetWidth;
+      const height = (width * 9) / 16; // assuming 16:9 aspect ratio
+      setYouTubePlayerOpts({
+        ...youTubePlayerOpts,
+        width,
+        height,
+      });
+    }
+  }, [youTubePlayerOpts]);
+
   const onPlayerReady = useCallback(
     (ev: YouTubeEvent) => {
-      if (playerContainerRef.current) {
-        const width = playerContainerRef.current.offsetWidth;
-        const height = (width * 9) / 16; // assuming 16:9 aspect ratio
-        setYouTubePlayerOpts({
-          ...youTubePlayerOpts,
-          width,
-          height,
-        });
-
-        setYouTubePlayer(ev.target);
-      }
+      setYouTubePlayer(ev.target);
+      resizePlayer();
     },
-    [youTubePlayerOpts]
+    [resizePlayer]
   );
   console.log(youTubePlayerOpts);
+
+  useLayoutEffect(() => {
+    window.addEventListener('resize', resizePlayer);
+    return () => window.removeEventListener('resize', resizePlayer);
+  }, [resizePlayer]);
 
   const handlePlay = async () => {
     if (youTubePlayer) {
