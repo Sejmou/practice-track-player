@@ -1,7 +1,7 @@
 import { clamp } from '@util';
 import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 
-export type BaseMediaControlsProps = {
+export type BasicMediaControlHookProps = {
   /**
    * Action to take if handleNext fires
    */
@@ -28,7 +28,7 @@ export type BaseMediaControlsProps = {
   maxPlaybackRate?: number;
 };
 
-export type BasicMediaControlsReturnValues = {
+export type BasicMediaControlsProps = {
   handlePlay: () => void;
   handlePause: () => void;
   handlePlayPauseToggle: () => void;
@@ -40,11 +40,15 @@ export type BasicMediaControlsReturnValues = {
   handlePlaybackRateChange: (newPlaybackRate: number) => void;
   playbackRate: number;
   currentTime: number;
+  isPlaying: boolean;
+  maxPlaybackRate: number;
+  minPlaybackRate: number;
+  duration: number;
 };
 
-export function useMediaControlsBase(props: BaseMediaControlsProps): Required<
-  Omit<BaseMediaControlsProps, 'initialSeekTime'>
-> & {
+export function useMediaControlsBase(
+  props: BasicMediaControlHookProps
+): Required<Omit<BasicMediaControlHookProps, 'initialSeekTime'>> & {
   playbackRate: number;
   setPlaybackRate: Dispatch<SetStateAction<number>>;
   isPlaying: boolean;

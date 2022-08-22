@@ -1,20 +1,20 @@
 import { clamp } from '@util';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import {
-  BaseMediaControlsProps,
-  BasicMediaControlsReturnValues,
+  BasicMediaControlHookProps,
+  BasicMediaControlsProps,
   useMediaControlsBase,
 } from '.';
 import { useKeyboardShortcuts } from '../use-keyboard-shortcuts';
 
-type YouTubePlayerControlsProps = BaseMediaControlsProps & {
+type YouTubePlayerControlsProps = BasicMediaControlHookProps & {
   player?: YouTubePlayer;
 };
 
 export const useYouTubePlayerControls: (
   props: YouTubePlayerControlsProps
-) => BasicMediaControlsReturnValues = props => {
+) => BasicMediaControlsProps = props => {
   const {
     addKeyboardShortcuts,
     isPlaying,
@@ -34,23 +34,35 @@ export const useYouTubePlayerControls: (
 
   const { player } = props;
 
+  useEffect(() => {
+    const listener = ({ data }: { data: YouTubePlayerState }) => {
+      setIsPlaying(data === YouTubePlayerState.PLAYING);
+    };
+    if (player) {
+      player.addEventListener('onStateChange', listener as unknown as string); // absolutely don't understand why listener is typed as string; it really is, even in the docs! https://developers.google.com/youtube/iframe_api_reference#Adding_event_listener
+    }
+    return () => {
+      try {
+        // TODO: figure out why this throws an error!?
+        player?.removeEventListener(
+          'onStateChange',
+          listener as unknown as string
+        );
+      } catch {}
+    };
+  }, [player, setIsPlaying]);
+
   const handlePlay = useCallback(async () => {
     if (player) {
       player.playVideo();
-      if (navigator?.mediaSession?.playbackState)
-        navigator.mediaSession.playbackState = 'playing';
-      setIsPlaying(true);
     }
-  }, [player, setIsPlaying]);
+  }, [player]);
 
   const handlePause = useCallback(() => {
     if (player) {
       player.pauseVideo();
-      if (navigator?.mediaSession?.playbackState)
-        navigator.mediaSession.playbackState = 'paused';
-      setIsPlaying(false);
     }
-  }, [player, setIsPlaying]);
+  }, [player]);
 
   const handlePlayPauseToggle = () => {
     if (isPlaying) handlePause();
@@ -132,7 +144,11 @@ export const useYouTubePlayerControls: (
   useEffect(() => {
     if (player) {
       if (player.getCurrentTime() === lastSeekTime) return;
-      player.seekTo(lastSeekTime, true);
+      try {
+        player.seekTo(lastSeekTime, true);
+      } catch (error) {
+        console.error('Error occured while seeking to', lastSeekTime, error);
+      }
     }
   }, [player, lastSeekTime]);
 
@@ -142,7 +158,7 @@ export const useYouTubePlayerControls: (
         setCurrentTime(player.getCurrentTime());
       }
     };
-    const id = setInterval(updateCurrentTime, 500);
+    const id = setInterval(updateCurrentTime, 50);
     return () => {
       clearInterval(id);
     };
@@ -179,6 +195,13 @@ export const useYouTubePlayerControls: (
     handlePrevious,
   ]);
 
+  const [duration, setDuration] = useState(1);
+  useEffect(() => {
+    if (player) {
+      setDuration(player.getDuration());
+    }
+  }, [player]);
+
   return {
     handlePlay,
     handlePause,
@@ -191,6 +214,10 @@ export const useYouTubePlayerControls: (
     handleSeek,
     currentTime,
     playbackRate,
+    isPlaying,
+    maxPlaybackRate,
+    minPlaybackRate,
+    duration,
   };
 };
 

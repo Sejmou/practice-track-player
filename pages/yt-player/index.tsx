@@ -30,10 +30,8 @@ import {
   YouTubeVideoDataValidator,
 } from '@models';
 import YouTube, { YouTubeProps, YouTubeEvent } from 'react-youtube';
-import {
-  useYouTubePlayerControls,
-  YouTubePlayer,
-} from '@frontend/hooks/media-playback/use-youtube-player-controls';
+import { YouTubePlayer } from '@frontend/hooks/media-playback/use-youtube-player-controls';
+import BasicYouTubePlayer from '@components/media/BasicYouTubePlayerControls';
 
 type Props = {};
 
@@ -124,12 +122,6 @@ const YouTubePlayerPage: NextPage = (props: Props) => {
   const handlePrevious = useCallback(() => {
     setCurrVideoIdx(prev => Math.max(prev - 1, 0));
   }, []);
-
-  useYouTubePlayerControls({
-    player: youTubePlayer,
-    onNext: handleNext,
-    onPrevious: handlePrevious,
-  });
 
   const handleLinkInputChange = useCallback(
     async (
@@ -235,15 +227,6 @@ const YouTubePlayerPage: NextPage = (props: Props) => {
           linkInput
         ) : (
           <Stack spacing={2}>
-            {/* <AudioPlayer
-              mainTitle={videoData[currVideoIdx].title}
-              subTitle={`uploaded by ${videoData[currVideoIdx].channelTitle}`}
-              audioElSrcData={audioSrcData}
-              audioContext={audioContext}
-              nextDisabled={currVideoIdx === videoData.length - 1}
-              onNext={nextHandler}
-              onPrevious={previousHandler}
-            /> */}
             <Box ref={playerContainerRef}>
               <YouTube
                 onReady={onPlayerReady}
@@ -251,6 +234,13 @@ const YouTubePlayerPage: NextPage = (props: Props) => {
                 opts={youTubePlayerOpts}
               />
             </Box>
+            {youTubePlayer && (
+              <BasicYouTubePlayer
+                player={youTubePlayer}
+                onNext={handleNext}
+                onPrevious={handlePrevious}
+              />
+            )}
             {videoData.length > 1 && (
               <SongList
                 title="Videos"

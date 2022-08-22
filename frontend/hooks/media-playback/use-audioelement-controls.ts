@@ -3,13 +3,13 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { SourceData } from '@models';
 import { useKeyboardShortcuts } from '@frontend/hooks/use-keyboard-shortcuts';
 import {
-  BaseMediaControlsProps,
-  BasicMediaControlsReturnValues,
+  BasicMediaControlHookProps,
+  BasicMediaControlsProps,
   useMediaControlsBase,
 } from '.';
 import { clamp } from '@util';
 
-type BasicAudioControlsProps = BaseMediaControlsProps & {
+type BasicAudioControlsProps = BasicMediaControlHookProps & {
   /**
    * data relevant for the internally used HTMLAudioElement
    */
@@ -19,7 +19,7 @@ type BasicAudioControlsProps = BaseMediaControlsProps & {
 // TODO: actually test this lol
 export const useBasicAudioPlaybackControls: (
   props: BasicAudioControlsProps
-) => BasicMediaControlsReturnValues = props => {
+) => BasicMediaControlsProps = props => {
   const {
     addKeyboardShortcuts,
     isPlaying,
@@ -210,6 +210,13 @@ export const useBasicAudioPlaybackControls: (
     handlePrevious,
   ]);
 
+  const [duration, setDuration] = useState(1);
+  useEffect(() => {
+    if (audioRef.current) {
+      setDuration(audioRef.current?.duration);
+    }
+  }, [audioElSrcData.src]);
+
   return {
     handlePlay,
     handlePause,
@@ -222,5 +229,9 @@ export const useBasicAudioPlaybackControls: (
     handleSeek,
     playbackRate,
     currentTime,
+    isPlaying,
+    maxPlaybackRate,
+    minPlaybackRate,
+    duration,
   };
 };

@@ -1,8 +1,8 @@
 import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
 
 import { SourceData } from '@models';
-import AudioControls from './AudioControls/AudioControls';
-import { WaveformViewPoint } from './AudioControls/WaveFormView/WaveformView';
+import AudioControls from './media-controls/AudioControls';
+import { WaveformViewPoint } from './WaveFormView/WaveformView';
 
 type Props = {
   mainTitle: string;
