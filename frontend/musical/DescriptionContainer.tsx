@@ -1,7 +1,7 @@
-import ResponsiveContainer from '@components/layout/ResponsiveContainer';
-import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
-import { useMusicalContext } from '@frontend/context/musical-context';
-import { useYouTubeDescriptionFetcher } from '@frontend/hooks/use-audio-data-fetcher';
+import ResponsiveContainer from '@frontend/layout/ResponsiveContainer';
+import SuspenseContainer from 'features/SuspenseContainer/SuspenseContainer';
+import { useMusicalContext } from '@frontend/musical/musical-context';
+import { useYouTubeDescriptionFetcher } from '@frontend/media-playback/use-audio-data-fetcher';
 import { MusicalSongTrackTimeStamp } from '@models';
 import { Link, SxProps, Typography } from '@mui/material';
 import { getSubstringAfterFirstSubstringOccurence } from '@util';

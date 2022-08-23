@@ -1,8 +1,8 @@
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import Head from 'next/head';
 
-import TrackList from '@components/Musical/TrackList';
-import MusicalSongList from '@components/Musical/MusicalSongList';
+import TrackList from '@frontend/musical/TrackList';
+import MusicalSongList from '@frontend/musical/MusicalSongList';
 import { getAllMusicalIds, getMusical } from '@backend/musical-data';
 import { Musical } from '@models';
 import {
@@ -15,9 +15,9 @@ import {
   useTheme,
 } from '@mui/material';
 import Link from 'next/link';
-import { MusicalProvider } from '@frontend/context/musical-context';
-import MusicalSongPlayer from '@components/Musical/MusicalSongPlayer';
-import DescriptionContainer from '@components/Musical/DescriptionContainer';
+import { MusicalProvider } from '@frontend/musical/musical-context';
+import MusicalSongPlayer from '@frontend/musical/MusicalSongPlayer';
+import DescriptionContainer from '@frontend/musical/DescriptionContainer';
 
 type Props = { musical: Musical };
 

@@ -1,14 +1,14 @@
 import { useMemo } from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 
-import { useMusicalContext } from '@frontend/context/musical-context';
-import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
-import AudioPlayer from '@components/media/AudioPlayer';
+import { useMusicalContext } from '@frontend/musical/musical-context';
+import SuspenseContainer from 'features/SuspenseContainer/SuspenseContainer';
+import AudioPlayer from '@frontend/media-playback/media/AudioPlayer';
 import {
   useServerWaveformDataFetcher,
   useGoogleDriveAudioSrcDataFetcher,
-} from '@frontend/hooks/use-audio-data-fetcher';
-import { useKeyboardShortcuts } from '@frontend/hooks/use-keyboard-shortcuts';
+} from '@frontend/media-playback/use-audio-data-fetcher';
+import { useKeyboardShortcuts } from '@frontend/media-playback/use-keyboard-shortcuts';
 
 const MusicalSongPlayer = () => {
   const {

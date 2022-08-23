@@ -4,7 +4,7 @@ import { Typography, Link, Box } from '@mui/material';
 
 import { getAllMusicalBaseData } from '@backend/musical-data';
 import { MusicalBaseData } from '@models';
-import MusicalsList from '@components/Musical/MusicalsList';
+import MusicalsList from '@frontend/musical/MusicalsList';
 
 type Props = { musicalsBaseData: MusicalBaseData[] };
 

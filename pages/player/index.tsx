@@ -3,10 +3,10 @@ import { NextPage } from 'next/types';
 import { ChangeEventHandler, useCallback, useEffect, useState } from 'react';
 import { Button, Stack, SxProps } from '@mui/material';
 import { Box } from '@mui/material';
-import AudioPlayer from '@components/media/AudioPlayer';
+import AudioPlayer from '@frontend/media-playback/media/AudioPlayer';
 import { Song, SourceData } from '@models';
 import * as mmb from 'music-metadata-browser';
-import SongList from '@components/SongList/SongList';
+import SongList from 'features/SongList/SongList';
 
 type Props = {};
 

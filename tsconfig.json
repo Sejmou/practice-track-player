@@ -20,7 +20,7 @@
       "@backend/*": ["backend/*"],
       "@frontend": ["frontend/index"],
       "@frontend/*": ["frontend/*"],
-      "@components/*": ["components/*"],
+      "@components/*": ["features/*"],
       "@pages/*": ["pages/*"],
       "@models": ["models/index"],
       "@util": ["util/index"],

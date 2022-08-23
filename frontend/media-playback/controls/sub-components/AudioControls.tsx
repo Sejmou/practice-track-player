@@ -8,14 +8,14 @@ import BasicControls from './BasicControls';
 import { PeaksInstance } from 'peaks.js';
 import WaveformViewZoomControls from './WaveformViewZoomControls';
 import React from 'react';
-import { useKeyboardShortcuts } from '@frontend/hooks/use-keyboard-shortcuts';
-import { WaveformViewPoint } from '../WaveFormView/WaveformView';
-import SuspenseContainer from '@components/SuspenseContainer/SuspenseContainer';
+import { useKeyboardShortcuts } from '@frontend/media-playback/use-keyboard-shortcuts';
+import { WaveformViewPoint } from './WaveFormView/WaveformView';
+import SuspenseContainer from 'features/SuspenseContainer/SuspenseContainer';
 import LoopControls from './LoopControls';
 
 import tinycolor from 'tinycolor2';
 
-const WaveFormView = dynamic(() => import('../WaveFormView/WaveformView'), {
+const WaveFormView = dynamic(() => import('./WaveFormView/WaveformView'), {
   ssr: false,
 });
 

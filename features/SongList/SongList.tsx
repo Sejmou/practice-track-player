@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import { Song } from '@models';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
-import ResponsiveContainer from '@components/layout/ResponsiveContainer';
+import ResponsiveContainer from '@frontend/layout/ResponsiveContainer';
 
 type Props = {
   songs: Song[];

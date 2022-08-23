@@ -1,4 +1,4 @@
-import { useMusicalContext } from '@frontend/context/musical-context';
+import { useMusicalContext } from '@frontend/musical/musical-context';
 import {
   List,
   ListItemButton,
@@ -7,7 +7,7 @@ import {
   SxProps,
 } from '@mui/material';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
-import ResponsiveContainer from '@components/layout/ResponsiveContainer';
+import ResponsiveContainer from '@frontend/layout/ResponsiveContainer';
 
 type Props = { sx?: SxProps };
 

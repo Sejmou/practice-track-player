@@ -20,7 +20,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Box } from '@mui/material';
-import SongList from '@components/SongList/SongList';
+import SongList from 'features/SongList/SongList';
 import InsertLinkIcon from '@mui/icons-material/InsertLink';
 import { getURLVideoID } from 'ytdl-core';
 import {
@@ -30,10 +30,12 @@ import {
   YouTubeVideoDataValidator,
 } from '@models';
 import YouTube, { YouTubeProps, YouTubeEvent } from 'react-youtube';
-import { YouTubePlayer } from '@frontend/hooks/media-playback/use-youtube-player-controls';
-import BasicYouTubePlayer from '@components/media/BasicYouTubePlayerControls';
-
-type Props = {};
+import BasicControls from '@frontend/media-playback/controls/sub-components/BasicControls';
+import {
+  useYouTubePlayer,
+  YouTubePlayer,
+} from '@frontend/media-playback/use-youtube-player';
+import BasicMediaControls from '@frontend/media-playback/controls/BasicMediaControls';
 
 const containerStyles: SxProps = {
   flex: '1',
@@ -47,7 +49,7 @@ type YouTubeLinkData = {
   playlistIndex?: string;
 };
 
-const YouTubePlayerPage: NextPage = (props: Props) => {
+const YouTubePlayerPage: NextPage = () => {
   const [audioContext, setAudioContext] = useState<AudioContext>();
   useEffect(() => {
     setAudioContext(new AudioContext());
@@ -62,6 +64,8 @@ const YouTubePlayerPage: NextPage = (props: Props) => {
 
   const playerContainerRef = useRef<HTMLDivElement>();
   const [youTubePlayer, setYouTubePlayer] = useState<YouTubePlayer>();
+
+  useYouTubePlayer(youTubePlayer);
 
   const [youTubePlayerOpts, setYouTubePlayerOpts] = useState<
     YouTubeProps['opts']
@@ -91,37 +95,6 @@ const YouTubePlayerPage: NextPage = (props: Props) => {
     window.addEventListener('resize', resizePlayer);
     return () => window.removeEventListener('resize', resizePlayer);
   }, [resizePlayer]);
-
-  const handlePlay = async () => {
-    if (youTubePlayer) {
-      youTubePlayer.playVideo();
-      if (navigator?.mediaSession?.playbackState)
-        navigator.mediaSession.playbackState = 'playing';
-    }
-  };
-
-  const handlePause = () => {
-    if (youTubePlayer) {
-      youTubePlayer.pauseVideo();
-      if (navigator?.mediaSession?.playbackState)
-        navigator.mediaSession.playbackState = 'paused';
-    }
-  };
-
-  const handlePlayPauseToggle = () => {
-    if (youTubePlayer) {
-      if (youTubePlayer.getPlayerState() == 1) handlePause();
-      else handlePlay();
-    }
-  };
-
-  const handleNext = useCallback(() => {
-    setCurrVideoIdx(prev => Math.min(prev + 1, videoData.length - 1));
-  }, [videoData]);
-
-  const handlePrevious = useCallback(() => {
-    setCurrVideoIdx(prev => Math.max(prev - 1, 0));
-  }, []);
 
   const handleLinkInputChange = useCallback(
     async (
@@ -234,13 +207,7 @@ const YouTubePlayerPage: NextPage = (props: Props) => {
                 opts={youTubePlayerOpts}
               />
             </Box>
-            {youTubePlayer && (
-              <BasicYouTubePlayer
-                player={youTubePlayer}
-                onNext={handleNext}
-                onPrevious={handlePrevious}
-              />
-            )}
+            {youTubePlayer && <BasicMediaControls />}
             {videoData.length > 1 && (
               <SongList
                 title="Videos"
