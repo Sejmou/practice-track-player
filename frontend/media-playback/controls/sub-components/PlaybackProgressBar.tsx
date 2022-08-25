@@ -1,21 +1,31 @@
 import { Box, Slider, SxProps } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 type Props = {
   currentTime: number;
   duration: number;
   onSeeked: (newTime: number) => void;
   sx?: SxProps;
+  sendSeekedUpdateOnChangeCommitted?: boolean;
 };
 const PlaybackProgressBar = (props: Props) => {
+  const sendSeekedUpdateOnChangeCommitted =
+    props.sendSeekedUpdateOnChangeCommitted ?? false;
   const [userInteracting, setUserInteracting] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
+  const [seekedPercent, setSeekedPercent] = useState(0);
 
-  useEffect(() => {
-    if (!userInteracting) {
-      setCurrentTime(props.currentTime);
-    }
-  }, [userInteracting, props.currentTime]);
+  const handleChange = (_: Event, newValue: number | number[]) => {
+    setSeekedPercent(newValue as number);
+    setUserInteracting(true);
+    if (!sendSeekedUpdateOnChangeCommitted)
+      props.onSeeked((seekedPercent / 100) * props.duration);
+  };
+
+  const handleChangeCommmitted = () => {
+    if (sendSeekedUpdateOnChangeCommitted)
+      props.onSeeked((seekedPercent / 100) * props.duration);
+    setUserInteracting(false);
+  };
 
   return (
     <Box sx={{ width: '100%', mr: 2, ml: 2, ...props.sx }}>
@@ -27,14 +37,13 @@ const PlaybackProgressBar = (props: Props) => {
           if (ev.key !== 'Tab       ') ev.preventDefault();
         }}
         sx={{ p: '5px 0' }}
-        value={(currentTime / props.duration) * 100}
-        onChange={() => {
-          setUserInteracting(true);
-        }}
-        onChangeCommitted={(_, newValue) => {
-          props.onSeeked(((newValue as number) / 100) * props.duration);
-          setUserInteracting(false);
-        }}
+        value={
+          userInteracting
+            ? seekedPercent
+            : (props.currentTime / props.duration) * 100
+        }
+        onChange={handleChange}
+        onChangeCommitted={handleChangeCommmitted}
         size="small"
       />
     </Box>

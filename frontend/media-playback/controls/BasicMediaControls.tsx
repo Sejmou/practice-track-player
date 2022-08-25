@@ -23,7 +23,7 @@ const progressBarStyles: SxProps = {
 
 const BasicMediaPlayerUI = () => {
   const {
-    loading,
+    mediumLoaded,
     playing,
     seekForward,
     seekBackward,
@@ -33,7 +33,7 @@ const BasicMediaPlayerUI = () => {
     seekTo,
   } = usePlaybackStore();
 
-  if (loading) {
+  if (!mediumLoaded) {
     return <div>Loading...</div>;
   }
 

@@ -3,13 +3,32 @@ import { clamp } from '@util';
 
 export interface PlaybackState {
   playing: boolean;
+  /**
+   * The current playback time for the medium that is loaded
+   *
+   * Value is meaningless while mediumLoaded is false
+   */
   currentTime: number;
-  lastSeekTime: number;
+  lastSeekTime: number | null;
   maxPlaybackRate: number;
   minPlaybackRate: number;
   playbackRate: number;
+  /**
+   * The total length of the medium that is loaded
+   *
+   * Value is meaningless while mediumLoaded is false
+   */
   duration: number;
-  loading: boolean;
+  /**
+   * Becomes true once the current medium (e.g. audio file or YouTube video) to be played has actually loaded.
+   *
+   * Only if this is true, current time and duration have meaningful values!
+   *
+   * For instance, this value should remain false while a YouTube player only displays the thumbnail of a video,
+   * but video playback has not started yet as some of the actual video information (i.e. length) has not
+   * been loaded by the player at all at this point.
+   */
+  mediumLoaded: boolean;
 }
 
 export interface PlaybackActions {
@@ -24,7 +43,7 @@ export interface PlaybackActions {
   seekForward: (amount: number) => void;
   seekBackward: (amount: number) => void;
   seekTo: (time: number) => void;
-  setLoading: (newVal: boolean) => void;
+  setMediumLoaded: (newVal: boolean) => void;
   setDuration: (newDuration: number) => void;
   setCurrentTime: (newTime: number) => void;
 }
@@ -73,15 +92,15 @@ export const usePlaybackStore = create<CurrentMediumPlaybackStore>(set => ({
     })),
   seekTo: (time: number) =>
     set(state => ({ currentTime: clamp(time, 0, state.duration) })),
-  setLoading: (newVal: boolean) => set(() => ({ loading: newVal })),
+  setMediumLoaded: (newVal: boolean) => set(() => ({ mediumLoaded: newVal })),
   setDuration: (newDuration: number) => set(() => ({ duration: newDuration })),
   setCurrentTime: (newTime: number) => set(() => ({ currentTime: newTime })),
-  lastSeekTime: 0,
+  lastSeekTime: null,
   minPlaybackRate: 0.5,
   maxPlaybackRate: 1,
   currentTime: 0,
   playing: false,
   playbackRate: 1,
-  duration: 0,
-  loading: true,
+  duration: 1,
+  mediumLoaded: true,
 }));

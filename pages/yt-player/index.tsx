@@ -69,7 +69,7 @@ const YouTubePlayerPage: NextPage = () => {
 
   const [youTubePlayerOpts, setYouTubePlayerOpts] = useState<
     YouTubeProps['opts']
-  >({ controls: false, playerVars: { controls: 0 } });
+  >({ controls: false, playerVars: { controls: 0, autoplay: 0 } });
 
   const resizePlayer = useCallback(() => {
     if (playerContainerRef.current) {

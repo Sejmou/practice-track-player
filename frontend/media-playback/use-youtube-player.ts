@@ -1,3 +1,4 @@
+import { addEventListenerWithRemoveCallback } from '@util';
 import { useEffect } from 'react';
 import { usePlaybackStore } from './current-medium-state';
 
@@ -5,71 +6,106 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
   const {
     setDuration,
     setCurrentTime,
-    setLoading,
+    setMediumLoaded,
     playbackRate,
     playing,
     lastSeekTime,
   } = usePlaybackStore();
 
   useEffect(() => {
-    try {
-      player?.setPlaybackRate(playbackRate);
-    } catch (error) {
-      console.error('Could not set playback rate on YouTube Player', error);
+    if (player) {
+      const updatePlaybackRate = () => {
+        player.setPlaybackRate(playbackRate);
+        console.log('playback rate set to', playbackRate);
+      };
+      if (player.getPlayerState() !== YouTubePlayerState.VIDEO_CUED) {
+        updatePlaybackRate();
+      } else {
+        // need to listen for change of player to state which supports playback rate change and setPlaybackRate() afterwards
+        // afterwards, we should remove the event listener for that
+        // for some super weird reason my remove listener callback implementation that
+        // would be useful for this doesn't work with the YouTube Player API while it works perfectly with the DOM API
+        // TODO: figure out why
+        let playbackRateUpdated = false; // TODO: part of workaround, remove later
+        const stateChangeListener = (
+          { data }: any,
+          removeListenerCallback: () => void
+        ) => {
+          if (playbackRateUpdated) return; // TODO: part of workaround, remove later
+          if (data !== YouTubePlayerState.VIDEO_CUED) {
+            if (player) {
+              updatePlaybackRate();
+              playbackRateUpdated = true; // TODO: part of workaround, remove later
+              removeListenerCallback(); // this actually doesn't work lol
+            }
+          }
+        };
+        addEventListenerWithRemoveCallback(
+          player as any,
+          'onStateChange',
+          stateChangeListener
+        );
+      }
     }
   }, [player, playbackRate]);
 
   useEffect(() => {
-    try {
+    if (player) {
       if (playing) {
-        player?.playVideo();
+        logPlayerStateAtAction('before schedule playback start', player);
+        player.playVideo();
+        logPlayerStateAtAction('after schedule playback start', player);
       } else {
-        player?.pauseVideo();
+        const playerState = player.getPlayerState();
+        if (playerState === YouTubePlayerState.VIDEO_CUED) return; // player effectively "paused" (playback actually not started yet) - will error if we try to pause!
+        logPlayerStateAtAction('before schedule playback pause', player);
+        player.pauseVideo();
+        logPlayerStateAtAction('after schedule playback pause', player);
       }
-    } catch (error) {
-      console.error('Could not change playback state on YouTube Player', error);
     }
   }, [player, playing]);
 
   useEffect(() => {
-    try {
-      player?.seekTo(lastSeekTime, true);
-    } catch (error) {
-      console.error('Could not seek YouTube Player', error);
+    if (player && lastSeekTime !== null) {
+      player.seekTo(lastSeekTime, true);
     }
   }, [player, lastSeekTime]);
 
   useEffect(() => {
-    const stateChangeListener = ({ data }: any) => {
-      if (data !== YouTubePlayerState.UNSTARTED) {
-        const duration = player?.getDuration();
-        if (duration) setDuration(duration);
-      }
-    };
     if (player) {
-      setLoading(false);
-      setCurrentTime(player.getCurrentTime());
+      const stateChangeListener = ({ data }: any) => {
+        if (data !== YouTubePlayerState.UNSTARTED) {
+          const duration = player.getDuration();
+          if (duration) setDuration(duration);
+        }
+      };
+
+      const currentTimeTimer = setInterval(() => {
+        const currentTime = player.getCurrentTime();
+        if (currentTime) setCurrentTime(currentTime);
+      }, 50);
+
+      setMediumLoaded(true);
+
       player.addEventListener(
         'onStateChange',
         stateChangeListener as unknown as string
       ); // for some reason official(!) API types event listener as string
-    }
 
-    return () => {
-      setLoading(true);
-      try {
-        player?.removeEventListener(
-          'onStateChange',
-          stateChangeListener as unknown as string
-        );
-      } catch (error) {
-        console.log(
-          'Error removing player event listener for onStateChange',
-          error
-        );
-      }
-    };
-  }, [player, setCurrentTime, setDuration, setLoading]);
+      return () => {
+        setMediumLoaded(false);
+        try {
+          player.removeEventListener(
+            'onStateChange',
+            stateChangeListener as unknown as string
+          );
+        } catch (error) {}
+        clearInterval(currentTimeTimer);
+      };
+    }
+  }, [player, setCurrentTime, setDuration, setMediumLoaded]);
+
+  // usePlaybackShortcuts(playbackAc);
 };
 
 /**
@@ -141,4 +177,10 @@ enum YouTubePlayerState {
   PAUSED = 2,
   BUFFERING = 3,
   VIDEO_CUED = 5,
+}
+
+function logPlayerStateAtAction(action: string, player: YouTubePlayer) {
+  console.log(
+    action + ', player state: ' + YouTubePlayerState[player.getPlayerState()]
+  );
 }
