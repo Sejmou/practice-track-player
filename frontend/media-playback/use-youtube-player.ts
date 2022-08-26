@@ -1,82 +1,84 @@
-import { addEventListenerWithRemoveCallback } from '@util';
-import { useEffect } from 'react';
-import { usePlaybackStore } from './current-medium-state';
+import { useEffect, useRef } from 'react';
+import { usePlaybackStore } from './use-playback-store';
 
 export const useYouTubePlayer = (player?: YouTubePlayer) => {
   const {
     setDuration,
     setCurrentTime,
     setMediumLoaded,
-    playbackRate,
+    reset,
     playing,
-    lastSeekTime,
+    play,
+    pause,
   } = usePlaybackStore();
 
-  useEffect(() => {
-    if (player) {
-      const updatePlaybackRate = () => {
-        player.setPlaybackRate(playbackRate);
-        console.log('playback rate set to', playbackRate);
-      };
-      if (player.getPlayerState() !== YouTubePlayerState.VIDEO_CUED) {
-        updatePlaybackRate();
-      } else {
-        // need to listen for change of player to state which supports playback rate change and setPlaybackRate() afterwards
-        // afterwards, we should remove the event listener for that
-        // for some super weird reason my remove listener callback implementation that
-        // would be useful for this doesn't work with the YouTube Player API while it works perfectly with the DOM API
-        // TODO: figure out why
-        let playbackRateUpdated = false; // TODO: part of workaround, remove later
-        const stateChangeListener = (
-          { data }: any,
-          removeListenerCallback: () => void
-        ) => {
-          if (playbackRateUpdated) return; // TODO: part of workaround, remove later
-          if (data !== YouTubePlayerState.VIDEO_CUED) {
-            if (player) {
-              updatePlaybackRate();
-              playbackRateUpdated = true; // TODO: part of workaround, remove later
-              removeListenerCallback(); // this actually doesn't work lol
-            }
-          }
-        };
-        addEventListenerWithRemoveCallback(
-          player as any,
-          'onStateChange',
-          stateChangeListener
-        );
-      }
-    }
-  }, [player, playbackRate]);
+  const playerRef = useRef<YouTubePlayer | undefined>(player);
+  const playerState = useRef<YouTubePlayerState>(YouTubePlayerState.UNSTARTED);
+  const scheduledAction = useRef<'play' | 'pause' | null>(null);
+
+  // TODOs:
+  // verify that player functions are only called when player can actually execute them
+  // sync playbackrate -> only possible once player not in VIDEO_CUED state
+  // sync current time -> only possible once player not in VIDEO_CUED?
+  // handle seek -> only possible once player not in VIDEO_CUED?
 
   useEffect(() => {
-    if (player) {
+    if (player && !scheduledAction.current) {
       if (playing) {
-        logPlayerStateAtAction('before schedule playback start', player);
-        player.playVideo();
-        logPlayerStateAtAction('after schedule playback start', player);
+        logPlayerState('playing', player);
+        if (!isPlaying(player)) {
+          if (canPlay(player)) {
+            console.log('player should play video');
+            player.playVideo();
+          } else {
+            scheduledAction.current = 'play';
+          }
+        }
       } else {
-        const playerState = player.getPlayerState();
-        if (playerState === YouTubePlayerState.VIDEO_CUED) return; // player effectively "paused" (playback actually not started yet) - will error if we try to pause!
-        logPlayerStateAtAction('before schedule playback pause', player);
-        player.pauseVideo();
-        logPlayerStateAtAction('after schedule playback pause', player);
+        logPlayerState('not playing', player);
+        if (isPlaying(player)) {
+          if (canPause(player)) {
+            console.log('player should pause');
+            player.pauseVideo();
+          }
+        }
       }
     }
   }, [player, playing]);
 
-  useEffect(() => {
-    if (player && lastSeekTime !== null) {
-      player.seekTo(lastSeekTime, true);
-    }
-  }, [player, lastSeekTime]);
+  // removing event listeners from YouTube Iframe API does not work - see https://stackoverflow.com/a/25928370/13727176
+  // so, my workaround is to just pass an event listener once and change the function the reference points to on every fresh call to useEffect
+  const stateChangeListenerRef =
+    useRef<(data: { data: YouTubePlayerState }) => void>();
 
   useEffect(() => {
     if (player) {
-      const stateChangeListener = ({ data }: any) => {
-        if (data !== YouTubePlayerState.UNSTARTED) {
-          const duration = player.getDuration();
-          if (duration) setDuration(duration);
+      const playerRefChanged = player !== playerRef.current;
+      playerRef.current = player;
+      const listenerId = Math.round(Math.random() * 1000);
+      stateChangeListenerRef.current = ({ data }: any) => {
+        logPlayerState(
+          `state change listener with random ID ${listenerId} triggered`,
+          player
+        );
+        playerState.current = data;
+        if (playerState.current !== YouTubePlayerState.UNSTARTED) {
+          setDuration(player.getDuration());
+        }
+        const playerPlaying = isPlaying(player);
+
+        if (!scheduledAction.current) {
+          if (playerPlaying && !playing) {
+            play();
+          } else if (!playerPlaying && playing) {
+            pause();
+          }
+        } else if (scheduledAction.current === 'play') {
+          if (!playerPlaying && canPlay(player)) {
+            player.playVideo();
+          } else if (playerPlaying) {
+            scheduledAction.current === null;
+          }
         }
       };
 
@@ -87,25 +89,30 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
 
       setMediumLoaded(true);
 
-      player.addEventListener(
-        'onStateChange',
-        stateChangeListener as unknown as string
-      ); // for some reason official(!) API types event listener as string
+      if (playerRefChanged) {
+        console.log('player ref changed!');
+        reset();
+        const helper = (event: any) => {
+          // will call the current state change listener every time - part of workaround for non-functional event listener removal from YouTube Iframe API
+          stateChangeListenerRef.current?.(event);
+        };
+        player.addEventListener('onStateChange', helper as unknown as string); // for some reason official(!) API types event listener as string
+      }
 
       return () => {
-        setMediumLoaded(false);
-        try {
-          player.removeEventListener(
-            'onStateChange',
-            stateChangeListener as unknown as string
-          );
-        } catch (error) {}
         clearInterval(currentTimeTimer);
       };
     }
-  }, [player, setCurrentTime, setDuration, setMediumLoaded]);
-
-  // usePlaybackShortcuts(playbackAc);
+  }, [
+    pause,
+    play,
+    player,
+    playing,
+    reset,
+    setCurrentTime,
+    setDuration,
+    setMediumLoaded,
+  ]);
 };
 
 /**
@@ -179,8 +186,27 @@ enum YouTubePlayerState {
   VIDEO_CUED = 5,
 }
 
-function logPlayerStateAtAction(action: string, player: YouTubePlayer) {
+function logPlayerState(desc: string, player: YouTubePlayer) {
   console.log(
-    action + ', player state: ' + YouTubePlayerState[player.getPlayerState()]
+    desc + ', player state: ' + YouTubePlayerState[player.getPlayerState()]
+  );
+}
+
+function isPlaying(player: YouTubePlayer) {
+  return player.getPlayerState() === YouTubePlayerState.PLAYING;
+}
+
+function canPlay(player: YouTubePlayer) {
+  const playerState = player.getPlayerState();
+  return playerState !== YouTubePlayerState.UNSTARTED;
+}
+
+function canPause(player: YouTubePlayer) {
+  const playerState = player.getPlayerState();
+  return (
+    playerState !== YouTubePlayerState.ENDED &&
+    playerState !== YouTubePlayerState.VIDEO_CUED &&
+    playerState !== YouTubePlayerState.UNSTARTED &&
+    playerState !== YouTubePlayerState.PAUSED
   );
 }

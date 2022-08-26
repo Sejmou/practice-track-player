@@ -3,7 +3,7 @@ import { Box, useMediaQuery, useTheme } from '@mui/material';
 
 import { useMusicalContext } from '@frontend/musical/musical-context';
 import SuspenseContainer from 'features/SuspenseContainer/SuspenseContainer';
-import AudioPlayer from '@frontend/media-playback/media/AudioPlayer';
+import AudioPlayer from '@frontend/media-playback/AudioPlayer';
 import {
   useServerWaveformDataFetcher,
   useGoogleDriveAudioSrcDataFetcher,

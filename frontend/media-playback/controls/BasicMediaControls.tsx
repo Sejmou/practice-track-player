@@ -1,5 +1,5 @@
 import { Box, SxProps } from '@mui/material';
-import { usePlaybackStore } from '../current-medium-state';
+import { usePlaybackStore } from '../use-playback-store';
 import BasicControls from './sub-components/BasicControls';
 import PlaybackProgressBar from './sub-components/PlaybackProgressBar';
 
@@ -52,12 +52,7 @@ const BasicMediaPlayerUI = () => {
         onPlayPause={togglePlayPause}
         sx={basicControlsStyles}
       />
-      <PlaybackProgressBar
-        currentTime={currentTime}
-        duration={duration}
-        onSeeked={time => seekTo(time)}
-        sx={progressBarStyles}
-      />
+      <PlaybackProgressBar sx={progressBarStyles} />
     </Box>
   );
 };

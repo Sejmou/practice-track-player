@@ -1,4 +1,4 @@
-import { PlaybackActions } from './current-medium-state';
+import { PlaybackActions } from './use-playback-store';
 import { useKeyboardShortcuts } from './use-keyboard-shortcuts';
 
 export function usePlaybackShortcuts(playbackActions: PlaybackActions) {

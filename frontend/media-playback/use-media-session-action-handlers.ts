@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { PlaybackActions } from './current-medium-state';
+import { PlaybackActions } from './use-playback-store';
 
 export function useMediaSessionActionHandlers(
   playbackActions: PlaybackActions

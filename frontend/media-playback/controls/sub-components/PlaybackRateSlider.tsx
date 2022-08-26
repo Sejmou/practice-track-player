@@ -1,4 +1,4 @@
-import { Box, Grid, Slider, Stack, SxProps, Typography } from '@mui/material';
+import { Slider, Stack, SxProps, Typography } from '@mui/material';
 // import SlowMotionVideoIcon from '@mui/icons-material/SlowMotionVideo';
 import SpeedIcon from '@mui/icons-material/Speed';
 import React from 'react';

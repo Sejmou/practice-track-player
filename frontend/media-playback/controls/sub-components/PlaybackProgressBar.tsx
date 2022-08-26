@@ -1,51 +1,66 @@
-import { Box, Slider, SxProps } from '@mui/material';
-import { useState } from 'react';
+import { usePlaybackStore } from '@frontend/media-playback/use-playback-store';
+import { Box, Slider, SxProps, Typography } from '@mui/material';
+import { SyntheticEvent, useState } from 'react';
 
 type Props = {
-  currentTime: number;
-  duration: number;
-  onSeeked: (newTime: number) => void;
   sx?: SxProps;
-  sendSeekedUpdateOnChangeCommitted?: boolean;
+  seekImmediately?: boolean;
 };
 const PlaybackProgressBar = (props: Props) => {
-  const sendSeekedUpdateOnChangeCommitted =
-    props.sendSeekedUpdateOnChangeCommitted ?? false;
+  const seekImmediately = props.seekImmediately ?? true;
   const [userInteracting, setUserInteracting] = useState(false);
-  const [seekedPercent, setSeekedPercent] = useState(0);
+
+  const {
+    currentTime,
+    duration,
+    seekTo,
+    seekBackward,
+    seekForward,
+    lastSeekTime,
+  } = usePlaybackStore();
 
   const handleChange = (_: Event, newValue: number | number[]) => {
-    setSeekedPercent(newValue as number);
     setUserInteracting(true);
-    if (!sendSeekedUpdateOnChangeCommitted)
-      props.onSeeked((seekedPercent / 100) * props.duration);
+    if (seekImmediately) seekTo(((newValue as number) / 100) * duration);
   };
 
-  const handleChangeCommmitted = () => {
-    if (sendSeekedUpdateOnChangeCommitted)
-      props.onSeeked((seekedPercent / 100) * props.duration);
+  const handleChangeCommmitted = (
+    ev: Event | SyntheticEvent<Element, Event>,
+    newValue: number | number[]
+  ) => {
+    seekTo(((newValue as number) / 100) * duration);
     setUserInteracting(false);
   };
 
   return (
-    <Box sx={{ width: '100%', mr: 2, ml: 2, ...props.sx }}>
+    <Box sx={{ width: '100%', ...props.sx }}>
       <Slider
         onKeyDownCapture={ev => {
           // prevent everything except TAB -> may be used to skip through focusable elements on page
           // left/right arrow interactions would trigger slider movement -> does not work well with
           // "global keyboard shortcuts" for skipping through media (also bound to left/right)
-          if (ev.key !== 'Tab       ') ev.preventDefault();
+          if (ev.key === 'ArrowLeft') {
+            seekBackward(5);
+            ev.preventDefault();
+          }
+          if (ev.key === 'ArrowRight') {
+            seekForward(5);
+            ev.preventDefault();
+          }
         }}
         sx={{ p: '5px 0' }}
         value={
-          userInteracting
-            ? seekedPercent
-            : (props.currentTime / props.duration) * 100
+          ((userInteracting && lastSeekTime ? lastSeekTime : currentTime) /
+            duration) *
+          100
         }
         onChange={handleChange}
         onChangeCommitted={handleChangeCommmitted}
         size="small"
       />
+      <Typography textAlign="left">{currentTime}</Typography>
+      {/* <Typography textAlign="right">{lastSeekTime}</Typography> */}
+      <Typography textAlign="right">{duration}</Typography>
     </Box>
   );
 };
