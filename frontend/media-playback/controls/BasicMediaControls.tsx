@@ -1,6 +1,6 @@
 import { Box, SxProps } from '@mui/material';
 import { usePlaybackStore } from '../use-playback-store';
-import BasicControls from './sub-components/using-props/BasicControls';
+import BasicControls from './sub-components/using-store/BasicControls';
 import PlaybackProgressBar from './sub-components/using-store/PlaybackProgressBar';
 
 const controlsContainerStyles: SxProps = {
@@ -21,27 +21,10 @@ const progressBarStyles: SxProps = {
 
 // TODO: implement with new approach (components for UI, hooks for adding logic to components)
 
-const BasicMediaPlayerUI = () => {
-  const { playing, seekForward, seekBackward, togglePlayPause } =
-    usePlaybackStore();
-
-  return (
-    <Box sx={controlsContainerStyles}>
-      <BasicControls
-        playing={playing}
-        onNext={() => {
-          console.log('next');
-        }}
-        onPrevious={() => {
-          console.log('previous');
-        }}
-        onForward5={() => seekForward(5)}
-        onBackward5={() => seekBackward(5)}
-        onPlayPause={togglePlayPause}
-        sx={basicControlsStyles}
-      />
-      <PlaybackProgressBar sx={progressBarStyles} />
-    </Box>
-  );
-};
+const BasicMediaPlayerUI = () => (
+  <Box sx={controlsContainerStyles}>
+    <BasicControls sx={basicControlsStyles} />
+    <PlaybackProgressBar sx={progressBarStyles} />
+  </Box>
+);
 export default BasicMediaPlayerUI;
