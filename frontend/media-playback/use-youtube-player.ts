@@ -8,13 +8,15 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
     setMediumLoaded,
     reset,
     playing,
+    timeToSeekTo: lastSeekTime,
+    mediumLoaded,
     play,
     pause,
   } = usePlaybackStore();
 
   const playerRef = useRef<YouTubePlayer | undefined>(player);
   const playerState = useRef<YouTubePlayerState>(YouTubePlayerState.UNSTARTED);
-  const scheduledAction = useRef<'play' | 'pause' | null>(null);
+  const playScheduled = useRef(false);
 
   // TODOs:
   // verify that player functions are only called when player can actually execute them
@@ -23,7 +25,7 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
   // handle seek -> only possible once player not in VIDEO_CUED?
 
   useEffect(() => {
-    if (player && !scheduledAction.current) {
+    if (player && !playScheduled.current) {
       if (playing) {
         logPlayerState('playing', player);
         if (!isPlaying(player)) {
@@ -31,7 +33,7 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
             console.log('player should play video');
             player.playVideo();
           } else {
-            scheduledAction.current = 'play';
+            playScheduled.current = true;
           }
         }
       } else {
@@ -45,6 +47,13 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
       }
     }
   }, [player, playing]);
+
+  useEffect(() => {
+    if (lastSeekTime !== null && player) {
+      logPlayerState('lastSeekTime changed to ' + lastSeekTime, player);
+      player.seekTo(lastSeekTime, true);
+    }
+  }, [player, mediumLoaded, lastSeekTime]);
 
   // removing event listeners from YouTube Iframe API does not work - see https://stackoverflow.com/a/25928370/13727176
   // so, my workaround is to just pass an event listener once and change the function the reference points to on every fresh call to useEffect
@@ -64,20 +73,21 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
         playerState.current = data;
         if (playerState.current !== YouTubePlayerState.UNSTARTED) {
           setDuration(player.getDuration());
+          setMediumLoaded(true);
         }
         const playerPlaying = isPlaying(player);
 
-        if (!scheduledAction.current) {
+        if (!playScheduled.current) {
           if (playerPlaying && !playing) {
             play();
           } else if (!playerPlaying && playing) {
             pause();
           }
-        } else if (scheduledAction.current === 'play') {
+        } else if (playScheduled.current) {
           if (!playerPlaying && canPlay(player)) {
             player.playVideo();
           } else if (playerPlaying) {
-            scheduledAction.current === null;
+            playScheduled.current = false;
           }
         }
       };
@@ -86,8 +96,6 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
         const currentTime = player.getCurrentTime();
         if (currentTime) setCurrentTime(currentTime);
       }, 50);
-
-      setMediumLoaded(true);
 
       if (playerRefChanged) {
         console.log('player ref changed!');
@@ -193,7 +201,11 @@ function logPlayerState(desc: string, player: YouTubePlayer) {
 }
 
 function isPlaying(player: YouTubePlayer) {
-  return player.getPlayerState() === YouTubePlayerState.PLAYING;
+  const playerState = player.getPlayerState();
+  return (
+    playerState === YouTubePlayerState.PLAYING ||
+    playerState === YouTubePlayerState.BUFFERING
+  );
 }
 
 function canPlay(player: YouTubePlayer) {

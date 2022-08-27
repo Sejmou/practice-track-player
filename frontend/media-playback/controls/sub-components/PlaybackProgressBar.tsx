@@ -16,7 +16,7 @@ const PlaybackProgressBar = (props: Props) => {
     seekTo,
     seekBackward,
     seekForward,
-    lastSeekTime,
+    timeToSeekTo: lastSeekTime,
   } = usePlaybackStore();
 
   const handleChange = (_: Event, newValue: number | number[]) => {
