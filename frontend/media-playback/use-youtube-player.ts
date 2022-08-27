@@ -5,11 +5,9 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
   const {
     setDuration,
     setCurrentTime,
-    setMediumLoaded,
     reset,
     playing,
     lastSeekTime,
-    mediumLoaded,
     play,
     pause,
   } = usePlaybackStore();
@@ -53,7 +51,7 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
       logPlayerState('lastSeekTime changed to ' + lastSeekTime, player);
       player.seekTo(lastSeekTime, true);
     }
-  }, [player, mediumLoaded, lastSeekTime]);
+  }, [player, lastSeekTime]);
 
   // removing event listeners from YouTube Iframe API does not work - see https://stackoverflow.com/a/25928370/13727176
   // so, my workaround is to just pass an event listener once and change the function the reference points to on every fresh call to useEffect
@@ -73,7 +71,6 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
         playerState.current = data;
         if (playerState.current !== YouTubePlayerState.UNSTARTED) {
           setDuration(player.getDuration());
-          setMediumLoaded(true);
         }
         const playerPlaying = isPlaying(player);
 
@@ -111,16 +108,7 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
         clearInterval(currentTimeTimer);
       };
     }
-  }, [
-    pause,
-    play,
-    player,
-    playing,
-    reset,
-    setCurrentTime,
-    setDuration,
-    setMediumLoaded,
-  ]);
+  }, [pause, play, player, playing, reset, setCurrentTime, setDuration]);
 };
 
 /**

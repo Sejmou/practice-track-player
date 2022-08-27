@@ -21,14 +21,15 @@ const PlaybackProgressBar = (props: Props) => {
 
   const handleChange = (_: Event, newValue: number | number[]) => {
     setUserInteracting(true);
-    if (seekImmediately) seekTo(((newValue as number) / 100) * duration);
+    if (duration && seekImmediately)
+      seekTo(((newValue as number) / 100) * duration);
   };
 
   const handleChangeCommmitted = (
     ev: Event | SyntheticEvent<Element, Event>,
     newValue: number | number[]
   ) => {
-    seekTo(((newValue as number) / 100) * duration);
+    if (duration) seekTo(((newValue as number) / 100) * duration);
     setUserInteracting(false);
   };
 
@@ -50,9 +51,11 @@ const PlaybackProgressBar = (props: Props) => {
         }}
         sx={{ p: '5px 0' }}
         value={
-          ((userInteracting && lastSeekTime ? lastSeekTime : currentTime) /
-            duration) *
-          100
+          !currentTime || !duration
+            ? 0
+            : ((userInteracting && lastSeekTime ? lastSeekTime : currentTime) /
+                duration) *
+              100
         }
         onChange={handleChange}
         onChangeCommitted={handleChangeCommmitted}

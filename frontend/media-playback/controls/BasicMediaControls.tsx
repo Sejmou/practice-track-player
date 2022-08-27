@@ -22,20 +22,8 @@ const progressBarStyles: SxProps = {
 // TODO: implement with new approach (components for UI, hooks for adding logic to components)
 
 const BasicMediaPlayerUI = () => {
-  const {
-    mediumLoaded,
-    playing,
-    seekForward,
-    seekBackward,
-    togglePlayPause,
-    currentTime,
-    duration,
-    seekTo,
-  } = usePlaybackStore();
-
-  if (!mediumLoaded) {
-    return <div>Loading...</div>;
-  }
+  const { playing, seekForward, seekBackward, togglePlayPause } =
+    usePlaybackStore();
 
   return (
     <Box sx={controlsContainerStyles}>

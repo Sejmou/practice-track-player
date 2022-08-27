@@ -4,9 +4,7 @@ import { clamp } from '@util';
 export interface PlaybackState {
   playing: boolean;
   /**
-   * The current playback time for the medium that is loaded
-   *
-   * Value is meaningless while mediumLoaded is false
+   * The current playback time for the medium that the player should play
    */
   currentTime: number;
   /**
@@ -17,21 +15,11 @@ export interface PlaybackState {
   minPlaybackRate: number;
   playbackRate: number;
   /**
-   * The total length of the medium that is loaded
+   * The total length of the medium
    *
-   * Value is meaningless while mediumLoaded is false
+   * May be null while medium is not yet available to player
    */
-  duration: number;
-  /**
-   * Becomes true once the current medium (e.g. audio file or YouTube video) to be played has actually loaded.
-   *
-   * Only if this is true, current time and duration have meaningful values!
-   *
-   * For instance, this value should remain false while a YouTube player only displays the thumbnail of a video,
-   * but video playback has not started yet as some of the actual video information (i.e. length) has not
-   * been loaded by the player at all at this point.
-   */
-  mediumLoaded: boolean;
+  duration: number | null;
 }
 
 export interface PlaybackActions {
@@ -47,7 +35,6 @@ export interface PlaybackActions {
   seekBackward: (amount: number) => void;
   seekTo: (time: number) => void;
   jumpToEnd: () => void;
-  setMediumLoaded: (newVal: boolean) => void;
   setDuration: (newDuration: number) => void;
   setCurrentTime: (newTime: number) => void;
   reset: () => void;
@@ -72,10 +59,13 @@ export const usePlaybackStore = create<CurrentMediumPlaybackStore>(
         return { playing: false };
       }),
     jumpToEnd: () =>
-      set(state => ({
-        playing: false,
-        currentTime: state.duration,
-      })),
+      set(state => {
+        if (!state.duration) return {}; // this should make that action a no-op if duration is not available yet
+        return {
+          playing: false,
+          currentTime: state.duration,
+        };
+      }),
     togglePlayPause: () => set(state => ({ playing: !state.playing })),
     changePlaybackRate: (newPBR: number) =>
       set(state => ({
@@ -107,16 +97,21 @@ export const usePlaybackStore = create<CurrentMediumPlaybackStore>(
         ),
       })),
     seekForward: (amount: number) =>
-      set(state => ({
-        lastSeekTime:
-          Math.min(state.duration, state.currentTime + amount) -
-          0.000001 * Math.random(),
-      })),
+      set(state => {
+        if (!state.duration) return {}; // this should make that action a no-op if duration is not available yet
+        return {
+          lastSeekTime:
+            Math.min(state.duration, state.currentTime + amount) -
+            0.000001 * Math.random(),
+        };
+      }),
     seekTo: (time: number) =>
-      set(state => ({
-        lastSeekTime: clamp(time, 0, state.duration),
-      })),
-    setMediumLoaded: (newVal: boolean) => set(() => ({ mediumLoaded: newVal })),
+      set(state => {
+        if (!state.duration) return {}; // this should make that action a no-op if duration is not available yet
+        return {
+          lastSeekTime: clamp(time, 0, state.duration),
+        };
+      }),
     setDuration: (newDuration: number) =>
       set(() => ({ duration: newDuration })),
     setCurrentTime: (newTime: number) => set(() => ({ currentTime: newTime })),
@@ -129,7 +124,6 @@ export const usePlaybackStore = create<CurrentMediumPlaybackStore>(
         playing: false,
         playbackRate: 1,
         duration: 1,
-        mediumLoaded: true,
       })),
     lastSeekTime: null,
     minPlaybackRate: 0.5,
@@ -138,6 +132,5 @@ export const usePlaybackStore = create<CurrentMediumPlaybackStore>(
     playing: false,
     playbackRate: 1,
     duration: 1,
-    mediumLoaded: true,
   })
 );
