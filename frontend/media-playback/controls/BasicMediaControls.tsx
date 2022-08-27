@@ -1,7 +1,7 @@
 import { Box, SxProps } from '@mui/material';
 import { usePlaybackStore } from '../use-playback-store';
-import BasicControls from './sub-components/BasicControls';
-import PlaybackProgressBar from './sub-components/PlaybackProgressBar';
+import BasicControls from './sub-components/using-props/BasicControls';
+import PlaybackProgressBar from './sub-components/using-store/PlaybackProgressBar';
 
 const controlsContainerStyles: SxProps = {
   display: 'grid',

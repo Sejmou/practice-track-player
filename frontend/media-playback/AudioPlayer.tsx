@@ -1,8 +1,8 @@
 import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
 
 import { SourceData } from '@models';
-import AudioControls from './controls/sub-components/AudioControls';
-import { WaveformViewPoint } from './controls/sub-components/WaveFormView/WaveformView';
+import AudioControls from './controls/sub-components/using-props/AudioControls';
+import { WaveformViewPoint } from './controls/sub-components/using-props/WaveFormView/WaveformView';
 
 // TODO: refactor this to use new approach to media playback
 

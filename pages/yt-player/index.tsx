@@ -30,7 +30,6 @@ import {
   YouTubeVideoDataValidator,
 } from '@models';
 import YouTube, { YouTubeProps, YouTubeEvent } from 'react-youtube';
-import BasicControls from '@frontend/media-playback/controls/sub-components/BasicControls';
 import {
   useYouTubePlayer,
   YouTubePlayer,
