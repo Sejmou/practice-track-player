@@ -18,8 +18,6 @@ const progressBarStyles: SxProps = {
   gridArea: 'progress',
 };
 
-// TODO: implement with new approach (components for UI, hooks for adding logic to components)
-
 const ClassicPlayerUI = () => (
   <Box sx={controlsContainerStyles}>
     <BasicControls sx={basicControlsStyles} />

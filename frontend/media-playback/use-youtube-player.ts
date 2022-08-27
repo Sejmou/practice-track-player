@@ -8,6 +8,7 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
     reset,
     playing,
     lastSeekTime,
+    playbackRate,
     play,
     pause,
   } = usePlaybackStore();
@@ -15,12 +16,10 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
   const playerRef = useRef<YouTubePlayer | undefined>(player);
   const playerState = useRef<YouTubePlayerState>(YouTubePlayerState.UNSTARTED);
   const playScheduled = useRef(false);
+  const scheduledNewPbr = useRef<number | null>(null);
 
   // TODOs:
   // verify that player functions are only called when player can actually execute them
-  // sync playbackrate -> only possible once player not in VIDEO_CUED state
-  // sync current time -> only possible once player not in VIDEO_CUED?
-  // handle seek -> only possible once player not in VIDEO_CUED?
 
   useEffect(() => {
     if (player && !playScheduled.current) {
@@ -52,6 +51,13 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
       player.seekTo(lastSeekTime, true);
     }
   }, [player, lastSeekTime]);
+
+  useEffect(() => {
+    if (player) {
+      if (isVideoLoaded(player)) player.setPlaybackRate(playbackRate);
+      else scheduledNewPbr.current = playbackRate;
+    }
+  }, [player, playbackRate])
 
   // removing event listeners from YouTube Iframe API does not work - see https://stackoverflow.com/a/25928370/13727176
   // so, my workaround is to just pass an event listener once and change the function the reference points to on every fresh call to useEffect
@@ -85,6 +91,13 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
             player.playVideo();
           } else if (playerPlaying) {
             playScheduled.current = false;
+          }
+        }
+
+        if (scheduledNewPbr.current !== null) {
+          if (isVideoLoaded(player)) {
+            player.setPlaybackRate(scheduledNewPbr.current);
+            scheduledNewPbr.current = null;
           }
         }
       };
@@ -199,6 +212,11 @@ function isPlaying(player: YouTubePlayer) {
 function canPlay(player: YouTubePlayer) {
   const playerState = player.getPlayerState();
   return playerState !== YouTubePlayerState.UNSTARTED;
+}
+
+function isVideoLoaded(player: YouTubePlayer) {
+  const playerState = player.getPlayerState();
+  return playerState !== YouTubePlayerState.UNSTARTED && playerState !== YouTubePlayerState.VIDEO_CUED
 }
 
 function canPause(player: YouTubePlayer) {
