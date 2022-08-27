@@ -9,7 +9,7 @@
     },
     {
       "name": "Next.js: debug client-side",
-      "type": "chrome",
+      "type": "pwa-chrome",
       "request": "launch",
       "url": "http://localhost:3000"
     },

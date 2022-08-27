@@ -123,7 +123,7 @@ export const usePlaybackStore = create<CurrentMediumPlaybackStore>(
         currentTime: 0,
         playing: false,
         playbackRate: 1,
-        duration: 1,
+        duration: null,
       })),
     lastSeekTime: null,
     minPlaybackRate: 0.5,
@@ -131,6 +131,6 @@ export const usePlaybackStore = create<CurrentMediumPlaybackStore>(
     currentTime: 0,
     playing: false,
     playbackRate: 1,
-    duration: 1,
+    duration: null,
   })
 );

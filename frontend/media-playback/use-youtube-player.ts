@@ -16,6 +16,7 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
   const playerRef = useRef<YouTubePlayer | undefined>(player);
   const playerState = useRef<YouTubePlayerState>(YouTubePlayerState.UNSTARTED);
   const playScheduled = useRef(false);
+  const scheduledSeekTime = useRef<number | null>(null);
   const scheduledNewPbr = useRef<number | null>(null);
 
   // TODOs:
@@ -48,16 +49,20 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
   useEffect(() => {
     if (lastSeekTime !== null && player) {
       logPlayerState('lastSeekTime changed to ' + lastSeekTime, player);
-      player.seekTo(lastSeekTime, true);
+      if (isVideoAvailable(player)) {
+        player.seekTo(lastSeekTime, true);
+      } else {
+        scheduledSeekTime.current = lastSeekTime;
+      }
     }
   }, [player, lastSeekTime]);
 
   useEffect(() => {
     if (player) {
-      if (isVideoLoaded(player)) player.setPlaybackRate(playbackRate);
+      if (isVideoAvailable(player)) player.setPlaybackRate(playbackRate);
       else scheduledNewPbr.current = playbackRate;
     }
-  }, [player, playbackRate])
+  }, [player, playbackRate]);
 
   // removing event listeners from YouTube Iframe API does not work - see https://stackoverflow.com/a/25928370/13727176
   // so, my workaround is to just pass an event listener once and change the function the reference points to on every fresh call to useEffect
@@ -94,10 +99,17 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
           }
         }
 
-        if (scheduledNewPbr.current !== null) {
-          if (isVideoLoaded(player)) {
+        const videoAvailable = isVideoAvailable(player);
+
+        if (videoAvailable) {
+          if (scheduledNewPbr.current !== null) {
             player.setPlaybackRate(scheduledNewPbr.current);
             scheduledNewPbr.current = null;
+          }
+
+          if (scheduledSeekTime.current !== null) {
+            player.seekTo(scheduledSeekTime.current, true);
+            scheduledSeekTime.current = null;
           }
         }
       };
@@ -214,9 +226,12 @@ function canPlay(player: YouTubePlayer) {
   return playerState !== YouTubePlayerState.UNSTARTED;
 }
 
-function isVideoLoaded(player: YouTubePlayer) {
+function isVideoAvailable(player: YouTubePlayer) {
   const playerState = player.getPlayerState();
-  return playerState !== YouTubePlayerState.UNSTARTED && playerState !== YouTubePlayerState.VIDEO_CUED
+  return (
+    playerState !== YouTubePlayerState.UNSTARTED &&
+    playerState !== YouTubePlayerState.VIDEO_CUED
+  );
 }
 
 function canPause(player: YouTubePlayer) {
