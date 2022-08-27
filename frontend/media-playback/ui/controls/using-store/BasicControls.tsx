@@ -33,7 +33,7 @@ const BasicControls = ({ sx }: Props) => {
         </IconButton>
         <IconButton
           size="large"
-          onClick={() => Error('TODO: implement')}
+          // onClick={onPrevious}// TODO
           color="primary"
         >
           <SkipPreviousIcon />

@@ -1,7 +1,6 @@
 import { Box, SxProps } from '@mui/material';
-import { usePlaybackStore } from '../use-playback-store';
-import BasicControls from './sub-components/using-store/BasicControls';
-import PlaybackProgressBar from './sub-components/using-store/PlaybackProgressBar';
+import BasicControls from './controls/using-store/BasicControls';
+import PlaybackProgressBar from './controls/using-store/PlaybackProgressBar';
 
 const controlsContainerStyles: SxProps = {
   display: 'grid',
@@ -21,10 +20,10 @@ const progressBarStyles: SxProps = {
 
 // TODO: implement with new approach (components for UI, hooks for adding logic to components)
 
-const BasicMediaPlayerUI = () => (
+const ClassicPlayerUI = () => (
   <Box sx={controlsContainerStyles}>
     <BasicControls sx={basicControlsStyles} />
     <PlaybackProgressBar sx={progressBarStyles} />
   </Box>
 );
-export default BasicMediaPlayerUI;
+export default ClassicPlayerUI;

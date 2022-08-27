@@ -34,7 +34,7 @@ import {
   useYouTubePlayer,
   YouTubePlayer,
 } from '@frontend/media-playback/use-youtube-player';
-import BasicMediaControls from '@frontend/media-playback/controls/BasicMediaControls';
+import ClassicPlayerUI from '@frontend/media-playback/ui/ClassicPlayerUI';
 
 const containerStyles: SxProps = {
   flex: '1',
@@ -206,7 +206,7 @@ const YouTubePlayerPage: NextPage = () => {
                 opts={youTubePlayerOpts}
               />
             </Box>
-            {youTubePlayer && <BasicMediaControls />}
+            {youTubePlayer && <ClassicPlayerUI />}
             {videoData.length > 1 && (
               <SongList
                 title="Videos"
