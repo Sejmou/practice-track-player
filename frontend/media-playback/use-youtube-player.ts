@@ -8,7 +8,7 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
     setMediumLoaded,
     reset,
     playing,
-    timeToSeekTo: lastSeekTime,
+    lastSeekTime,
     mediumLoaded,
     play,
     pause,

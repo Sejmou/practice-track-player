@@ -10,9 +10,9 @@ export interface PlaybackState {
    */
   currentTime: number;
   /**
-   * If this is !== null, player should seek to the given time (in seconds) as soon as possible
+   * The last point in time the user seeked to for the currently playing medium
    */
-  timeToSeekTo: number | null;
+  lastSeekTime: number | null;
   maxPlaybackRate: number;
   minPlaybackRate: number;
   playbackRate: number;
@@ -46,7 +46,6 @@ export interface PlaybackActions {
   seekForward: (amount: number) => void;
   seekBackward: (amount: number) => void;
   seekTo: (time: number) => void;
-  onSeeked: () => void;
   jumpToEnd: () => void;
   setMediumLoaded: (newVal: boolean) => void;
   setDuration: (newDuration: number) => void;
@@ -102,20 +101,20 @@ export const usePlaybackStore = create<CurrentMediumPlaybackStore>(
       })),
     seekBackward: (amount: number) =>
       set(state => ({
-        timeToSeekTo: Math.max(
+        lastSeekTime: Math.max(
           0 + 0.000001 * Math.random(),
           state.currentTime - amount
         ),
       })),
     seekForward: (amount: number) =>
       set(state => ({
-        timeToSeekTo:
+        lastSeekTime:
           Math.min(state.duration, state.currentTime + amount) -
           0.000001 * Math.random(),
       })),
     seekTo: (time: number) =>
       set(state => ({
-        timeToSeekTo: clamp(time, 0, state.duration),
+        lastSeekTime: clamp(time, 0, state.duration),
       })),
     setMediumLoaded: (newVal: boolean) => set(() => ({ mediumLoaded: newVal })),
     setDuration: (newDuration: number) =>
@@ -123,7 +122,7 @@ export const usePlaybackStore = create<CurrentMediumPlaybackStore>(
     setCurrentTime: (newTime: number) => set(() => ({ currentTime: newTime })),
     reset: () =>
       set(() => ({
-        timeToSeekTo: null,
+        lastSeekTime: null,
         minPlaybackRate: 0.5,
         maxPlaybackRate: 1,
         currentTime: 0,
@@ -132,8 +131,7 @@ export const usePlaybackStore = create<CurrentMediumPlaybackStore>(
         duration: 1,
         mediumLoaded: true,
       })),
-    onSeeked: () => set({ timeToSeekTo: null }),
-    timeToSeekTo: null,
+    lastSeekTime: null,
     minPlaybackRate: 0.5,
     maxPlaybackRate: 1,
     currentTime: 0,
