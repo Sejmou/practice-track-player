@@ -1,6 +1,6 @@
 import create, { StateCreator } from 'zustand';
 import { clamp } from '@util';
-import { YouTubeVideoData } from '@models';
+import { YouTubePlaylistVideoData, YouTubeVideoData } from '@models';
 
 interface CurrentMediumPlaybackState {
   playing: boolean;
@@ -221,7 +221,7 @@ const createMediaElementsSlice: StateCreator<
 });
 
 type YouTubeStore = CurrentMediumPlaybackSlice &
-  MediaElementsSlice<YouTubeVideoData>;
+  MediaElementsSlice<YouTubeVideoData | YouTubePlaylistVideoData>;
 
 export const useYouTubeStore = create<YouTubeStore>()((...a) => ({
   ...createCurrentMediumPlaybackSlice(...a),

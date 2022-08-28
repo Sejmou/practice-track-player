@@ -74,5 +74,15 @@ export const YouTubeVideoDataValidator = z.object({
 
 export type YouTubeVideoData = z.infer<typeof YouTubeVideoDataValidator>;
 
-export const YouTubePlaylistDataValidator = z.array(YouTubeVideoDataValidator);
+export const YouTubePlaylistVideoDataValidator =
+  YouTubeVideoDataValidator.extend({
+    videoOwnerChannelTitle: z.string(),
+  });
+export type YouTubePlaylistVideoData = z.infer<
+  typeof YouTubePlaylistVideoDataValidator
+>;
+
+export const YouTubePlaylistDataValidator = z.array(
+  YouTubePlaylistVideoDataValidator
+);
 export type YouTubePlaylistData = z.infer<typeof YouTubePlaylistDataValidator>;

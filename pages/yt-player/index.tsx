@@ -65,7 +65,18 @@ const YouTubePlayerPage: NextPage = () => {
   const [songListData, setSongListData] = useState<Song[]>([]);
   useEffect(() => {
     setSongListData(
-      mediaElements.map(el => ({ title: el.title, artist: el.channelTitle }))
+      mediaElements.map(el => {
+        if ('videoOwnerChannelTitle' in el) {
+          return {
+            title: el.title,
+            artist: el.videoOwnerChannelTitle,
+          };
+        } else
+          return {
+            title: el.title,
+            artist: el.channelTitle,
+          };
+      })
     );
   }, [mediaElements]);
 
