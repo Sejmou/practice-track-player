@@ -1,13 +1,8 @@
-import create from 'zustand';
+import create, { StateCreator } from 'zustand';
 import { clamp } from '@util';
-import { produce } from 'immer';
+import { YouTubeVideoData } from '@models';
 
-interface RemoteMediaElementData {
-  url: string;
-  contentType?: string;
-}
-
-interface MediaElementPlaybackData {
+interface CurrentMediumPlaybackState {
   playing: boolean;
   /**
    * The current playback time for the medium that the player should play
@@ -28,40 +23,26 @@ interface MediaElementPlaybackData {
   duration: number | null;
 }
 
-type CurrentMediaElementPlaybackData = MediaElementPlaybackData &
-  Partial<RemoteMediaElementData>;
-
-export interface PlaybackState {
-  currentElementData: CurrentMediaElementPlaybackData;
-  mediaElements: RemoteMediaElementData[];
-}
-
-export interface PlaybackActions {
+export interface CurrentMediumPlaybackActions {
   play: () => void;
   pause: () => void;
   togglePlayPause: () => void;
   increasePlaybackRate: (amount: number) => void;
   decreasePlaybackRate: (amount: number) => void;
   changePlaybackRate: (newPBR: number) => void;
-  changeCurrentMediaElement: (newIdx: number) => void;
-  next: () => void;
-  previous: () => void;
-  initialize: (
-    mediaElementData: RemoteMediaElementData[],
-    startIdx: number
-  ) => void;
   seekForward: (amount: number) => void;
   seekBackward: (amount: number) => void;
   seekTo: (time: number) => void;
   jumpToEnd: () => void;
   setDuration: (newDuration: number) => void;
   setCurrentTime: (newTime: number) => void;
-  reset: () => void;
+  resetCurrentPlaybackState: () => void;
 }
 
-type PlaybackStore = PlaybackState & PlaybackActions;
+type CurrentMediumPlaybackSlice = CurrentMediumPlaybackState &
+  CurrentMediumPlaybackActions;
 
-const initialCurrentElementPlaybackState: CurrentMediaElementPlaybackData = {
+const initialMediumPlaybackState: CurrentMediumPlaybackState = {
   lastSeekTime: null,
   minPlaybackRate: 0.5,
   maxPlaybackRate: 1,
@@ -69,174 +50,180 @@ const initialCurrentElementPlaybackState: CurrentMediaElementPlaybackData = {
   playing: false,
   playbackRate: 1,
   duration: null,
-  url: undefined,
-  contentType: undefined,
 };
 
-export const usePlaybackStore = create<PlaybackStore>((set, get) => ({
+const createCurrentMediumPlaybackSlice: StateCreator<
+  CurrentMediumPlaybackSlice & MediaElementsSlice<any>,
+  [],
+  [],
+  CurrentMediumPlaybackSlice
+> = (set, get) => ({
   play: () =>
-    set(
-      produce((state: PlaybackState) => {
-        if (navigator?.mediaSession?.playbackState) {
-          navigator.mediaSession.playbackState = 'playing';
-        }
-        state.currentElementData.playing = true;
-      })
-    ),
+    set(() => {
+      if (navigator?.mediaSession?.playbackState) {
+        navigator.mediaSession.playbackState = 'playing';
+      }
+      return { playing: true };
+    }),
   pause: () =>
-    set(
-      produce((state: PlaybackState) => {
-        if (navigator?.mediaSession?.playbackState) {
-          navigator.mediaSession.playbackState = 'paused';
-        }
-        state.currentElementData.playing = false;
-      })
-    ),
+    set(() => {
+      if (navigator?.mediaSession?.playbackState) {
+        navigator.mediaSession.playbackState = 'paused';
+      }
+      return { playing: false };
+    }),
   jumpToEnd: () =>
-    set(
-      produce(state => {
-        if (!state.currentElementData.duration) return; // this should make that action a no-op if duration is not available yet
-        state.currentElementData.playing = false;
-        state.currentElementData.currentTime =
-          state.currentElementData.duration;
-      })
-    ),
-  togglePlayPause: () =>
-    set(
-      produce((state: PlaybackState) => {
-        state.currentElementData.playing = !state.currentElementData.playing;
-      })
-    ),
-  changePlaybackRate: (newPBR: number) =>
-    set(
-      produce((state: PlaybackState) => {
-        state.currentElementData.playbackRate = clamp(
-          newPBR,
-          state.currentElementData.minPlaybackRate,
-          state.currentElementData.maxPlaybackRate
-        );
-      })
-    ),
-  increasePlaybackRate: (amount: number) =>
-    set(
-      produce((state: PlaybackState) => {
-        state.currentElementData.playbackRate = Math.min(
-          state.currentElementData.playbackRate + amount,
-          state.currentElementData.maxPlaybackRate
-        );
-      })
-    ),
-  decreasePlaybackRate: (amount: number) =>
-    set(
-      produce((state: PlaybackState) => {
-        state.currentElementData.playbackRate = Math.max(
-          state.currentElementData.playbackRate - amount,
-          state.currentElementData.minPlaybackRate
-        );
-      })
-    ),
-  seekBackward: (amount: number) =>
-    set(
-      produce((state: PlaybackState) => {
-        state.currentElementData.lastSeekTime = Math.max(
-          0 + 0.000001 * Math.random(),
-          state.currentElementData.currentTime - amount
-        );
-      })
-    ),
-  seekForward: (amount: number) =>
-    set(
-      produce((state: PlaybackState) => {
-        if (!state.currentElementData.duration) return; // this should make that action a no-op if duration is not available yet
-        state.currentElementData.lastSeekTime =
-          Math.min(
-            state.currentElementData.duration,
-            state.currentElementData.currentTime + amount
-          ) -
-          0.000001 * Math.random();
-      })
-    ),
-  seekTo: (time: number) =>
-    set(
-      produce((state: PlaybackState) => {
-        if (!state.currentElementData.duration) return; // this should make that action a no-op if duration is not available yet
-        state.currentElementData.lastSeekTime = clamp(
-          time,
-          0,
-          state.currentElementData.duration
-        );
-      })
-    ),
-  setDuration: (newDuration: number) =>
-    set(
-      produce((state: PlaybackState) => {
-        state.currentElementData.duration = newDuration;
-      })
-    ),
-  setCurrentTime: (newTime: number) =>
-    set(
-      produce((state: PlaybackState) => {
-        state.currentElementData.currentTime = newTime;
-      })
-    ),
-  next: () =>
-    set(
-      produce((state: PlaybackState) => {
-        const currentUrl = state.currentElementData.url;
-        if (!currentUrl) return;
-        const currentIdx = state.mediaElements.findIndex(
-          el => el.url === currentUrl
-        );
-        if (currentIdx === -1) return;
-        const next = state.mediaElements[currentIdx + 1];
-        if (!next) return;
-        state.currentElementData.url = next.url;
-        state.currentElementData.contentType = next.contentType;
-      })
-    ),
-  previous: () =>
-    set(
-      produce((state: PlaybackState) => {
-        const currentUrl = state.currentElementData.url;
-        if (!currentUrl) return;
-        const currentIdx = state.mediaElements.findIndex(
-          el => el.url === currentUrl
-        );
-        if (currentIdx === -1) return;
-        const previous = state.mediaElements[currentIdx - 1];
-        if (!previous) return;
-        state.currentElementData.url = previous.url;
-        state.currentElementData.contentType = previous.contentType;
-      })
-    ),
-  changeCurrentMediaElement: (newIdx: number) =>
     set(state => {
-      if (!state.mediaElements[newIdx]) return {};
+      if (!state.duration) return {}; // this should make that action a no-op if duration is not available yet
       return {
-        currentElementData: {
-          ...initialCurrentElementPlaybackState,
-          url: state.mediaElements[newIdx].url,
-          contentType: state.mediaElements[newIdx].contentType,
-        },
+        playing: false,
+        currentTime: state.duration,
       };
     }),
-  initialize: (mediaElements: RemoteMediaElementData[], startIdx: number) =>
-    set(() => {
-      if (!mediaElements[startIdx]) return {};
+  togglePlayPause: () => set(state => ({ playing: !state.playing })),
+  changePlaybackRate: (newPBR: number) =>
+    set(state => ({
+      playbackRate: clamp(newPBR, state.minPlaybackRate, state.maxPlaybackRate),
+    })),
+  increasePlaybackRate: (amount: number) =>
+    set(state => ({
+      playbackRate: Math.min(
+        state.playbackRate + amount,
+        state.maxPlaybackRate
+      ),
+    })),
+  decreasePlaybackRate: (amount: number) =>
+    set(state => ({
+      playbackRate: Math.max(
+        state.playbackRate - amount,
+        state.minPlaybackRate
+      ),
+    })),
+  seekBackward: (amount: number) =>
+    set(state => ({
+      lastSeekTime: Math.max(
+        0 + 0.000001 * Math.random(),
+        state.currentTime - amount
+      ),
+    })),
+  seekForward: (amount: number) =>
+    set(state => {
+      if (!state.duration) return {}; // this should make that action a no-op if duration is not available yet
       return {
-        currentElementData: {
-          ...initialCurrentElementPlaybackState,
-          url: mediaElements[startIdx].url,
-          contentType: mediaElements[startIdx].contentType,
-        },
+        lastSeekTime:
+          Math.min(state.duration, state.currentTime + amount) -
+          0.000001 * Math.random(),
+      };
+    }),
+  seekTo: (time: number) =>
+    set(state => {
+      if (!state.duration) return {}; // this should make that action a no-op if duration is not available yet
+      return {
+        lastSeekTime: clamp(time, 0, state.duration),
+      };
+    }),
+  setDuration: (newDuration: number) => set(() => ({ duration: newDuration })),
+  setCurrentTime: (newTime: number) => set(() => ({ currentTime: newTime })),
+  resetCurrentPlaybackState: () =>
+    set(() => ({
+      lastSeekTime: null,
+      minPlaybackRate: 0.5,
+      maxPlaybackRate: 1,
+      currentTime: 0,
+      playing: false,
+      playbackRate: 1,
+      duration: null,
+    })),
+  lastSeekTime: null,
+  minPlaybackRate: 0.5,
+  maxPlaybackRate: 1,
+  currentTime: 0,
+  playing: false,
+  playbackRate: 1,
+  duration: null,
+});
+
+interface MediaElementsSlice<T> {
+  switchTo: (newIdx: number) => void;
+  next: () => void;
+  previous: () => void;
+  initialize: (mediaElements: T[], startIdx: number) => void;
+  reset: () => void;
+  currIdx: number;
+  mediaElements: T[];
+  initialized: boolean;
+}
+
+interface RemoteMediaData {
+  url: string;
+  contentType?: string;
+}
+
+const createMediaElementsSlice: StateCreator<
+  CurrentMediumPlaybackSlice & MediaElementsSlice<any>,
+  [],
+  [],
+  MediaElementsSlice<any>
+> = (set, get) => ({
+  switchTo: (newIdx: number) =>
+    set(state => {
+      if (state.currIdx === null || !state.mediaElements[newIdx]) return {};
+      get().resetCurrentPlaybackState(); // apparently this is a sensible approach for side-effects in zustand: https://github.com/pmndrs/zustand/discussions/307
+      return { currIdx: newIdx };
+    }),
+  next: () =>
+    set(state => {
+      if (state.currIdx === null || !state.mediaElements[state.currIdx + 1])
+        return {};
+      get().resetCurrentPlaybackState();
+      return { currIdx: state.currIdx + 1 };
+    }),
+  previous: () =>
+    set(state => {
+      if (state.currIdx === null || !state.mediaElements[state.currIdx - 1])
+        return {};
+      get().resetCurrentPlaybackState();
+      return { currIdx: state.currIdx - 1 };
+    }),
+  initialize: (mediaElements: any[], startIdx: number) =>
+    set(() => {
+      if (
+        startIdx < 0 ||
+        mediaElements.length === 0 ||
+        !mediaElements[startIdx]
+      ) {
+        console.warn(
+          'Invalid startIdx',
+          startIdx,
+          'for provided media elements',
+          mediaElements
+        );
+        return {};
+      }
+      return {
         mediaElements,
+        currIdx: startIdx,
+        intialized: true,
       };
     }),
   reset: () =>
-    set(() => ({
-      currentElementData: initialCurrentElementPlaybackState,
-      mediaElements: [],
-    })),
-  currentElementData: initialCurrentElementPlaybackState,
+    set(() => {
+      get().resetCurrentPlaybackState();
+      return {
+        initialized: false,
+        currIdx: -1,
+        mediaElements: [],
+      };
+    }),
+  initialized: false,
+  currIdx: -1,
   mediaElements: [],
+});
+
+type YouTubeStore = CurrentMediumPlaybackSlice &
+  MediaElementsSlice<YouTubeVideoData>;
+
+export const useYouTubeStore = create<YouTubeStore>()((...a) => ({
+  ...createCurrentMediumPlaybackSlice(...a),
+  ...createMediaElementsSlice(...a),
 }));

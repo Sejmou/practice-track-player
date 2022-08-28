@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import { PlaybackActions } from './use-playback-store';
+import { CurrentMediumPlaybackActions } from './use-playback-store';
 
 export function useMediaSessionActionHandlers(
-  playbackActions: PlaybackActions
+  playbackActions: CurrentMediumPlaybackActions
 ) {
   useEffect(() => {
     const actionHandlers: [

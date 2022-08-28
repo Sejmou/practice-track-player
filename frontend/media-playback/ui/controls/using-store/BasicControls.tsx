@@ -5,20 +5,20 @@ import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import Replay5Icon from '@mui/icons-material/Replay5';
 import Forward5Icon from '@mui/icons-material/Forward5';
-import { usePlaybackStore } from '@frontend/media-playback/use-playback-store';
+import { useYouTubeStore } from '@frontend/media-playback/use-playback-store';
 
 type Props = {
   sx?: SxProps;
 };
 const BasicControls = ({ sx }: Props) => {
   const {
-    currentElementData: { playing },
+    playing,
     seekBackward,
     seekForward,
     togglePlayPause,
     next,
     previous,
-  } = usePlaybackStore();
+  } = useYouTubeStore();
 
   return (
     <Box

@@ -1,15 +1,17 @@
 import { useEffect, useRef } from 'react';
-import { usePlaybackStore } from './use-playback-store';
+import { useYouTubeStore } from './use-playback-store';
 
 export const useYouTubePlayer = (player?: YouTubePlayer) => {
   const {
     setDuration,
     setCurrentTime,
-    reset,
-    currentElementData: { playing, lastSeekTime, playbackRate },
+    resetCurrentPlaybackState: resetCurrent,
+    playing,
+    lastSeekTime,
+    playbackRate,
     play,
     pause,
-  } = usePlaybackStore();
+  } = useYouTubeStore();
 
   const playerRef = useRef<YouTubePlayer | undefined>(player);
   const playerState = useRef<YouTubePlayerState>(YouTubePlayerState.UNSTARTED);
@@ -119,7 +121,7 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
 
       if (playerRefChanged) {
         console.log('player ref changed!');
-        reset();
+        resetCurrent();
         const helper = (event: any) => {
           // will call the current state change listener every time - part of workaround for non-functional event listener removal from YouTube Iframe API
           stateChangeListenerRef.current?.(event);
@@ -131,7 +133,7 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
         clearInterval(currentTimeTimer);
       };
     }
-  }, [pause, play, player, playing, reset, setCurrentTime, setDuration]);
+  }, [pause, play, player, playing, resetCurrent, setCurrentTime, setDuration]);
 };
 
 /**

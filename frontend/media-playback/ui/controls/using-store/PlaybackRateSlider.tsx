@@ -1,7 +1,7 @@
 import { Slider, Stack, SxProps, Typography } from '@mui/material';
 import SpeedIcon from '@mui/icons-material/Speed';
 import React from 'react';
-import { usePlaybackStore } from '@frontend/media-playback/use-playback-store';
+import { useYouTubeStore } from '@frontend/media-playback/use-playback-store';
 
 type Props = {
   sx?: SxProps;
@@ -10,8 +10,10 @@ const PlaybackRateSlider = React.forwardRef<HTMLInputElement, Props>(
   ({ sx }: Props, ref) => {
     const {
       changePlaybackRate,
-      currentElementData: { playbackRate, minPlaybackRate, maxPlaybackRate },
-    } = usePlaybackStore();
+      playbackRate,
+      minPlaybackRate,
+      maxPlaybackRate,
+    } = useYouTubeStore();
 
     const handleSliderChange = (event: Event, newValue: number | number[]) => {
       changePlaybackRate(newValue as number);

@@ -36,7 +36,7 @@ import {
 } from '@frontend/media-playback/use-youtube-player';
 import ClassicPlayerUI from '@frontend/media-playback/ui/ClassicPlayerUI';
 import PBRPlayerUI from '@frontend/media-playback/ui/PBRPlayerUI';
-import { usePlaybackStore } from '@frontend/media-playback/use-playback-store';
+import { useYouTubeStore } from '@frontend/media-playback/use-playback-store';
 
 const containerStyles: SxProps = {
   flex: '1',
@@ -47,35 +47,27 @@ const containerStyles: SxProps = {
 type YouTubeLinkData = {
   videoId?: string;
   playlistId?: string;
-  playlistIndex?: string;
+  playlistIndex?: number;
 };
 
 const YouTubePlayerPage: NextPage = () => {
   const [linkInputTouched, setLinkInputTouched] = useState(false);
   const [videoLinkError, setVideoLinkError] = useState(false);
 
-  const [videoData, setVideoData] = useState<YouTubeVideoData[]>([]);
-  const [songListData, setSongListData] = useState<Song[]>([]);
-  const [currVideoIdx, setCurrVideoIdx] = useState(0);
-
   const playerContainerRef = useRef<HTMLDivElement>();
   const [youTubePlayer, setYouTubePlayer] = useState<YouTubePlayer>();
 
   useYouTubePlayer(youTubePlayer);
 
-  const {
-    initialize,
-    currentElementData: { url },
-  } = usePlaybackStore();
+  const { initialize, mediaElements, currIdx, switchTo, initialized, reset } =
+    useYouTubeStore();
 
+  const [songListData, setSongListData] = useState<Song[]>([]);
   useEffect(() => {
-    initialize(
-      videoData.map(d => ({ url: d.videoId })),
-      0
+    setSongListData(
+      mediaElements.map(el => ({ title: el.title, artist: el.channelTitle }))
     );
-  }, [videoData]);
-
-  console.log(url);
+  }, [mediaElements]);
 
   const [youTubePlayerOpts, setYouTubePlayerOpts] = useState<
     YouTubeProps['opts']
@@ -111,7 +103,7 @@ const YouTubePlayerPage: NextPage = () => {
       ev: ChangeEvent<HTMLInputElement> | FocusEvent<HTMLInputElement>
     ) => {
       const input = ev.target.value;
-      const { videoId, playlistId, playlistIndex } = getYouTubeVideoData(input);
+      const { videoId, playlistId, playlistIndex } = getYouTubeLinkData(input);
       const inputInvalid = !videoId && !playlistId;
       setVideoLinkError(inputInvalid);
 
@@ -122,18 +114,13 @@ const YouTubePlayerPage: NextPage = () => {
         )
           .then(res => res.json())
           .then(json => YouTubePlaylistDataValidator.parse(json));
-        setVideoData(playlistData);
-        setSongListData(
-          playlistData.map(v => ({ title: v.title, artist: v.channelTitle }))
-        );
+        initialize(playlistData, playlistIndex ?? 0);
+        // setLocalMediaElements(playlistData);
       } else if (videoId) {
         const videoData = await fetch(`/api/yt/video-metadata/${videoId}`)
           .then(res => res.json())
           .then(json => YouTubeVideoDataValidator.parse(json));
-        setVideoData([videoData]);
-        setSongListData([
-          { title: videoData.title, artist: videoData.channelTitle },
-        ]);
+        initialize([videoData], 0);
       }
     },
     []
@@ -143,7 +130,7 @@ const YouTubePlayerPage: NextPage = () => {
     setLinkInputTouched(true);
   };
 
-  const playerDataReady = videoData.length > 0;
+  const playerDataReady = mediaElements.length > 0;
 
   const linkInput = (
     <>
@@ -212,26 +199,24 @@ const YouTubePlayerPage: NextPage = () => {
             <Box ref={playerContainerRef}>
               <YouTube
                 onReady={onPlayerReady}
-                videoId={url}
+                videoId={mediaElements[currIdx].videoId}
                 opts={youTubePlayerOpts}
               />
             </Box>
             {/* {youTubePlayer && <ClassicPlayerUI />} */}
             {youTubePlayer && <PBRPlayerUI />}
-            {videoData.length > 1 && (
+            {mediaElements.length > 1 && (
               <SongList
                 title="Videos"
                 songs={songListData}
-                currentSong={songListData[currVideoIdx]}
+                currentSong={songListData[currIdx]}
                 handleSongChange={song => {
-                  setCurrVideoIdx(
-                    songListData.findIndex(s => s.title === song.title)
-                  );
+                  switchTo(songListData.findIndex(s => s.title === song.title));
                 }}
               />
             )}
             <Stack direction="column">
-              <Button onClick={() => setVideoData([])}>
+              <Button onClick={() => reset()}>
                 Pick other video or playlist
               </Button>
             </Stack>
@@ -243,7 +228,7 @@ const YouTubePlayerPage: NextPage = () => {
 };
 export default YouTubePlayerPage;
 
-function getYouTubeVideoData(input: string): YouTubeLinkData {
+function getYouTubeLinkData(input: string): YouTubeLinkData {
   let videoId;
   try {
     // make use of function used by ytdl-core
@@ -252,8 +237,12 @@ function getYouTubeVideoData(input: string): YouTubeLinkData {
     // continue in any case to also check if there is a playlist ID
   }
   const playlistId = getYouTubeQueryParam(input, 'list');
-  const playlistIndex = getYouTubeQueryParam(input, 'index');
-  return { videoId, playlistId, playlistIndex };
+  const playlistIndex = Number(getYouTubeQueryParam(input, 'index'));
+  return {
+    videoId,
+    playlistId,
+    playlistIndex: isNaN(playlistIndex) ? undefined : playlistIndex - 1, // playlistIndex on YouTube is not zero-based
+  };
 }
 
 //recycling code from ytdl-core

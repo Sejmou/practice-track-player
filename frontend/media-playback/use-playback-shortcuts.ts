@@ -1,7 +1,9 @@
-import { PlaybackActions } from './use-playback-store';
+import { CurrentMediumPlaybackActions } from './use-playback-store';
 import { useKeyboardShortcuts } from './use-keyboard-shortcuts';
 
-export function usePlaybackShortcuts(playbackActions: PlaybackActions) {
+export function usePlaybackShortcuts(
+  playbackActions: CurrentMediumPlaybackActions
+) {
   useKeyboardShortcuts([
     [
       { key: ' ' },
