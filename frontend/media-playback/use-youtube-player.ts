@@ -11,6 +11,7 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
     playbackRate,
     play,
     pause,
+    currIdx,
   } = useYouTubeStore();
 
   const playerRef = useRef<YouTubePlayer | undefined>(player);
@@ -18,6 +19,7 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
   const playScheduled = useRef(false);
   const scheduledSeekTime = useRef<number | null>(null);
   const scheduledNewPbr = useRef<number | null>(null);
+  const lastIdx = useRef<number | null>(null);
 
   // TODOs:
   // verify that player functions are only called when player can actually execute them
@@ -45,6 +47,14 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
       }
     }
   }, [player, playing]);
+
+  useEffect(() => {
+    const previousIdx = lastIdx.current;
+    if (playing && previousIdx !== currIdx) {
+      playScheduled.current = true;
+    }
+    lastIdx.current = currIdx;
+  }, [playing, currIdx]);
 
   useEffect(() => {
     if (lastSeekTime !== null && player) {

@@ -33,7 +33,7 @@ export interface CurrentMediumPlaybackActions {
   seekForward: (amount: number) => void;
   seekBackward: (amount: number) => void;
   seekTo: (time: number) => void;
-  jumpToEnd: () => void;
+  jumpToStart: () => void;
   setDuration: (newDuration: number) => void;
   setCurrentTime: (newTime: number) => void;
   resetCurrentPlaybackState: () => void;
@@ -72,13 +72,11 @@ const createCurrentMediumPlaybackSlice: StateCreator<
       }
       return { playing: false };
     }),
-  jumpToEnd: () =>
+  jumpToStart: () =>
     set(state => {
       if (!state.duration) return {}; // this should make that action a no-op if duration is not available yet
-      return {
-        playing: false,
-        currentTime: state.duration,
-      };
+      get().seekTo(0 + Math.random() * 0.00000001); // making sure "change detection" always trigger by never providing the exact same value
+      return {};
     }),
   togglePlayPause: () => set(state => ({ playing: !state.playing })),
   changePlaybackRate: (newPBR: number) =>
@@ -124,23 +122,8 @@ const createCurrentMediumPlaybackSlice: StateCreator<
     }),
   setDuration: (newDuration: number) => set(() => ({ duration: newDuration })),
   setCurrentTime: (newTime: number) => set(() => ({ currentTime: newTime })),
-  resetCurrentPlaybackState: () =>
-    set(() => ({
-      lastSeekTime: null,
-      minPlaybackRate: 0.5,
-      maxPlaybackRate: 1,
-      currentTime: 0,
-      playing: false,
-      playbackRate: 1,
-      duration: null,
-    })),
-  lastSeekTime: null,
-  minPlaybackRate: 0.5,
-  maxPlaybackRate: 1,
-  currentTime: 0,
-  playing: false,
-  playbackRate: 1,
-  duration: null,
+  resetCurrentPlaybackState: () => set(() => initialMediumPlaybackState),
+  ...initialMediumPlaybackState,
 });
 
 interface MediaElementsSlice<T> {
@@ -175,15 +158,23 @@ const createMediaElementsSlice: StateCreator<
     set(state => {
       if (state.currIdx === null || !state.mediaElements[state.currIdx + 1])
         return {};
-      get().resetCurrentPlaybackState();
-      return { currIdx: state.currIdx + 1 };
+      return {
+        currIdx: state.currIdx + 1,
+        lastSeekTime: null,
+      };
     }),
   previous: () =>
     set(state => {
       if (state.currIdx === null || !state.mediaElements[state.currIdx - 1])
         return {};
-      get().resetCurrentPlaybackState();
-      return { currIdx: state.currIdx - 1 };
+      if (state.currentTime > 2.5) {
+        get().jumpToStart();
+        return {};
+      }
+      return {
+        currIdx: state.currIdx - 1,
+        lastSeekTime: null,
+      };
     }),
   initialize: (mediaElements: any[], startIdx: number) =>
     set(() => {
