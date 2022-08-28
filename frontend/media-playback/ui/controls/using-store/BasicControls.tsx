@@ -11,8 +11,14 @@ type Props = {
   sx?: SxProps;
 };
 const BasicControls = ({ sx }: Props) => {
-  const { playing, seekBackward, seekForward, togglePlayPause } =
-    usePlaybackStore();
+  const {
+    currentElementData: { playing },
+    seekBackward,
+    seekForward,
+    togglePlayPause,
+    next,
+    previous,
+  } = usePlaybackStore();
 
   return (
     <Box
@@ -31,11 +37,7 @@ const BasicControls = ({ sx }: Props) => {
         >
           <Replay5Icon />
         </IconButton>
-        <IconButton
-          size="large"
-          // onClick={onPrevious}// TODO
-          color="primary"
-        >
+        <IconButton size="large" onClick={previous} color="primary">
           <SkipPreviousIcon />
         </IconButton>
         <IconButton onClick={togglePlayPause} color="primary" size="large">
@@ -44,7 +46,7 @@ const BasicControls = ({ sx }: Props) => {
         <IconButton
           size="large"
           // disabled={nextDisabled}// TODO
-          // onClick={onNext}// TODO
+          onClick={next}
           color="primary"
         >
           <SkipNextIcon />

@@ -10,9 +10,7 @@ const PlaybackRateSlider = React.forwardRef<HTMLInputElement, Props>(
   ({ sx }: Props, ref) => {
     const {
       changePlaybackRate,
-      playbackRate,
-      minPlaybackRate,
-      maxPlaybackRate,
+      currentElementData: { playbackRate, minPlaybackRate, maxPlaybackRate },
     } = usePlaybackStore();
 
     const handleSliderChange = (event: Event, newValue: number | number[]) => {

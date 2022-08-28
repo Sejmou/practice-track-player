@@ -6,9 +6,7 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
     setDuration,
     setCurrentTime,
     reset,
-    playing,
-    lastSeekTime,
-    playbackRate,
+    currentElementData: { playing, lastSeekTime, playbackRate },
     play,
     pause,
   } = usePlaybackStore();

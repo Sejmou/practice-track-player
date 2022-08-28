@@ -36,6 +36,7 @@ import {
 } from '@frontend/media-playback/use-youtube-player';
 import ClassicPlayerUI from '@frontend/media-playback/ui/ClassicPlayerUI';
 import PBRPlayerUI from '@frontend/media-playback/ui/PBRPlayerUI';
+import { usePlaybackStore } from '@frontend/media-playback/use-playback-store';
 
 const containerStyles: SxProps = {
   flex: '1',
@@ -50,12 +51,7 @@ type YouTubeLinkData = {
 };
 
 const YouTubePlayerPage: NextPage = () => {
-  const [audioContext, setAudioContext] = useState<AudioContext>();
-  useEffect(() => {
-    setAudioContext(new AudioContext());
-  }, []);
-
-  const [linkInputTourched, setLinkInputTouched] = useState(false);
+  const [linkInputTouched, setLinkInputTouched] = useState(false);
   const [videoLinkError, setVideoLinkError] = useState(false);
 
   const [videoData, setVideoData] = useState<YouTubeVideoData[]>([]);
@@ -66,6 +62,20 @@ const YouTubePlayerPage: NextPage = () => {
   const [youTubePlayer, setYouTubePlayer] = useState<YouTubePlayer>();
 
   useYouTubePlayer(youTubePlayer);
+
+  const {
+    initialize,
+    currentElementData: { url },
+  } = usePlaybackStore();
+
+  useEffect(() => {
+    initialize(
+      videoData.map(d => ({ url: d.videoId })),
+      0
+    );
+  }, [videoData]);
+
+  console.log(url);
 
   const [youTubePlayerOpts, setYouTubePlayerOpts] = useState<
     YouTubeProps['opts']
@@ -100,7 +110,6 @@ const YouTubePlayerPage: NextPage = () => {
     async (
       ev: ChangeEvent<HTMLInputElement> | FocusEvent<HTMLInputElement>
     ) => {
-      if (!audioContext) return; // should never be the case in practice
       const input = ev.target.value;
       const { videoId, playlistId, playlistIndex } = getYouTubeVideoData(input);
       const inputInvalid = !videoId && !playlistId;
@@ -127,7 +136,7 @@ const YouTubePlayerPage: NextPage = () => {
         ]);
       }
     },
-    [audioContext]
+    []
   );
 
   const handleLinkBlur = () => {
@@ -175,7 +184,7 @@ const YouTubePlayerPage: NextPage = () => {
                 <InsertLinkIcon />
               </InputAdornment>
             ),
-            error: videoLinkError && linkInputTourched,
+            error: videoLinkError && linkInputTouched,
             spellCheck: false,
           }}
           onChange={handleLinkInputChange}
@@ -203,7 +212,7 @@ const YouTubePlayerPage: NextPage = () => {
             <Box ref={playerContainerRef}>
               <YouTube
                 onReady={onPlayerReady}
-                videoId={videoData[currVideoIdx]?.videoId}
+                videoId={url}
                 opts={youTubePlayerOpts}
               />
             </Box>

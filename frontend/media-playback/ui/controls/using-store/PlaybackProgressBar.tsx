@@ -1,5 +1,5 @@
 import { usePlaybackStore } from '@frontend/media-playback/use-playback-store';
-import { Box, Slider, Stack, SxProps, Typography } from '@mui/material';
+import { Box, Slider, SxProps, Typography } from '@mui/material';
 import { SyntheticEvent, useState } from 'react';
 
 const containerStyles: SxProps = {
@@ -40,12 +40,10 @@ const PlaybackProgressBar = (props: Props) => {
   const [userInteracting, setUserInteracting] = useState(false);
 
   const {
-    currentTime,
-    duration,
+    currentElementData: { currentTime, duration, lastSeekTime },
     seekTo,
     seekBackward,
     seekForward,
-    lastSeekTime: lastSeekTime,
   } = usePlaybackStore();
 
   const handleChange = (_: Event, newValue: number | number[]) => {
