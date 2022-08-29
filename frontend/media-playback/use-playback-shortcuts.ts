@@ -1,5 +1,5 @@
 import { PlaybackActions } from './use-playback-store';
-import { useKeyboardShortcuts } from './use-keyboard-shortcuts';
+import { useKeyboardShortcuts } from '../util/use-keyboard-shortcuts';
 
 export function usePlaybackShortcuts(
   shortcutActions: Pick<

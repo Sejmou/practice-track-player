@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { useMediaSessionActionHandlers } from './use-media-session-action-handlers';
 import { usePlaybackShortcuts } from './use-playback-shortcuts';
 import { useYouTubeStore } from './use-playback-store';
 
@@ -48,8 +47,6 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
   ]);
 
   usePlaybackShortcuts(playbackFns, true);
-
-  useMediaSessionActionHandlers(playbackFns);
 
   const playerRef = useRef<YouTubePlayer | undefined>(player);
   const playerState = useRef<YouTubePlayerState>(YouTubePlayerState.UNSTARTED);

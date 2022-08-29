@@ -8,7 +8,7 @@ import {
   useServerWaveformDataFetcher,
   useGoogleDriveAudioSrcDataFetcher,
 } from '@frontend/media-playback/use-audio-data-fetcher';
-import { useKeyboardShortcuts } from '@frontend/media-playback/use-keyboard-shortcuts';
+import { useKeyboardShortcuts } from '@frontend/util/use-keyboard-shortcuts';
 
 const MusicalSongPlayer = () => {
   const {

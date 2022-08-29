@@ -185,7 +185,7 @@ const createMediaElementsSlice: StateCreator<
       };
     }),
   initialize: (mediaElements: any[], startIdx: number) =>
-    set(() => {
+    set(state => {
       if (
         startIdx < 0 ||
         mediaElements.length === 0 ||
@@ -199,6 +199,13 @@ const createMediaElementsSlice: StateCreator<
         );
         return {};
       }
+      const actionHandlerFns = (({ next, previous, play, pause }) => ({
+        next,
+        previous,
+        play,
+        pause,
+      }))(state);
+      setupMediaSession(actionHandlerFns);
       return {
         mediaElements,
         currIdx: startIdx,
@@ -208,6 +215,7 @@ const createMediaElementsSlice: StateCreator<
   reset: () =>
     set(() => {
       get().resetCurrentPlaybackState();
+      mediaSessionCleanup();
       return {
         initialized: false,
         currIdx: -1,
@@ -226,3 +234,93 @@ export const useYouTubeStore = create<YouTubeStore>()((...a) => ({
   ...createCurrentMediumPlaybackSlice(...a),
   ...createMediaElementsSlice(...a),
 }));
+
+// part of media session workaround - see initializeMediaSession()
+let audio: HTMLAudioElement;
+const ACTION_HANDLER_NAMES = ['play', 'pause', 'next', 'previous'] as const;
+type ActionHandlerNames = typeof ACTION_HANDLER_NAMES[number]; // some completely unnecessary TS stuff: https://stackoverflow.com/a/45486495/13727176
+type ActionHandlers = Pick<PlaybackActions, ActionHandlerNames>;
+const ACTION_HANDLER_ACTION_NAMES = [
+  'play',
+  'pause',
+  'nexttrack',
+  'previoustrack',
+] as const; // TODO for extreme geeks: figure out way to create "static map" between action handler action names and action handler names for maximum type safety
+
+function setupMediaSession(actionHandlers: ActionHandlers) {
+  // sometimes we might not have actual audio/video elemnts when we play media
+  // or, we want to redefine the media session related behavior
+  // this is for example the case with the YouTube Iframe player API
+  // so, we need this weird workaround of playing silent audio in a loop
+  if (!audio) {
+    audio = new Audio('/mp3/Superhero.mp3');
+    audio.loop = true;
+  } else {
+    audio.pause();
+  }
+  audio.play().then(() => {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      artist: 'Test',
+      title: 'Something',
+    });
+
+    navigator.mediaSession.playbackState = 'playing';
+
+    const actionHandlersArr: [
+      action: MediaSessionAction,
+      handler: MediaSessionActionHandler
+    ][] = [
+      [
+        'play',
+        () => {
+          console.log('play');
+          actionHandlers.play();
+        },
+      ],
+      [
+        'pause',
+        () => {
+          console.log('pause');
+          actionHandlers.pause();
+        },
+      ],
+      [
+        'nexttrack',
+        () => {
+          console.log('next track');
+          actionHandlers.next();
+        },
+      ],
+      [
+        'previoustrack',
+        () => {
+          console.log('previous track');
+          actionHandlers.previous();
+        },
+      ],
+      //['seekto', playbackActions.seekTo],//TODO if motivated
+      // ['seekbackward', handleBackward5],// will disabling those but enabling the two above cause prev./next buttons to show up on mobile?
+      // ['seekforward', handleForward5],
+    ];
+    for (const [action, handler] of actionHandlersArr) {
+      try {
+        console.log('Adding action handler for', action);
+        navigator.mediaSession.setActionHandler(action, null);
+        navigator.mediaSession.setActionHandler(action, handler);
+      } catch (error) {
+        console.log(
+          `The media session action "${action}" is not supported yet.`
+        );
+      }
+    }
+  }); // this requires the user already interacted with your page
+}
+
+function mediaSessionCleanup() {
+  for (const action of ACTION_HANDLER_ACTION_NAMES) {
+    navigator.mediaSession.setActionHandler(action, null);
+  }
+  if (audio) {
+    audio.pause();
+  }
+}
