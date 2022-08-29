@@ -1,4 +1,4 @@
-import { useYouTubeStore } from '@frontend/media-playback/use-playback-store';
+import { useYouTubeStore } from '@frontend/media-playback/store';
 import { Box, Slider, SxProps, Typography } from '@mui/material';
 import { SyntheticEvent, useState } from 'react';
 

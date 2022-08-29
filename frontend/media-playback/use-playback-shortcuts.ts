@@ -1,4 +1,4 @@
-import { PlaybackActions } from './use-playback-store';
+import { PlaybackActions } from './store';
 import { useKeyboardShortcuts } from '../util/use-keyboard-shortcuts';
 
 export function usePlaybackShortcuts(

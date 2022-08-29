@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { usePlaybackShortcuts } from './use-playback-shortcuts';
-import { useYouTubeStore } from './use-playback-store';
+import { useYouTubeStore } from './store';
 
 export const useYouTubePlayer = (player?: YouTubePlayer) => {
   const {

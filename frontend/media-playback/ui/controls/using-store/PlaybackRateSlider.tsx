@@ -1,7 +1,7 @@
 import { Slider, Stack, SxProps, Typography } from '@mui/material';
 import SpeedIcon from '@mui/icons-material/Speed';
 import React from 'react';
-import { useYouTubeStore } from '@frontend/media-playback/use-playback-store';
+import { useYouTubeStore } from '@frontend/media-playback/store';
 
 type Props = {
   sx?: SxProps;

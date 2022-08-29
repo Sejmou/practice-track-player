@@ -36,7 +36,7 @@ import {
 } from '@frontend/media-playback/use-youtube-player';
 import ClassicPlayerUI from '@frontend/media-playback/ui/ClassicPlayerUI';
 import PBRPlayerUI from '@frontend/media-playback/ui/PBRPlayerUI';
-import { useYouTubeStore } from '@frontend/media-playback/use-playback-store';
+import { useYouTubeStore } from '@frontend/media-playback/store';
 
 const containerStyles: SxProps = {
   flex: '1',
