@@ -1,4 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
+import { useMediaSessionActionHandlers } from './use-media-session-action-handlers';
+import { usePlaybackShortcuts } from './use-playback-shortcuts';
 import { useYouTubeStore } from './use-playback-store';
 
 export const useYouTubePlayer = (player?: YouTubePlayer) => {
@@ -11,8 +13,43 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
     playbackRate,
     play,
     pause,
+    togglePlayPause,
+    seekForward,
+    seekBackward,
+    next,
+    previous,
+    increasePlaybackRate,
+    decreasePlaybackRate,
     currIdx,
   } = useYouTubeStore();
+
+  const playbackFns = useMemo(() => {
+    return {
+      togglePlayPause,
+      seekForward,
+      seekBackward,
+      next,
+      previous,
+      increasePlaybackRate,
+      decreasePlaybackRate,
+      play,
+      pause,
+    };
+  }, [
+    togglePlayPause,
+    seekForward,
+    seekBackward,
+    next,
+    previous,
+    increasePlaybackRate,
+    decreasePlaybackRate,
+    play,
+    pause,
+  ]);
+
+  usePlaybackShortcuts(playbackFns, true);
+
+  useMediaSessionActionHandlers(playbackFns);
 
   const playerRef = useRef<YouTubePlayer | undefined>(player);
   const playerState = useRef<YouTubePlayerState>(YouTubePlayerState.UNSTARTED);

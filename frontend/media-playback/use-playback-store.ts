@@ -23,7 +23,7 @@ interface CurrentMediumPlaybackState {
   duration: number | null;
 }
 
-export interface CurrentMediumPlaybackActions {
+interface CurrentMediumPlaybackActions {
   play: () => void;
   pause: () => void;
   togglePlayPause: () => void;
@@ -126,16 +126,24 @@ const createCurrentMediumPlaybackSlice: StateCreator<
   ...initialMediumPlaybackState,
 });
 
-interface MediaElementsSlice<T> {
+interface MediaElementsActions<T> {
   switchTo: (newIdx: number) => void;
   next: () => void;
   previous: () => void;
   initialize: (mediaElements: T[], startIdx: number) => void;
   reset: () => void;
+}
+
+export type PlaybackActions<T = any> = CurrentMediumPlaybackActions &
+  MediaElementsActions<T>;
+
+interface MediaElementsState<T> {
   currIdx: number;
   mediaElements: T[];
   initialized: boolean;
 }
+
+type MediaElementsSlice<T> = MediaElementsActions<T> & MediaElementsState<T>;
 
 interface RemoteMediaData {
   url: string;
@@ -194,7 +202,7 @@ const createMediaElementsSlice: StateCreator<
       return {
         mediaElements,
         currIdx: startIdx,
-        intialized: true,
+        initialized: true,
       };
     }),
   reset: () =>

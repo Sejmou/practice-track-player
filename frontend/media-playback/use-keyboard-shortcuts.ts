@@ -13,11 +13,12 @@ export function useKeyboardShortcuts(
   keyBindings: [
     keyCombo: KeyComboKeys,
     handler: (event: KeyboardEvent) => void
-  ][]
+  ][],
+  active: boolean = true
 ) {
   useEffect(() => {
     const keyBindingKeysAndVals: [string, (event: KeyboardEvent) => void][] =
-      keyBindings.map(([c, h]) => [createKeybindingMapKey(c), h]);
+      active ? keyBindings.map(([c, h]) => [createKeybindingMapKey(c), h]) : [];
     const keyBindingsMap = new Map<string, (event: KeyboardEvent) => void>(
       keyBindingKeysAndVals
     );
@@ -33,7 +34,7 @@ export function useKeyboardShortcuts(
     return () => {
       document.body.removeEventListener('keydown', handleKeyDown, true);
     };
-  }, [keyBindings]);
+  }, [keyBindings, active]);
 }
 
 type KeyComboKeys = Pick<KeyboardEvent, 'key'> &

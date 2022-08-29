@@ -141,8 +141,6 @@ const YouTubePlayerPage: NextPage = () => {
     setLinkInputTouched(true);
   };
 
-  const playerDataReady = mediaElements.length > 0;
-
   const linkInput = (
     <>
       <Typography variant="h3">YouTube Player</Typography>
@@ -203,7 +201,7 @@ const YouTubePlayerPage: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Box sx={containerStyles}>
-        {!playerDataReady ? (
+        {!initialized ? (
           linkInput
         ) : (
           <Stack spacing={2}>
