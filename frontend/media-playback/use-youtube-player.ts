@@ -103,8 +103,11 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
 
   useEffect(() => {
     if (player) {
-      if (isVideoAvailable(player)) player.setPlaybackRate(playbackRate);
-      else scheduledNewPbr.current = playbackRate;
+      try {
+        player.setPlaybackRate(playbackRate);
+      } catch (error) {
+        scheduledNewPbr.current = playbackRate;
+      }
     }
   }, [player, playbackRate]);
 
@@ -161,6 +164,11 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
       const currentTimeTimer = setInterval(() => {
         const currentTime = player.getCurrentTime();
         if (currentTime) setCurrentTime(currentTime);
+        const duration = player.getDuration();
+        if (duration && playing && duration - currentTime < 1) {
+          // playing and less than 1 second of playback left -> go to next video!
+          next();
+        }
       }, 50);
 
       if (playerRefChanged) {
