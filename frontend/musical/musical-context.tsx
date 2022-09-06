@@ -4,6 +4,7 @@ import React, {
   createContext,
   useContext,
   useCallback,
+  useEffect,
 } from 'react';
 
 import {
@@ -15,10 +16,23 @@ import {
 
 const useMusicalController = (musical: Musical) => {
   const songs = musical.songs;
-  const [currentSong, setCurrentSong] = useState(songs[0]);
+
+  const [currSongIdx, setCurrSongIdx] = useState(0);
+
+  useEffect(() => {
+    setCurrSongIdx(0);
+  }, [setCurrSongIdx, songs]);
+
+  const currentSong = useMemo(() => {
+    return songs[currSongIdx];
+  }, [currSongIdx, songs]);
 
   const tracks = useMemo(() => currentSong.tracks, [currentSong]);
-  const [currentTrack, setCurrentTrack] = useState(tracks[0]);
+  const [currTrackIdx, setCurrTrackIdx] = useState(0);
+
+  const currentTrack = useMemo(() => {
+    return tracks[currTrackIdx];
+  }, [tracks, currTrackIdx]);
 
   const [nextSongAvailable, setNextSongAvailable] = useState(true);
   const [previousSongAvailable, setPreviousSongAvailable] = useState(false);
@@ -40,12 +54,12 @@ const useMusicalController = (musical: Musical) => {
         );
         return;
       }
-      setCurrentSong(songs[songIdx]);
-      setCurrentTrack(songs[songIdx].tracks[0]);
+      setCurrSongIdx(songIdx);
+      setCurrTrackIdx(0);
       updateNextPreviousAvailability(songIdx);
       setLastSeekedTime(0);
     },
-    [songs, updateNextPreviousAvailability]
+    [setCurrSongIdx, songs, updateNextPreviousAvailability]
   );
 
   const changeTrackHandler = useCallback(
@@ -58,7 +72,7 @@ const useMusicalController = (musical: Musical) => {
         console.warn('Current song:', currentSong);
         return;
       }
-      setCurrentTrack(tracks[trackIdx]);
+      setCurrTrackIdx(trackIdx);
       setLastSeekedTime(0);
     },
     [tracks, currentSong]
@@ -68,29 +82,29 @@ const useMusicalController = (musical: Musical) => {
     const currentSongIdx = songs.findIndex(song => song === currentSong);
     const nextSong = songs[currentSongIdx + 1];
     if (nextSong) {
-      setCurrentSong(nextSong);
+      setCurrSongIdx(currentSongIdx + 1);
       updateNextPreviousAvailability(currentSongIdx + 1);
-      setCurrentTrack(nextSong.tracks[0]);
+      setCurrTrackIdx(0);
       setLastSeekedTime(0);
     }
-  }, [currentSong, songs, updateNextPreviousAvailability]);
+  }, [currentSong, setCurrSongIdx, songs, updateNextPreviousAvailability]);
 
   const goToPreviousSong = useCallback(() => {
     const currentSongIdx = songs.findIndex(song => song === currentSong);
     const previousSong = songs[currentSongIdx - 1];
     if (previousSong) {
-      setCurrentSong(previousSong);
+      setCurrSongIdx(currentSongIdx - 1);
       updateNextPreviousAvailability(currentSongIdx - 1);
-      setCurrentTrack(previousSong.tracks[0]);
+      setCurrTrackIdx(0);
       setLastSeekedTime(0);
     }
-  }, [currentSong, songs, updateNextPreviousAvailability]);
+  }, [currentSong, setCurrSongIdx, songs, updateNextPreviousAvailability]);
 
   const goToNextTrack = useCallback(() => {
     const trackIdx = tracks.findIndex(t => t.name === currentTrack.name);
     const nextTrack = tracks[trackIdx + 1];
     if (nextTrack) {
-      setCurrentTrack(nextTrack);
+      setCurrTrackIdx(trackIdx + 1);
       setLastSeekedTime(0);
     }
   }, [currentTrack.name, tracks]);
@@ -99,7 +113,7 @@ const useMusicalController = (musical: Musical) => {
     const trackIdx = tracks.findIndex(t => t.name === currentTrack.name);
     const previousTrack = tracks[trackIdx - 1];
     if (previousTrack) {
-      setCurrentTrack(previousTrack);
+      setCurrTrackIdx(trackIdx - 1);
       setLastSeekedTime(0);
     }
   }, [currentTrack.name, tracks]);
