@@ -8,27 +8,29 @@ import React, {
 } from 'react';
 
 import {
-  Musical,
   MusicalSong,
   MusicalSongTrack,
   MusicalSongTrackTimeStamp,
 } from '@models';
+import { useRouter } from 'next/router';
 
-const useMusicalController = (musical: Musical) => {
-  const songs = musical.songs;
-
-  const [currSongIdx, setCurrSongIdx] = useState(0);
+const useMusicalController = (
+  songs: MusicalSong[],
+  initialSongIdx: number,
+  initialTrackIdx: number
+) => {
+  const [currSongIdx, setCurrSongIdx] = useState(initialSongIdx);
 
   useEffect(() => {
-    setCurrSongIdx(0);
-  }, [setCurrSongIdx, songs]);
+    setCurrSongIdx(initialSongIdx);
+  }, [initialSongIdx, setCurrSongIdx, songs]);
 
   const currentSong = useMemo(() => {
     return songs[currSongIdx];
   }, [currSongIdx, songs]);
 
   const tracks = useMemo(() => currentSong.tracks, [currentSong]);
-  const [currTrackIdx, setCurrTrackIdx] = useState(0);
+  const [currTrackIdx, setCurrTrackIdx] = useState(initialTrackIdx);
 
   const currentTrack = useMemo(() => {
     return tracks[currTrackIdx];
@@ -130,6 +132,30 @@ const useMusicalController = (musical: Musical) => {
     MusicalSongTrackTimeStamp[]
   >([]);
 
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace(
+      {
+        pathname: router.pathname,
+        query: { ...router.query, songIdx: currSongIdx },
+      },
+      undefined,
+      { shallow: true }
+    );
+  }, [currSongIdx]); //TODO: figure out why this behaves VERY weirdly as soon as router is added as dependency
+
+  useEffect(() => {
+    router.replace(
+      {
+        pathname: router.pathname,
+        query: { ...router.query, trackIdx: currTrackIdx },
+      },
+      undefined,
+      { shallow: true }
+    );
+  }, [currTrackIdx]);
+
   return {
     songs,
     tracks,
@@ -147,6 +173,8 @@ const useMusicalController = (musical: Musical) => {
     setCurrentTimeStamps,
     goToNextTrack,
     goToPreviousTrack,
+    setCurrSongIdx,
+    setCurrTrackIdx,
   };
 };
 
@@ -174,16 +202,24 @@ const MusicalContext = createContext<ReturnType<typeof useMusicalController>>({
   setCurrentTimeStamps: () => {},
   goToNextTrack: () => {},
   goToPreviousTrack: () => {},
+  setCurrSongIdx: () => {},
+  setCurrTrackIdx: () => {},
 });
 
 export const MusicalProvider = ({
-  musical,
+  songs,
+  initialSongIdx,
+  initialTrackIdx,
   children,
 }: {
-  musical: Musical;
+  songs: MusicalSong[];
+  initialSongIdx: number;
+  initialTrackIdx: number;
   children: React.ReactNode;
 }) => (
-  <MusicalContext.Provider value={useMusicalController(musical)}>
+  <MusicalContext.Provider
+    value={useMusicalController(songs, initialSongIdx, initialTrackIdx)}
+  >
     {children}
   </MusicalContext.Provider>
 );
