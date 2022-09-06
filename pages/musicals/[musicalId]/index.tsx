@@ -21,8 +21,8 @@ import DescriptionContainer from '@frontend/musical/DescriptionContainer';
 
 type Props = {
   musical: Musical;
-  queryParamSongIdx?: number;
-  queryParamTrackIdx?: number;
+  queryParamSongIdx: number | null; // can't use undefined instead of null as this is computed on server and undefined cannot be serialized to JSON
+  queryParamTrackIdx: number | null;
 };
 
 const tracksAndSongsContainerStyles: SxProps = {
@@ -96,8 +96,8 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   const musical = await getMusical(musicalId);
   if (!musical) return { notFound: true };
 
-  let queryParamSongIdx: number | undefined;
-  let queryParamTrackIdx: number | undefined;
+  let queryParamSongIdx: number | null = null;
+  let queryParamTrackIdx: number | null = null;
 
   if (typeof songIdx === 'string' && !isNaN(+songIdx)) {
     queryParamSongIdx = +songIdx;
@@ -105,8 +105,6 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   if (typeof trackIdx === 'string' && !isNaN(+trackIdx)) {
     queryParamTrackIdx = +trackIdx;
   }
-
-  console.log(queryParamSongIdx, queryParamTrackIdx);
 
   return {
     props: {
