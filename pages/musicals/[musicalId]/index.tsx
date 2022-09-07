@@ -24,6 +24,7 @@ type Props = {
   musical: Musical;
   queryParamSongIdx: number | null; // can't use undefined instead of null as this is computed on server and undefined cannot be serialized to JSON
   queryParamTrackIdx: number | null;
+  queryParamFilters: string[] | null;
 };
 
 const tracksAndSongsContainerStyles: SxProps = {
@@ -52,6 +53,7 @@ const MusicalPage: NextPage<Props> = ({
   musical,
   queryParamSongIdx,
   queryParamTrackIdx,
+  queryParamFilters,
 }) => {
   const theme = useTheme();
   const narrowViewport = useMediaQuery(theme.breakpoints.down('md'));
@@ -61,6 +63,7 @@ const MusicalPage: NextPage<Props> = ({
       musical={musical}
       initialSongIdx={queryParamSongIdx ?? 0}
       initialTrackIdx={queryParamTrackIdx ?? 0}
+      initialFilters={queryParamFilters ?? []}
     >
       <Head>
         <title>{musical.title}</title>
@@ -93,13 +96,14 @@ const MusicalPage: NextPage<Props> = ({
 export default MusicalPage;
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  const { musicalId, songIdx, trackIdx } = query;
+  const { musicalId, songIdx, trackIdx, filters } = query;
   if (typeof musicalId !== 'string') return { notFound: true };
   const musical = await getMusical(musicalId);
   if (!musical) return { notFound: true };
 
   let queryParamSongIdx: number | null = null;
   let queryParamTrackIdx: number | null = null;
+  let queryParamFilters: string[] | null = null;
 
   if (typeof songIdx === 'string' && !isNaN(+songIdx)) {
     queryParamSongIdx = +songIdx;
@@ -108,11 +112,16 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     queryParamTrackIdx = +trackIdx;
   }
 
+  if (typeof filters === 'string') {
+    queryParamFilters = decodeURIComponent(filters).split(',');
+  }
+
   return {
     props: {
       musical,
       queryParamSongIdx,
       queryParamTrackIdx,
+      queryParamFilters,
     },
   };
 };

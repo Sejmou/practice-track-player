@@ -4,6 +4,7 @@ import {
   Button,
   Chip,
   ListItem,
+  Paper,
   Stack,
   TextField,
 } from '@mui/material';
@@ -19,9 +20,8 @@ const TrackFilter = () => {
     resetFilters,
   } = useMusicalContext();
 
-  console.log(stagedTrackFilters);
   return (
-    <Stack direction="row">
+    <Stack direction="row" component={Paper}>
       <Autocomplete
         disablePortal
         size="small"
@@ -40,7 +40,13 @@ const TrackFilter = () => {
       <Stack p={0} m={0} component="ul" direction="row">
         {stagedTrackFilters.map((f, i) => (
           <ListItem sx={{ p: 1 }} key={i}>
-            <Chip label={f.label} onDelete={() => removeTrackFilter(f)} />
+            <Chip
+              label={f.label}
+              onDelete={() => {
+                removeTrackFilter(f);
+                if (stagedTrackFilters.length === 1) resetFilters();
+              }}
+            />
           </ListItem>
         ))}
       </Stack>

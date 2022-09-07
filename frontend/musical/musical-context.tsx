@@ -15,7 +15,7 @@ import {
 } from '@models';
 import { useRouter } from 'next/router';
 
-type TrackFilter = {
+export type TrackFilter = {
   label: string;
   value: string;
 };
@@ -23,14 +23,16 @@ type TrackFilter = {
 const useMusicalController = (
   musical: Musical,
   initialSongIdx: number,
-  initialTrackIdx: number
+  initialTrackIdx: number,
+  initialFilters: string[]
 ) => {
   const [appliedTrackFilters, setAppliedTrackFilters] = useState<TrackFilter[]>(
-    []
+    initialFilters.map(f => ({ label: f, value: encodeURIComponent(f) }))
   );
+  console.log(appliedTrackFilters);
 
   const [stagedTrackFilters, setStagedTrackFilters] = useState<TrackFilter[]>(
-    []
+    initialFilters.map(f => ({ label: f, value: encodeURIComponent(f) }))
   );
 
   const applyFilters = useCallback(() => {
@@ -254,6 +256,28 @@ const useMusicalController = (
     );
   }, [currTrackIdx]);
 
+  useEffect(() => {
+    const filtersString = appliedTrackFilters
+      .map(f => f.value)
+      .join(encodeURIComponent(','));
+    const query = {
+      ...router.query,
+    };
+    if (filtersString) {
+      query.filters = filtersString;
+    } else {
+      delete query.filters;
+    }
+    router.replace(
+      {
+        pathname: router.pathname,
+        query,
+      },
+      undefined,
+      { shallow: true }
+    );
+  }, [appliedTrackFilters]);
+
   return {
     songs: filteredSongs,
     tracks,
@@ -320,15 +344,22 @@ export const MusicalProvider = ({
   musical,
   initialSongIdx,
   initialTrackIdx,
+  initialFilters,
   children,
 }: {
   musical: Musical;
   initialSongIdx: number;
   initialTrackIdx: number;
+  initialFilters: string[];
   children: React.ReactNode;
 }) => (
   <MusicalContext.Provider
-    value={useMusicalController(musical, initialSongIdx, initialTrackIdx)}
+    value={useMusicalController(
+      musical,
+      initialSongIdx,
+      initialTrackIdx,
+      initialFilters
+    )}
   >
     {children}
   </MusicalContext.Provider>
