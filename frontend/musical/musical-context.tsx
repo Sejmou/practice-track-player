@@ -53,8 +53,9 @@ const useMusicalController = (
             appliedTrackFilters.length > 0
               ? s.tracks.filter(
                   t =>
-                    !!appliedTrackFilters.find(filter =>
-                      t.name.toLowerCase().includes(filter.label.toLowerCase())
+                    !!appliedTrackFilters.find(
+                      filter =>
+                        t.name.toLowerCase() === filter.label.toLowerCase()
                     )
                 )
               : s.tracks,
@@ -66,10 +67,7 @@ const useMusicalController = (
   const trackFilterOptions = useMemo(
     () =>
       Array.from(
-        new Set([
-          ...musical.songs.map(s => s.tracks.map(t => t.name)).flat(),
-          'Choir',
-        ])
+        new Set(musical.songs.map(s => s.tracks.map(t => t.name)).flat())
       )
         .filter(name => !name.includes('Private video'))
         .sort()
@@ -79,7 +77,19 @@ const useMusicalController = (
 
   const addTrackFilter = useCallback(
     (filter: TrackFilter) => {
-      setStagedTrackFilters([...stagedTrackFilters, filter]);
+      const addVocalFilter =
+        !filter.label.toLowerCase().includes('piano') &&
+        !filter.label.toLowerCase().includes('instrumental') &&
+        !stagedTrackFilters.find(f => f.label === 'Vocal');
+      setStagedTrackFilters(
+        addVocalFilter
+          ? [
+              ...stagedTrackFilters,
+              filter,
+              { label: 'Vocal', value: encodeURIComponent('Vocal') },
+            ]
+          : [...stagedTrackFilters, filter]
+      );
     },
     [stagedTrackFilters]
   );
