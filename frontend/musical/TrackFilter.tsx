@@ -1,18 +1,25 @@
-import { Autocomplete, Chip, ListItem, Stack, TextField } from '@mui/material';
-import { useRef } from 'react';
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Chip,
+  ListItem,
+  Stack,
+  TextField,
+} from '@mui/material';
 import { useMusicalContext } from './musical-context';
 
 const TrackFilter = () => {
   const {
     trackFilterOptions,
-    appliedTrackFilters,
+    stagedTrackFilters,
     addTrackFilter,
     removeTrackFilter,
+    applyFilters,
+    resetFilters,
   } = useMusicalContext();
 
-  const autoCompleteInputRef = useRef<any>();
-
-  console.log(appliedTrackFilters);
+  console.log(stagedTrackFilters);
   return (
     <Stack direction="row">
       <Autocomplete
@@ -21,7 +28,7 @@ const TrackFilter = () => {
         sx={{ width: 300, p: 1 }}
         renderInput={params => <TextField {...params} label="Filter tracks" />}
         options={trackFilterOptions.filter(
-          o => !appliedTrackFilters.find(a => o.label === a.label)
+          o => !stagedTrackFilters.find(a => o.label === a.label)
         )}
         isOptionEqualToValue={(option, value) => option.label === value.label}
         onChange={(_, value) => {
@@ -31,12 +38,22 @@ const TrackFilter = () => {
         }}
       />
       <Stack p={0} m={0} component="ul" direction="row">
-        {appliedTrackFilters.map((f, i) => (
+        {stagedTrackFilters.map((f, i) => (
           <ListItem sx={{ p: 1 }} key={i}>
             <Chip label={f.label} onDelete={() => removeTrackFilter(f)} />
           </ListItem>
         ))}
       </Stack>
+      {stagedTrackFilters.length > 0 && (
+        <>
+          <Box alignSelf="center">
+            <Button onClick={applyFilters}>Apply</Button>
+          </Box>
+          <Box alignSelf="center">
+            <Button onClick={resetFilters}>Reset</Button>
+          </Box>
+        </>
+      )}
     </Stack>
   );
 };

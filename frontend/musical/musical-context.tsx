@@ -15,7 +15,7 @@ import {
 } from '@models';
 import { useRouter } from 'next/router';
 
-type TrackFilterOption = {
+type TrackFilter = {
   label: string;
   value: string;
 };
@@ -25,19 +25,37 @@ const useMusicalController = (
   initialSongIdx: number,
   initialTrackIdx: number
 ) => {
-  const [appliedTrackFilters, setAppliedTrackFilters] = useState<
-    TrackFilterOption[]
-  >([]);
+  const [appliedTrackFilters, setAppliedTrackFilters] = useState<TrackFilter[]>(
+    []
+  );
 
-  const songs = useMemo(
+  const [stagedTrackFilters, setStagedTrackFilters] = useState<TrackFilter[]>(
+    []
+  );
+
+  const applyFilters = useCallback(() => {
+    setCurrSongIdx(0);
+    setCurrTrackIdx(0);
+    setAppliedTrackFilters(stagedTrackFilters);
+  }, [stagedTrackFilters]);
+
+  const resetFilters = useCallback(() => {
+    setAppliedTrackFilters([]);
+    setStagedTrackFilters([]);
+  }, []);
+
+  const filteredSongs = useMemo(
     () =>
       musical.songs
         .map(s => ({
           ...s,
           tracks:
             appliedTrackFilters.length > 0
-              ? s.tracks.filter(t =>
-                  appliedTrackFilters.map(o => o.label).includes(t.name)
+              ? s.tracks.filter(
+                  t =>
+                    !!appliedTrackFilters.find(filter =>
+                      t.name.toLowerCase().includes(filter.label.toLowerCase())
+                    )
                 )
               : s.tracks,
         }))
@@ -47,41 +65,43 @@ const useMusicalController = (
 
   const trackFilterOptions = useMemo(
     () =>
-      Array.from(new Set(songs.map(s => s.tracks.map(t => t.name)).flat()))
+      Array.from(
+        new Set([
+          ...musical.songs.map(s => s.tracks.map(t => t.name)).flat(),
+          'Choir',
+        ])
+      )
         .filter(name => !name.includes('Private video'))
         .sort()
         .map(name => ({ label: name, value: encodeURIComponent(name) })),
-    [songs]
+    [musical.songs]
   );
 
   const addTrackFilter = useCallback(
-    (filter: TrackFilterOption) => {
-      console.log('in add track filter');
-      const newFilter = trackFilterOptions.find(f => f.label === filter.label);
-      if (newFilter)
-        setAppliedTrackFilters([...appliedTrackFilters, newFilter]);
+    (filter: TrackFilter) => {
+      setStagedTrackFilters([...stagedTrackFilters, filter]);
     },
-    [appliedTrackFilters, trackFilterOptions]
+    [stagedTrackFilters]
   );
 
   const removeTrackFilter = useCallback(
-    (filter: TrackFilterOption) => {
-      setAppliedTrackFilters(
-        appliedTrackFilters.filter(f => f.label !== filter.label)
+    (filter: TrackFilter) => {
+      setStagedTrackFilters(
+        stagedTrackFilters.filter(f => f.label !== filter.label)
       );
     },
-    [appliedTrackFilters]
+    [stagedTrackFilters]
   );
 
   const [currSongIdx, setCurrSongIdx] = useState(initialSongIdx);
 
   useEffect(() => {
     setCurrSongIdx(initialSongIdx);
-  }, [initialSongIdx, setCurrSongIdx, songs]);
+  }, [initialSongIdx, setCurrSongIdx, filteredSongs]);
 
   const currentSong = useMemo(() => {
-    return songs[currSongIdx];
-  }, [currSongIdx, songs]);
+    return filteredSongs[currSongIdx];
+  }, [currSongIdx, filteredSongs]);
 
   const tracks = useMemo(() => currentSong.tracks, [currentSong]);
   const [currTrackIdx, setCurrTrackIdx] = useState(initialTrackIdx);
@@ -95,15 +115,15 @@ const useMusicalController = (
 
   const updateNextPreviousAvailability = useCallback(
     (newIdx: number) => {
-      setNextSongAvailable(!!songs[newIdx + 1]);
-      setPreviousSongAvailable(!!songs[newIdx - 1]);
+      setNextSongAvailable(!!filteredSongs[newIdx + 1]);
+      setPreviousSongAvailable(!!filteredSongs[newIdx - 1]);
     },
-    [songs]
+    [filteredSongs]
   );
 
   const changeSongHandler = useCallback(
     (song: MusicalSong) => {
-      const songIdx = songs.findIndex(s => s.no === song.no);
+      const songIdx = filteredSongs.findIndex(s => s.no === song.no);
       if (songIdx === -1) {
         console.warn(
           `Cannot change song, no song with song no.'${song.no} found!`
@@ -115,7 +135,7 @@ const useMusicalController = (
       updateNextPreviousAvailability(songIdx);
       setLastSeekedTime(0);
     },
-    [setCurrSongIdx, songs, updateNextPreviousAvailability]
+    [setCurrSongIdx, filteredSongs, updateNextPreviousAvailability]
   );
 
   const changeTrackHandler = useCallback(
@@ -135,26 +155,40 @@ const useMusicalController = (
   );
 
   const goToNextSong = useCallback(() => {
-    const currentSongIdx = songs.findIndex(song => song === currentSong);
-    const nextSong = songs[currentSongIdx + 1];
+    const currentSongIdx = filteredSongs.findIndex(
+      song => song === currentSong
+    );
+    const nextSong = filteredSongs[currentSongIdx + 1];
     if (nextSong) {
       setCurrSongIdx(currentSongIdx + 1);
       updateNextPreviousAvailability(currentSongIdx + 1);
       setCurrTrackIdx(0);
       setLastSeekedTime(0);
     }
-  }, [currentSong, setCurrSongIdx, songs, updateNextPreviousAvailability]);
+  }, [
+    currentSong,
+    setCurrSongIdx,
+    filteredSongs,
+    updateNextPreviousAvailability,
+  ]);
 
   const goToPreviousSong = useCallback(() => {
-    const currentSongIdx = songs.findIndex(song => song === currentSong);
-    const previousSong = songs[currentSongIdx - 1];
+    const currentSongIdx = filteredSongs.findIndex(
+      song => song === currentSong
+    );
+    const previousSong = filteredSongs[currentSongIdx - 1];
     if (previousSong) {
       setCurrSongIdx(currentSongIdx - 1);
       updateNextPreviousAvailability(currentSongIdx - 1);
       setCurrTrackIdx(0);
       setLastSeekedTime(0);
     }
-  }, [currentSong, setCurrSongIdx, songs, updateNextPreviousAvailability]);
+  }, [
+    currentSong,
+    setCurrSongIdx,
+    filteredSongs,
+    updateNextPreviousAvailability,
+  ]);
 
   const goToNextTrack = useCallback(() => {
     const trackIdx = tracks.findIndex(t => t.name === currentTrack.name);
@@ -211,7 +245,7 @@ const useMusicalController = (
   }, [currTrackIdx]);
 
   return {
-    songs,
+    songs: filteredSongs,
     tracks,
     currentSong,
     currentTrack,
@@ -230,9 +264,11 @@ const useMusicalController = (
     setCurrSongIdx,
     setCurrTrackIdx,
     trackFilterOptions,
-    appliedTrackFilters,
     addTrackFilter,
     removeTrackFilter,
+    applyFilters,
+    resetFilters,
+    stagedTrackFilters,
   };
 };
 
@@ -263,9 +299,11 @@ const MusicalContext = createContext<ReturnType<typeof useMusicalController>>({
   setCurrSongIdx: () => {},
   setCurrTrackIdx: () => {},
   trackFilterOptions: [],
-  appliedTrackFilters: [],
+  stagedTrackFilters: [],
   addTrackFilter: () => {},
   removeTrackFilter: () => {},
+  applyFilters: () => {},
+  resetFilters: () => {},
 });
 
 export const MusicalProvider = ({
