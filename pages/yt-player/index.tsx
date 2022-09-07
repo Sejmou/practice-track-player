@@ -37,6 +37,7 @@ import {
 import ClassicPlayerUI from '@frontend/media-playback/ui/ClassicPlayerUI';
 import PBRPlayerUI from '@frontend/media-playback/ui/PBRPlayerUI';
 import { useYouTubeStore } from '@frontend/media-playback/store';
+import PBRAndLoopPlayerUI from '@frontend/media-playback/ui/PBRAndLoopPlayerUI';
 
 const containerStyles: SxProps = {
   flex: '1',
@@ -213,7 +214,8 @@ const YouTubePlayerPage: NextPage = () => {
               />
             </Box>
             {/* {youTubePlayer && <ClassicPlayerUI />} */}
-            {youTubePlayer && <PBRPlayerUI />}
+            {/* {youTubePlayer && <PBRPlayerUI />} */}
+            {youTubePlayer && <PBRAndLoopPlayerUI />}
             {mediaElements.length > 1 && (
               <SongList
                 title="Videos"
