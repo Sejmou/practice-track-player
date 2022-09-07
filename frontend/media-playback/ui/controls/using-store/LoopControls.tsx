@@ -1,24 +1,24 @@
-import { Box, SxProps, ToggleButton } from '@mui/material';
+import { Box, SxProps, ToggleButton, Typography } from '@mui/material';
 import LoopIcon from '@mui/icons-material/Loop';
 import { usePlaybackStore } from '@frontend/media-playback/store';
+import { secondsToMinutesAndSecondsStr } from '../../format-time';
 
 type Props = {
   sx?: SxProps;
 };
 const LoopControls = ({ sx }: Props) => {
-  const { enableLoop, disableLoop, loopActive } = usePlaybackStore(
-    ({ loopActive, enableLoop, disableLoop }) => ({
-      loopActive,
-      enableLoop,
-      disableLoop,
-    })
-  );
+  const loopActive = usePlaybackStore(state => state.loopActive);
+  const enableLoop = usePlaybackStore(state => state.enableLoop);
+  const disableLoop = usePlaybackStore(state => state.disableLoop);
+  const loopStart = usePlaybackStore(state => state.loopStart);
+  const loopEnd = usePlaybackStore(state => state.loopEnd);
   return (
     <Box
       sx={{
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        gap: 1,
         ...sx,
       }}
     >
@@ -33,6 +33,13 @@ const LoopControls = ({ sx }: Props) => {
       >
         <LoopIcon />
       </ToggleButton>
+      <Typography variant="body2">
+        {loopActive
+          ? `Looping (${secondsToMinutesAndSecondsStr(
+              loopStart
+            )} - ${secondsToMinutesAndSecondsStr(loopEnd)})`
+          : 'Not looping'}
+      </Typography>
     </Box>
   );
 };

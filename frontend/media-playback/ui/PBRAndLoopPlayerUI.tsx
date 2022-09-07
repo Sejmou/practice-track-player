@@ -1,6 +1,7 @@
 import { Box, SxProps } from '@mui/material';
 import BasicControls from './controls/using-store/BasicControls';
 import LoopControls from './controls/using-store/LoopControls';
+import LoopProgressBarControls from './controls/using-store/LoopProgressBarControls';
 import PlaybackProgressBar from './controls/using-store/PlaybackProgressBar';
 import PlaybackRateSlider from './controls/using-store/PlaybackRateSlider';
 
@@ -35,7 +36,7 @@ const PBRAndLoopPlayerUI = () => (
   <Box sx={controlsContainerStyles}>
     <BasicControls sx={basicControlsStyles} />
     <LoopControls sx={loopControlsStyles} />
-    <PlaybackProgressBar sx={progressBarStyles} />
+    <LoopProgressBarControls sx={progressBarStyles} />
     <PlaybackRateSlider sx={playbackRateSliderStyles} />
   </Box>
 );

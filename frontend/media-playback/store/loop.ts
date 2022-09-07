@@ -12,8 +12,8 @@ export interface LoopActions {
   enableLoop: () => void;
   disableLoop: () => void;
   resetLoop: () => void;
-  moveLoopStart: (newTime: number) => void;
-  moveLoopEnd: (newTime: number) => void;
+  setLoopStart: (newTime: number) => void;
+  setLoopEnd: (newTime: number) => void;
 }
 
 export type Loop = LoopState & LoopActions;
@@ -36,7 +36,7 @@ export const createLoopManipulator: PlaybackStateManipulator<
     const loopInInitialState = prevStart === 0 && prevEnd === 0;
     const currTime = get().currentTime;
     const loopStart = loopInInitialState ? currTime : 0;
-    const loopEnd = loopInInitialState ? Math.min(duration, currTime + 5) : 0;
+    const loopEnd = loopInInitialState ? duration : 0;
     console.log('enabling loop');
     set(() => ({ loopActive: true, loopStart, loopEnd }));
   },
@@ -47,16 +47,18 @@ export const createLoopManipulator: PlaybackStateManipulator<
   resetLoop: () => {
     set(() => initialLoopState);
   },
-  moveLoopStart: (newTime: number) => {
+  setLoopStart: (newTime: number) => {
+    const loopStart = clamp(newTime, 0, get().loopEnd);
     set(() => ({
-      loopStart: clamp(newTime, 0, get().loopEnd),
+      loopStart,
     }));
+    get().seekTo(loopStart);
   },
-  moveLoopEnd: (newTime: number) => {
+  setLoopEnd: (newTime: number) => {
     set(() => ({
       loopEnd: clamp(
         newTime,
-        get().loopEnd,
+        get().loopStart,
         get().duration ?? get().currentTime
       ),
     }));
