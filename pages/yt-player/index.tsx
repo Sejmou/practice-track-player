@@ -26,6 +26,7 @@ import { getURLVideoID } from 'ytdl-core';
 import {
   Song,
   YouTubePlaylistDataValidator,
+  YouTubePlaylistVideoData,
   YouTubeVideoData,
   YouTubeVideoDataValidator,
 } from '@models';
@@ -36,7 +37,7 @@ import {
 } from '@frontend/media-playback/use-youtube-player';
 import ClassicPlayerUI from '@frontend/media-playback/ui/ClassicPlayerUI';
 import PBRPlayerUI from '@frontend/media-playback/ui/PBRPlayerUI';
-import { useYouTubeStore } from '@frontend/media-playback/store';
+import { usePlaybackStore } from '@frontend/media-playback/store';
 import PBRAndLoopPlayerUI from '@frontend/media-playback/ui/PBRAndLoopPlayerUI';
 
 const containerStyles: SxProps = {
@@ -60,8 +61,19 @@ const YouTubePlayerPage: NextPage = () => {
 
   useYouTubePlayer(youTubePlayer);
 
-  const { initialize, mediaElements, currIdx, switchTo, initialized, reset } =
-    useYouTubeStore();
+  const {
+    initialize,
+    mediaElements: mediaElementsAny,
+    currIdx,
+    switchTo,
+    initialized,
+    reset,
+  } = usePlaybackStore();
+
+  const mediaElements = mediaElementsAny as (
+    | YouTubeVideoData
+    | YouTubePlaylistVideoData
+  )[];
 
   const [songListData, setSongListData] = useState<Song[]>([]);
   useEffect(() => {

@@ -1,6 +1,5 @@
 import { clamp } from '@util';
-import { StateCreator } from 'zustand';
-import { PlaybackStateManipulator, PlaybackStore } from '.';
+import { PlaybackStateManipulator } from '.';
 import { BasicPlayback } from './basic';
 
 interface LoopState {

@@ -1,12 +1,12 @@
 import { Box, SxProps, ToggleButton } from '@mui/material';
 import LoopIcon from '@mui/icons-material/Loop';
-import { useYouTubeStore } from '@frontend/media-playback/store';
+import { usePlaybackStore } from '@frontend/media-playback/store';
 
 type Props = {
   sx?: SxProps;
 };
 const LoopControls = ({ sx }: Props) => {
-  const { enableLoop, disableLoop, loopActive } = useYouTubeStore(
+  const { enableLoop, disableLoop, loopActive } = usePlaybackStore(
     ({ loopActive, enableLoop, disableLoop }) => ({
       loopActive,
       enableLoop,

@@ -1,27 +1,25 @@
-import { StateCreator } from 'zustand';
-import { PlaybackStateManipulator, PlaybackStore } from '.';
+import { PlaybackStateManipulator } from '.';
 import { BasicPlayback } from './basic';
 import { MediaSessionManipulation } from './media-session';
 
-export interface MediaSwitchingActions<T> {
+export interface MediaSwitchingActions {
   switchTo: (newIdx: number) => void;
   next: () => void;
   previous: () => void;
-  initialize: (mediaElements: T[], startIdx: number) => void;
+  initialize: (mediaElements: any[], startIdx: number) => void;
   reset: () => void;
 }
 
-interface MediaElementsState<T> {
+interface MediaElementsState {
   currIdx: number;
-  mediaElements: T[];
+  mediaElements: any[];
   initialized: boolean;
 }
 
-export type MediaSwitching<T> = MediaSwitchingActions<T> &
-  MediaElementsState<T>;
+export type MediaSwitching = MediaSwitchingActions & MediaElementsState;
 
 export const createMediaSwitcher: PlaybackStateManipulator<
-  MediaSwitching<any>,
+  MediaSwitching,
   BasicPlayback & MediaSessionManipulation
 > = (set, get) => ({
   switchTo: (newIdx: number) =>

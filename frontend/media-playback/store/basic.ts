@@ -1,5 +1,4 @@
-import { StateCreator } from 'zustand';
-import { PlaybackStateManipulator, PlaybackStore } from '.';
+import { PlaybackStateManipulator } from '.';
 import { clamp } from '@util';
 import { MediaSessionManipulation } from './media-session';
 

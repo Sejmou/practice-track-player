@@ -1,30 +1,19 @@
 import create from 'zustand';
 import { subscribeWithSelector, devtools } from 'zustand/middleware';
-import {
-  BasicPlaybackActions,
-  BasicPlayback,
-  createBasicPlaybackManipulator,
-} from './basic';
-import {
-  MediaSwitchingActions,
-  MediaSwitching,
-  createMediaSwitcher,
-} from './media-switching';
+import { BasicPlayback, createBasicPlaybackManipulator } from './basic';
+import { MediaSwitching, createMediaSwitcher } from './media-switching';
 import {
   createMediaSessionManipulator,
   MediaSessionManipulation,
 } from './media-session';
-import { YouTubeVideoData, YouTubePlaylistVideoData } from '@models';
 import { createLoopManipulator, Loop } from './loop';
 
-export type PlaybackStore<T = any> = BasicPlayback &
+export type PlaybackStore = BasicPlayback &
   Loop &
-  MediaSwitching<T> &
+  MediaSwitching &
   MediaSessionManipulation;
 
-type YouTubeStore = PlaybackStore<YouTubeVideoData | YouTubePlaylistVideoData>;
-
-export const useYouTubeStore = create<YouTubeStore>()(
+export const usePlaybackStore = create<PlaybackStore>()(
   devtools(
     subscribeWithSelector((set, get) => ({
       ...createBasicPlaybackManipulator(set, get),
@@ -37,10 +26,10 @@ export const useYouTubeStore = create<YouTubeStore>()(
     }
   )
 );
-type PlaybackStatePart<T = any> =
+type PlaybackStatePart =
   | BasicPlayback
   | Loop
-  | MediaSwitching<T>
+  | MediaSwitching
   | MediaSessionManipulation;
 
 export type PlaybackStateManipulator<
@@ -63,6 +52,3 @@ export type PlaybackStateManipulator<
   ) => void,
   get: () => T & AdditionalManipulatedState
 ) => T;
-
-export type PlaybackActions<T = any> = BasicPlaybackActions &
-  MediaSwitchingActions<T>;

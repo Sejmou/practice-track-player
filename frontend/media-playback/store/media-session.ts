@@ -1,10 +1,4 @@
-import { StateCreator } from 'zustand';
-import {
-  PlaybackActions,
-  PlaybackStateManipulator,
-  PlaybackStore,
-  useYouTubeStore,
-} from '.';
+import { PlaybackStateManipulator } from '.';
 import { BasicPlayback } from './basic';
 import { MediaSwitching } from './media-switching';
 
@@ -37,7 +31,7 @@ export type MediaSessionManipulation = MediaSessionActions & MediaSessionState;
 // TODO: write this
 export const createMediaSessionManipulator: PlaybackStateManipulator<
   MediaSessionManipulation,
-  BasicPlayback & MediaSwitching<any>
+  BasicPlayback & MediaSwitching
 > = (set, get) => ({
   addCustomMediaSessionData: () => {
     const mockAudio =

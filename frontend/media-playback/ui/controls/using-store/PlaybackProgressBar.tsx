@@ -1,4 +1,4 @@
-import { useYouTubeStore } from '@frontend/media-playback/store';
+import { usePlaybackStore } from '@frontend/media-playback/store';
 import { Box, Slider, SxProps, Typography } from '@mui/material';
 import { SyntheticEvent, useState } from 'react';
 
@@ -46,7 +46,7 @@ const PlaybackProgressBar = (props: Props) => {
     seekTo,
     seekBackward,
     seekForward,
-  } = useYouTubeStore();
+  } = usePlaybackStore();
 
   const handleChange = (_: Event, newValue: number | number[]) => {
     setUserInteracting(true);

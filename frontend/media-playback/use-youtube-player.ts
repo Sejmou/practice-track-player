@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { usePlaybackShortcuts } from './use-playback-shortcuts';
-import { useYouTubeStore } from './store';
+import { usePlaybackStore } from './store';
 
 export const useYouTubePlayer = (player?: YouTubePlayer) => {
   const {
@@ -20,7 +20,7 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
     increasePlaybackRate,
     decreasePlaybackRate,
     currIdx,
-  } = useYouTubeStore();
+  } = usePlaybackStore();
 
   const playbackFns = useMemo(() => {
     return {
