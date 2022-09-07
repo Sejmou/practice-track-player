@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { usePlaybackShortcuts } from './use-playback-shortcuts';
 import { usePlaybackStore } from './store';
+import { flushSync } from 'react-dom';
 
 export const useYouTubePlayer = (player?: YouTubePlayer) => {
   const {
@@ -20,6 +21,9 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
     increasePlaybackRate,
     decreasePlaybackRate,
     currIdx,
+    loopActive,
+    loopEnd,
+    loopStart,
   } = usePlaybackStore();
 
   const playbackFns = useMemo(() => {
@@ -163,7 +167,16 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
 
       const currentTimeTimer = setInterval(() => {
         const currentTime = player.getCurrentTime();
-        if (currentTime) setCurrentTime(currentTime);
+        if (currentTime) {
+          setCurrentTime(currentTime);
+
+          if (loopActive && currentTime > loopEnd) {
+            console.log('currentTime', currentTime);
+            console.log('start', loopStart);
+            console.log('end', loopEnd);
+            player.seekTo(loopStart, true);
+          }
+        }
         const duration = player.getDuration();
         if (duration && playing && duration - currentTime < 1) {
           // playing and less than 1 second of playback left -> go to next video!
@@ -185,7 +198,19 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
         clearInterval(currentTimeTimer);
       };
     }
-  }, [pause, play, player, playing, resetCurrent, setCurrentTime, setDuration]);
+  }, [
+    loopActive,
+    loopEnd,
+    loopStart,
+    next,
+    pause,
+    play,
+    player,
+    playing,
+    resetCurrent,
+    setCurrentTime,
+    setDuration,
+  ]);
 };
 
 /**

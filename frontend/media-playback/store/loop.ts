@@ -29,14 +29,14 @@ export const createLoopManipulator: PlaybackStateManipulator<
   BasicPlayback
 > = (set, get) => ({
   enableLoop: () => {
+    const duration = get().duration;
+    if (!duration) return;
     const prevStart = get().loopStart;
     const prevEnd = get().loopEnd;
     const loopInInitialState = prevStart === 0 && prevEnd === 0;
     const currTime = get().currentTime;
     const loopStart = loopInInitialState ? currTime : 0;
-    const loopEnd = loopInInitialState
-      ? Math.min(get().duration ?? currTime, currTime + 5)
-      : 0;
+    const loopEnd = loopInInitialState ? Math.min(duration, currTime + 5) : 0;
     console.log('enabling loop');
     set(() => ({ loopActive: true, loopStart, loopEnd }));
   },
