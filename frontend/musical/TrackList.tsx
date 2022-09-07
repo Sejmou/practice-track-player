@@ -1,9 +1,7 @@
 import {
-  Paper,
   List,
   ListItemButton,
   ListItemText,
-  Typography,
   ListItemIcon,
   SxProps,
 } from '@mui/material';

@@ -8,17 +8,71 @@ import React, {
 } from 'react';
 
 import {
+  Musical,
   MusicalSong,
   MusicalSongTrack,
   MusicalSongTrackTimeStamp,
 } from '@models';
 import { useRouter } from 'next/router';
 
+type TrackFilterOption = {
+  label: string;
+  value: string;
+};
+
 const useMusicalController = (
-  songs: MusicalSong[],
+  musical: Musical,
   initialSongIdx: number,
   initialTrackIdx: number
 ) => {
+  const [appliedTrackFilters, setAppliedTrackFilters] = useState<
+    TrackFilterOption[]
+  >([]);
+
+  const songs = useMemo(
+    () =>
+      musical.songs
+        .map(s => ({
+          ...s,
+          tracks:
+            appliedTrackFilters.length > 0
+              ? s.tracks.filter(t =>
+                  appliedTrackFilters.map(o => o.label).includes(t.name)
+                )
+              : s.tracks,
+        }))
+        .filter(s => s.tracks.length > 0),
+    [appliedTrackFilters, musical.songs]
+  );
+
+  const trackFilterOptions = useMemo(
+    () =>
+      Array.from(new Set(songs.map(s => s.tracks.map(t => t.name)).flat()))
+        .filter(name => !name.includes('Private video'))
+        .sort()
+        .map(name => ({ label: name, value: encodeURIComponent(name) })),
+    [songs]
+  );
+
+  const addTrackFilter = useCallback(
+    (filter: TrackFilterOption) => {
+      console.log('in add track filter');
+      const newFilter = trackFilterOptions.find(f => f.label === filter.label);
+      if (newFilter)
+        setAppliedTrackFilters([...appliedTrackFilters, newFilter]);
+    },
+    [appliedTrackFilters, trackFilterOptions]
+  );
+
+  const removeTrackFilter = useCallback(
+    (filter: TrackFilterOption) => {
+      setAppliedTrackFilters(
+        appliedTrackFilters.filter(f => f.label !== filter.label)
+      );
+    },
+    [appliedTrackFilters]
+  );
+
   const [currSongIdx, setCurrSongIdx] = useState(initialSongIdx);
 
   useEffect(() => {
@@ -175,6 +229,10 @@ const useMusicalController = (
     goToPreviousTrack,
     setCurrSongIdx,
     setCurrTrackIdx,
+    trackFilterOptions,
+    appliedTrackFilters,
+    addTrackFilter,
+    removeTrackFilter,
   };
 };
 
@@ -204,21 +262,25 @@ const MusicalContext = createContext<ReturnType<typeof useMusicalController>>({
   goToPreviousTrack: () => {},
   setCurrSongIdx: () => {},
   setCurrTrackIdx: () => {},
+  trackFilterOptions: [],
+  appliedTrackFilters: [],
+  addTrackFilter: () => {},
+  removeTrackFilter: () => {},
 });
 
 export const MusicalProvider = ({
-  songs,
+  musical,
   initialSongIdx,
   initialTrackIdx,
   children,
 }: {
-  songs: MusicalSong[];
+  musical: Musical;
   initialSongIdx: number;
   initialTrackIdx: number;
   children: React.ReactNode;
 }) => (
   <MusicalContext.Provider
-    value={useMusicalController(songs, initialSongIdx, initialTrackIdx)}
+    value={useMusicalController(musical, initialSongIdx, initialTrackIdx)}
   >
     {children}
   </MusicalContext.Provider>

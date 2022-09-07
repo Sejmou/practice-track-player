@@ -18,6 +18,7 @@ import Link from 'next/link';
 import { MusicalProvider } from '@frontend/musical/musical-context';
 import MusicalSongPlayer from '@frontend/musical/MusicalSongPlayer';
 import DescriptionContainer from '@frontend/musical/DescriptionContainer';
+import TrackFilter from '@frontend/musical/TrackFilter';
 
 type Props = {
   musical: Musical;
@@ -57,7 +58,7 @@ const MusicalPage: NextPage<Props> = ({
 
   return (
     <MusicalProvider
-      songs={musical.songs}
+      musical={musical}
       initialSongIdx={queryParamSongIdx ?? 0}
       initialTrackIdx={queryParamTrackIdx ?? 0}
     >
@@ -77,6 +78,7 @@ const MusicalPage: NextPage<Props> = ({
         </Stack>
       </Box>
       <Stack spacing={1}>
+        <TrackFilter />
         <MusicalSongPlayer />
         <Box sx={tracksAndSongsContainerStyles}>
           <TrackList sx={trackListStyles} />
