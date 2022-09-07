@@ -1,30 +1,33 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { usePlaybackShortcuts } from './use-playback-shortcuts';
 import { usePlaybackStore } from './store';
-import { flushSync } from 'react-dom';
 
 export const useYouTubePlayer = (player?: YouTubePlayer) => {
-  const {
-    setDuration,
-    setCurrentTime,
-    resetCurrentPlaybackState: resetCurrent,
-    playing,
-    lastSeekTime,
-    playbackRate,
-    play,
-    pause,
-    togglePlayPause,
-    seekForward,
-    seekBackward,
-    next,
-    previous,
-    increasePlaybackRate,
-    decreasePlaybackRate,
-    currIdx,
-    loopActive,
-    loopEnd,
-    loopStart,
-  } = usePlaybackStore();
+  const setDuration = usePlaybackStore(state => state.setDuration);
+  const setCurrentTime = usePlaybackStore(state => state.setCurrentTime);
+  const resetCurrentPlaybackState = usePlaybackStore(
+    state => state.resetCurrentPlaybackState
+  );
+  const playing = usePlaybackStore(state => state.playing);
+  const lastSeekTime = usePlaybackStore(state => state.lastSeekTime);
+  const playbackRate = usePlaybackStore(state => state.playbackRate);
+  const play = usePlaybackStore(state => state.play);
+  const pause = usePlaybackStore(state => state.pause);
+  const togglePlayPause = usePlaybackStore(state => state.togglePlayPause);
+  const seekForward = usePlaybackStore(state => state.seekForward);
+  const seekBackward = usePlaybackStore(state => state.seekBackward);
+  const next = usePlaybackStore(state => state.next);
+  const previous = usePlaybackStore(state => state.previous);
+  const increasePlaybackRate = usePlaybackStore(
+    state => state.increasePlaybackRate
+  );
+  const decreasePlaybackRate = usePlaybackStore(
+    state => state.decreasePlaybackRate
+  );
+  const currIdx = usePlaybackStore(state => state.currIdx);
+  const loopActive = usePlaybackStore(state => state.loopActive);
+  const loopEnd = usePlaybackStore(state => state.loopEnd);
+  const loopStart = usePlaybackStore(state => state.loopStart);
 
   const playbackFns = useMemo(() => {
     return {
@@ -186,7 +189,7 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
 
       if (playerRefChanged) {
         console.log('player ref changed!');
-        resetCurrent();
+        resetCurrentPlaybackState();
         const helper = (event: any) => {
           // will call the current state change listener every time - part of workaround for non-functional event listener removal from YouTube Iframe API
           stateChangeListenerRef.current?.(event);
@@ -207,7 +210,7 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
     play,
     player,
     playing,
-    resetCurrent,
+    resetCurrentPlaybackState,
     setCurrentTime,
     setDuration,
   ]);
