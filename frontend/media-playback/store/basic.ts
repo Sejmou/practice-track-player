@@ -1,8 +1,9 @@
 import { StateCreator } from 'zustand';
-import { PlaybackStore } from '.';
+import { PlaybackStateManipulator, PlaybackStore } from '.';
 import { clamp } from '@util';
+import { MediaSessionManipulation } from './media-session';
 
-interface CurrentMediumPlaybackState {
+interface BasicPlaybackState {
   playing: boolean;
   /**
    * The current playback time for the medium that the player should play
@@ -23,7 +24,7 @@ interface CurrentMediumPlaybackState {
   duration: number | null;
 }
 
-export interface CurrentMediumPlaybackActions {
+export interface BasicPlaybackActions {
   play: () => void;
   pause: () => void;
   togglePlayPause: () => void;
@@ -39,10 +40,9 @@ export interface CurrentMediumPlaybackActions {
   resetCurrentPlaybackState: () => void;
 }
 
-export type CurrentMediumPlaybackSlice = CurrentMediumPlaybackState &
-  CurrentMediumPlaybackActions;
+export type BasicPlayback = BasicPlaybackState & BasicPlaybackActions;
 
-const initialMediumPlaybackState: CurrentMediumPlaybackState = {
+const initialMediumPlaybackState: BasicPlaybackState = {
   lastSeekTime: null,
   minPlaybackRate: 0.5,
   maxPlaybackRate: 1,
@@ -52,11 +52,9 @@ const initialMediumPlaybackState: CurrentMediumPlaybackState = {
   duration: null,
 };
 
-export const createCurrentMediumPlaybackSlice: StateCreator<
-  PlaybackStore,
-  [],
-  [],
-  CurrentMediumPlaybackSlice
+export const createBasicPlaybackManipulator: PlaybackStateManipulator<
+  BasicPlayback,
+  MediaSessionManipulation
 > = (set, get) => ({
   play: () => {
     set(state => ({ playing: true }));

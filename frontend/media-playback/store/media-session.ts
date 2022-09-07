@@ -1,5 +1,12 @@
 import { StateCreator } from 'zustand';
-import { PlaybackActions, PlaybackStore, useYouTubeStore } from '.';
+import {
+  PlaybackActions,
+  PlaybackStateManipulator,
+  PlaybackStore,
+  useYouTubeStore,
+} from '.';
+import { BasicPlayback } from './basic';
+import { MediaSwitching } from './media-switching';
 
 export interface MediaSessionActions {
   addCustomMediaSessionData: () => void;
@@ -25,14 +32,12 @@ interface MediaSessionState {
  *
  * For this, we use an audio element playing silent audio in a loop as a workaround.
  */
-export type MediaSessionSlice = MediaSessionActions & MediaSessionState;
+export type MediaSessionManipulation = MediaSessionActions & MediaSessionState;
 
 // TODO: write this
-export const createMediaSessionSlice: StateCreator<
-  PlaybackStore,
-  [],
-  [],
-  MediaSessionSlice
+export const createMediaSessionManipulator: PlaybackStateManipulator<
+  MediaSessionManipulation,
+  BasicPlayback & MediaSwitching<any>
 > = (set, get) => ({
   addCustomMediaSessionData: () => {
     const mockAudio =

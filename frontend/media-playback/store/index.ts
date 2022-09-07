@@ -1,37 +1,68 @@
 import create from 'zustand';
+import { subscribeWithSelector, devtools } from 'zustand/middleware';
 import {
-  createCurrentMediumPlaybackSlice,
-  CurrentMediumPlaybackActions,
-  CurrentMediumPlaybackSlice,
-} from './current-medium-slice';
+  BasicPlaybackActions,
+  BasicPlayback,
+  createBasicPlaybackManipulator,
+} from './basic';
 import {
-  createMediaElementsSlice,
-  MediaElementsActions,
-  MediaElementsSlice,
-} from './media-elements-slice';
+  MediaSwitchingActions,
+  MediaSwitching,
+  createMediaSwitcher,
+} from './media-switching';
 import {
-  createMediaSessionSlice,
-  MediaSessionSlice,
-} from './media-session-slice';
+  createMediaSessionManipulator,
+  MediaSessionManipulation,
+} from './media-session';
 import { YouTubeVideoData, YouTubePlaylistVideoData } from '@models';
-import { createLoopSlice, LoopSlice } from './loop-slice';
+import { createLoopManipulator, Loop } from './loop';
 
-export type PlaybackStore = CurrentMediumPlaybackSlice &
-  LoopSlice &
-  MediaElementsSlice<any> &
-  MediaSessionSlice;
+export type PlaybackStore<T = any> = BasicPlayback &
+  Loop &
+  MediaSwitching<T> &
+  MediaSessionManipulation;
 
-type YouTubeStore = CurrentMediumPlaybackSlice &
-  LoopSlice &
-  MediaElementsSlice<YouTubeVideoData | YouTubePlaylistVideoData> &
-  MediaSessionSlice;
+type YouTubeStore = PlaybackStore<YouTubeVideoData | YouTubePlaylistVideoData>;
 
-export const useYouTubeStore = create<YouTubeStore>()((...a) => ({
-  ...createCurrentMediumPlaybackSlice(...a),
-  ...createMediaElementsSlice(...a),
-  ...createMediaSessionSlice(...a),
-  ...createLoopSlice(...a),
-}));
+export const useYouTubeStore = create<YouTubeStore>()(
+  devtools(
+    subscribeWithSelector((set, get) => ({
+      ...createBasicPlaybackManipulator(set, get),
+      ...createLoopManipulator(set, get),
+      ...createMediaSessionManipulator(set, get),
+      ...createMediaSwitcher(set, get),
+    })),
+    {
+      name: 'YouTubePlayerStore',
+    }
+  )
+);
+type PlaybackStatePart<T = any> =
+  | BasicPlayback
+  | Loop
+  | MediaSwitching<T>
+  | MediaSessionManipulation;
 
-export type PlaybackActions<T = any> = CurrentMediumPlaybackActions &
-  MediaElementsActions<T>;
+export type PlaybackStateManipulator<
+  T extends PlaybackStatePart,
+  AdditionalManipulatedState extends PlaybackStatePart = PlaybackStatePart
+> = (
+  set: <
+    A extends
+      | string
+      | {
+          type: unknown;
+        }
+  >(
+    partial:
+      | PlaybackStore
+      | Partial<PlaybackStore>
+      | ((state: PlaybackStore) => PlaybackStore | Partial<PlaybackStore>),
+    replace?: boolean | undefined,
+    action?: A | undefined
+  ) => void,
+  get: () => T & AdditionalManipulatedState
+) => T;
+
+export type PlaybackActions<T = any> = BasicPlaybackActions &
+  MediaSwitchingActions<T>;

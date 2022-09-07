@@ -1,7 +1,9 @@
 import { StateCreator } from 'zustand';
-import { PlaybackStore } from '.';
+import { PlaybackStateManipulator, PlaybackStore } from '.';
+import { BasicPlayback } from './basic';
+import { MediaSessionManipulation } from './media-session';
 
-export interface MediaElementsActions<T> {
+export interface MediaSwitchingActions<T> {
   switchTo: (newIdx: number) => void;
   next: () => void;
   previous: () => void;
@@ -15,14 +17,12 @@ interface MediaElementsState<T> {
   initialized: boolean;
 }
 
-export type MediaElementsSlice<T> = MediaElementsActions<T> &
+export type MediaSwitching<T> = MediaSwitchingActions<T> &
   MediaElementsState<T>;
 
-export const createMediaElementsSlice: StateCreator<
-  PlaybackStore,
-  [],
-  [],
-  MediaElementsSlice<any>
+export const createMediaSwitcher: PlaybackStateManipulator<
+  MediaSwitching<any>,
+  BasicPlayback & MediaSessionManipulation
 > = (set, get) => ({
   switchTo: (newIdx: number) =>
     set(state => {

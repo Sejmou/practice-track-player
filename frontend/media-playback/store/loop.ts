@@ -1,6 +1,7 @@
 import { clamp } from '@util';
 import { StateCreator } from 'zustand';
-import { PlaybackStore } from '.';
+import { PlaybackStateManipulator, PlaybackStore } from '.';
+import { BasicPlayback } from './basic';
 
 interface LoopState {
   loopActive: boolean;
@@ -16,7 +17,7 @@ export interface LoopActions {
   moveLoopEnd: (newTime: number) => void;
 }
 
-export type LoopSlice = LoopState & LoopActions;
+export type Loop = LoopState & LoopActions;
 
 const initialLoopState: LoopState = {
   loopActive: false,
@@ -24,10 +25,10 @@ const initialLoopState: LoopState = {
   loopEnd: 0,
 };
 
-export const createLoopSlice: StateCreator<PlaybackStore, [], [], LoopSlice> = (
-  set,
-  get
-) => ({
+export const createLoopManipulator: PlaybackStateManipulator<
+  Loop,
+  BasicPlayback
+> = (set, get) => ({
   enableLoop: () => {
     const prevStart = get().loopStart;
     const prevEnd = get().loopEnd;
