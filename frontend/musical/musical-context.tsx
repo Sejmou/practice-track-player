@@ -29,7 +29,6 @@ const useMusicalController = (
   const [appliedTrackFilters, setAppliedTrackFilters] = useState<TrackFilter[]>(
     initialFilters.map(f => ({ label: f, value: encodeURIComponent(f) }))
   );
-  console.log(appliedTrackFilters);
 
   const [stagedTrackFilters, setStagedTrackFilters] = useState<TrackFilter[]>(
     initialFilters.map(f => ({ label: f, value: encodeURIComponent(f) }))
@@ -42,6 +41,8 @@ const useMusicalController = (
   }, [stagedTrackFilters]);
 
   const resetFilters = useCallback(() => {
+    setCurrSongIdx(0);
+    setCurrTrackIdx(0);
     setAppliedTrackFilters([]);
     setStagedTrackFilters([]);
   }, []);
@@ -106,10 +107,6 @@ const useMusicalController = (
   );
 
   const [currSongIdx, setCurrSongIdx] = useState(initialSongIdx);
-
-  useEffect(() => {
-    setCurrSongIdx(initialSongIdx);
-  }, [initialSongIdx, setCurrSongIdx, filteredSongs]);
 
   const currentSong = useMemo(() => {
     return filteredSongs[currSongIdx];
@@ -235,25 +232,17 @@ const useMusicalController = (
   const router = useRouter();
 
   useEffect(() => {
-    router.replace(
-      {
-        pathname: router.pathname,
-        query: { ...router.query, songIdx: currSongIdx },
-      },
-      undefined,
-      { shallow: true }
-    );
+    router.replace({
+      pathname: router.pathname,
+      query: { ...router.query, songIdx: currSongIdx },
+    });
   }, [currSongIdx]); //TODO: figure out why this behaves VERY weirdly as soon as router is added as dependency
 
   useEffect(() => {
-    router.replace(
-      {
-        pathname: router.pathname,
-        query: { ...router.query, trackIdx: currTrackIdx },
-      },
-      undefined,
-      { shallow: true }
-    );
+    router.replace({
+      pathname: router.pathname,
+      query: { ...router.query, trackIdx: currTrackIdx },
+    });
   }, [currTrackIdx]);
 
   useEffect(() => {
@@ -268,15 +257,14 @@ const useMusicalController = (
     } else {
       delete query.filters;
     }
-    router.replace(
-      {
-        pathname: router.pathname,
-        query,
-      },
-      undefined,
-      { shallow: true }
-    );
+    router.replace({
+      pathname: router.pathname,
+      query,
+    });
   }, [appliedTrackFilters]);
+
+  console.log('current song index', currSongIdx);
+  console.log('applied track filters', appliedTrackFilters);
 
   return {
     songs: filteredSongs,
