@@ -4,7 +4,7 @@ import React, {
   createContext,
   useContext,
   useCallback,
-  useEffect,
+  useRef,
 } from 'react';
 
 import {
@@ -33,31 +33,6 @@ const useMusicalController = (
   const [stagedTrackFilters, setStagedTrackFilters] = useState<TrackFilter[]>(
     initialFilters.map(f => ({ label: f, value: encodeURIComponent(f) }))
   );
-
-  const applyFilters = useCallback(() => {
-    setCurrSongIdx(0);
-    setCurrTrackIdx(0);
-    setAppliedTrackFilters(stagedTrackFilters);
-    console.log('applying filters');
-    // TODO: figure out why useEffect with router (defined below) does not work as expected while it does work with index updates caused by changeSongHandler and changeTrackHandler
-    const searchParams = new URLSearchParams(window.location.search);
-    searchParams.set('songIdx', '0');
-    searchParams.set('trackIdx', '0');
-    window.location.search = searchParams.toString();
-  }, [stagedTrackFilters]);
-
-  const resetFilters = useCallback(() => {
-    setCurrSongIdx(0);
-    setCurrTrackIdx(0);
-    setAppliedTrackFilters([]);
-    setStagedTrackFilters([]);
-    console.log('resetting filters');
-    // TODO: figure out why useEffect with router (defined below) does not work as expected
-    const searchParams = new URLSearchParams(window.location.search);
-    searchParams.set('songIdx', '0');
-    searchParams.set('trackIdx', '0');
-    window.location.search = searchParams.toString();
-  }, []);
 
   const filteredSongs = useMemo(
     () =>
@@ -142,6 +117,39 @@ const useMusicalController = (
     [filteredSongs]
   );
 
+  const router = useRouter();
+  const queryParams = useRef<{ [key: string]: string }>({
+    songIdx: initialSongIdx.toString(),
+    trackIdx: initialTrackIdx.toString(),
+    filters: initialFilters
+      .map(f => encodeURIComponent(f))
+      .join(encodeURIComponent(',')),
+  });
+  const updateQueryParams = useCallback(() => {
+    console.log('updating params');
+    if (!queryParams.current.filters) delete queryParams.current.filters;
+    router.replace({
+      pathname: router.pathname,
+      query: { ...router.query, ...queryParams.current },
+    });
+  }, [router]);
+
+  const handleSongIdxChange = useCallback(
+    (newIdx: number) => {
+      if (!filteredSongs[newIdx]) {
+        console.log('invalid index selected!', newIdx);
+        return;
+      }
+      setCurrSongIdx(newIdx);
+      queryParams.current.songIdx = newIdx.toString();
+      updateQueryParams();
+      setCurrTrackIdx(0);
+      updateNextPreviousAvailability(newIdx);
+      setLastSeekedTime(0);
+    },
+    [filteredSongs, updateNextPreviousAvailability, updateQueryParams]
+  );
+
   const changeSongHandler = useCallback(
     (song: MusicalSong) => {
       const songIdx = filteredSongs.findIndex(s => s.no === song.no);
@@ -151,12 +159,21 @@ const useMusicalController = (
         );
         return;
       }
-      setCurrSongIdx(songIdx);
-      setCurrTrackIdx(0);
-      updateNextPreviousAvailability(songIdx);
-      setLastSeekedTime(0);
+      handleSongIdxChange(songIdx);
     },
-    [setCurrSongIdx, filteredSongs, updateNextPreviousAvailability]
+    [filteredSongs, handleSongIdxChange]
+  );
+
+  const handleTrackIdxChange = useCallback(
+    (newIdx: number) => {
+      const validIndex = !!tracks[newIdx];
+      if (!validIndex) return;
+      setCurrTrackIdx(newIdx);
+      setLastSeekedTime(0);
+      queryParams.current.trackIdx = newIdx.toString();
+      updateQueryParams();
+    },
+    [tracks, updateQueryParams]
   );
 
   const changeTrackHandler = useCallback(
@@ -166,13 +183,11 @@ const useMusicalController = (
         console.warn(
           `Cannot change track, no track with name '${track.name}' found for current song!`
         );
-        console.warn('Current song:', currentSong);
         return;
       }
-      setCurrTrackIdx(trackIdx);
-      setLastSeekedTime(0);
+      handleTrackIdxChange(trackIdx);
     },
-    [tracks, currentSong]
+    [handleTrackIdxChange, tracks]
   );
 
   const goToNextSong = useCallback(() => {
@@ -181,17 +196,9 @@ const useMusicalController = (
     );
     const nextSong = filteredSongs[currentSongIdx + 1];
     if (nextSong) {
-      setCurrSongIdx(currentSongIdx + 1);
-      updateNextPreviousAvailability(currentSongIdx + 1);
-      setCurrTrackIdx(0);
-      setLastSeekedTime(0);
+      handleSongIdxChange(currentSongIdx + 1);
     }
-  }, [
-    currentSong,
-    setCurrSongIdx,
-    filteredSongs,
-    updateNextPreviousAvailability,
-  ]);
+  }, [filteredSongs, currentSong, handleSongIdxChange]);
 
   const goToPreviousSong = useCallback(() => {
     const currentSongIdx = filteredSongs.findIndex(
@@ -199,35 +206,25 @@ const useMusicalController = (
     );
     const previousSong = filteredSongs[currentSongIdx - 1];
     if (previousSong) {
-      setCurrSongIdx(currentSongIdx - 1);
-      updateNextPreviousAvailability(currentSongIdx - 1);
-      setCurrTrackIdx(0);
-      setLastSeekedTime(0);
+      handleSongIdxChange(currentSongIdx - 1);
     }
-  }, [
-    currentSong,
-    setCurrSongIdx,
-    filteredSongs,
-    updateNextPreviousAvailability,
-  ]);
+  }, [filteredSongs, currentSong, handleSongIdxChange]);
 
   const goToNextTrack = useCallback(() => {
     const trackIdx = tracks.findIndex(t => t.name === currentTrack.name);
     const nextTrack = tracks[trackIdx + 1];
     if (nextTrack) {
-      setCurrTrackIdx(trackIdx + 1);
-      setLastSeekedTime(0);
+      handleTrackIdxChange(trackIdx + 1);
     }
-  }, [currentTrack.name, tracks]);
+  }, [currentTrack.name, handleTrackIdxChange, tracks]);
 
   const goToPreviousTrack = useCallback(() => {
     const trackIdx = tracks.findIndex(t => t.name === currentTrack.name);
     const previousTrack = tracks[trackIdx - 1];
     if (previousTrack) {
-      setCurrTrackIdx(trackIdx - 1);
-      setLastSeekedTime(0);
+      handleTrackIdxChange(trackIdx - 1);
     }
-  }, [currentTrack.name, tracks]);
+  }, [currentTrack.name, handleTrackIdxChange, tracks]);
 
   const [lastSeekedTime, setLastSeekedTime] = useState(0);
 
@@ -241,42 +238,31 @@ const useMusicalController = (
     MusicalSongTrackTimeStamp[]
   >([]);
 
-  const router = useRouter();
-
-  useEffect(() => {
-    router.replace({
-      pathname: router.pathname,
-      query: { ...router.query, songIdx: currSongIdx },
-    });
-  }, [currSongIdx]); //TODO: figure out why this behaves VERY weirdly as soon as router is added as dependency
-
-  useEffect(() => {
-    router.replace({
-      pathname: router.pathname,
-      query: { ...router.query, trackIdx: currTrackIdx },
-    });
-  }, [currTrackIdx]);
-
-  useEffect(() => {
-    const filtersString = appliedTrackFilters
+  const applyFilters = useCallback(() => {
+    console.log('applying filters');
+    setAppliedTrackFilters(stagedTrackFilters);
+    const filtersString = stagedTrackFilters
       .map(f => f.value)
       .join(encodeURIComponent(','));
-    const query = {
-      ...router.query,
-    };
-    if (filtersString) {
-      query.filters = filtersString;
-    } else {
-      delete query.filters;
-    }
-    router.replace({
-      pathname: router.pathname,
-      query,
-    });
-  }, [appliedTrackFilters]);
+    queryParams.current.filters = filtersString;
+    updateQueryParams();
+    handleSongIdxChange(0);
+    handleTrackIdxChange(0);
+  }, [
+    handleSongIdxChange,
+    handleTrackIdxChange,
+    stagedTrackFilters,
+    updateQueryParams,
+  ]);
 
-  console.log('current song index', currSongIdx);
-  console.log('applied track filters', appliedTrackFilters);
+  const resetFilters = useCallback(() => {
+    delete queryParams.current.filters;
+    updateQueryParams();
+    handleSongIdxChange(0);
+    handleTrackIdxChange(0);
+    setAppliedTrackFilters([]);
+    setStagedTrackFilters([]);
+  }, [handleSongIdxChange, handleTrackIdxChange, updateQueryParams]);
 
   return {
     songs: filteredSongs,
