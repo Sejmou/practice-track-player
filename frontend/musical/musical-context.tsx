@@ -127,7 +127,11 @@ const useMusicalController = (
   });
   const updateQueryParams = useCallback(() => {
     console.log('updating params');
-    if (!queryParams.current.filters) delete queryParams.current.filters;
+    if (!queryParams.current.filters) {
+      // TODO: there must be a cleaner way to solve this problem
+      delete queryParams.current.filters;
+      delete router.query.filters;
+    }
     router.replace({
       pathname: router.pathname,
       query: { ...router.query, ...queryParams.current },
