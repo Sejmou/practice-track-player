@@ -234,8 +234,24 @@ const AudioControls = React.forwardRef<HTMLDivElement, Props>(
       [
         { key: ' ' },
         event => {
-          // spacebar causes page scroll per default -> we don't want that!
+          if (document.activeElement) {
+            const inputElementTagNames = [
+              'input',
+              'select',
+              'button',
+              'textarea',
+            ];
+            if (
+              inputElementTagNames.find(
+                n => n === document.activeElement?.tagName.toLowerCase()
+              )
+            ) {
+              // user probably wants to interact with input, do nothing
+              return;
+            }
+          }
           handlePlayPauseToggle();
+          // spacebar causes page scroll per default -> we don't want that!
           event.preventDefault();
         },
       ],

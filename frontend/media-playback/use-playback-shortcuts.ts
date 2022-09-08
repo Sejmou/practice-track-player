@@ -19,6 +19,22 @@ export function usePlaybackShortcuts(
       [
         { key: ' ' },
         event => {
+          if (document.activeElement) {
+            const inputElementTagNames = [
+              'input',
+              'select',
+              'button',
+              'textarea',
+            ];
+            if (
+              inputElementTagNames.find(
+                n => n === document.activeElement?.tagName.toLowerCase()
+              )
+            ) {
+              // user probably wants to interact with input, do nothing
+              return;
+            }
+          }
           // spacebar causes page scroll per default -> we don't want that!
           event.preventDefault();
           shortcutActions.togglePlayPause();
