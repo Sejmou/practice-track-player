@@ -38,6 +38,12 @@ const useMusicalController = (
     setCurrSongIdx(0);
     setCurrTrackIdx(0);
     setAppliedTrackFilters(stagedTrackFilters);
+    console.log('applying filters');
+    // TODO: figure out why useEffect with router (defined below) does not work as expected while it does work with index updates caused by changeSongHandler and changeTrackHandler
+    const searchParams = new URLSearchParams(window.location.search);
+    searchParams.set('songIdx', '0');
+    searchParams.set('trackIdx', '0');
+    window.location.search = searchParams.toString();
   }, [stagedTrackFilters]);
 
   const resetFilters = useCallback(() => {
@@ -45,6 +51,12 @@ const useMusicalController = (
     setCurrTrackIdx(0);
     setAppliedTrackFilters([]);
     setStagedTrackFilters([]);
+    console.log('resetting filters');
+    // TODO: figure out why useEffect with router (defined below) does not work as expected
+    const searchParams = new URLSearchParams(window.location.search);
+    searchParams.set('songIdx', '0');
+    searchParams.set('trackIdx', '0');
+    window.location.search = searchParams.toString();
   }, []);
 
   const filteredSongs = useMemo(
