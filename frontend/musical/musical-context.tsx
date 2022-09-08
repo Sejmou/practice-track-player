@@ -5,6 +5,7 @@ import React, {
   useContext,
   useCallback,
   useRef,
+  useEffect,
 } from 'react';
 
 import {
@@ -26,73 +27,7 @@ const useMusicalController = (
   initialTrackIdx: number,
   initialFilters: string[]
 ) => {
-  const [appliedTrackFilters, setAppliedTrackFilters] = useState<TrackFilter[]>(
-    initialFilters.map(f => ({ label: f, value: encodeURIComponent(f) }))
-  );
-
-  const [stagedTrackFilters, setStagedTrackFilters] = useState<TrackFilter[]>(
-    initialFilters.map(f => ({ label: f, value: encodeURIComponent(f) }))
-  );
-
-  const filteredSongs = useMemo(
-    () =>
-      musical.songs
-        .map(s => ({
-          ...s,
-          tracks:
-            appliedTrackFilters.length > 0
-              ? s.tracks.filter(
-                  t =>
-                    !!appliedTrackFilters.find(
-                      filter =>
-                        t.name.toLowerCase() === filter.label.toLowerCase()
-                    )
-                )
-              : s.tracks,
-        }))
-        .filter(s => s.tracks.length > 0),
-    [appliedTrackFilters, musical.songs]
-  );
-
-  const trackFilterOptions = useMemo(
-    () =>
-      Array.from(
-        new Set(musical.songs.map(s => s.tracks.map(t => t.name)).flat())
-      )
-        .filter(name => !name.includes('Private video'))
-        .sort()
-        .map(name => ({ label: name, value: encodeURIComponent(name) })),
-    [musical.songs]
-  );
-
-  const addTrackFilter = useCallback(
-    (filter: TrackFilter) => {
-      const addVocalFilter =
-        !filter.label.toLowerCase().includes('piano') &&
-        !filter.label.toLowerCase().includes('instrumental') &&
-        !stagedTrackFilters.find(f => f.label === 'Vocal');
-      setStagedTrackFilters(
-        addVocalFilter
-          ? [
-              ...stagedTrackFilters,
-              filter,
-              { label: 'Vocal', value: encodeURIComponent('Vocal') },
-            ]
-          : [...stagedTrackFilters, filter]
-      );
-    },
-    [stagedTrackFilters]
-  );
-
-  const removeTrackFilter = useCallback(
-    (filter: TrackFilter) => {
-      setStagedTrackFilters(
-        stagedTrackFilters.filter(f => f.label !== filter.label)
-      );
-    },
-    [stagedTrackFilters]
-  );
-
+  const [filteredSongs, setFilteredSongs] = useState(musical.songs);
   const [currSongIdx, setCurrSongIdx] = useState(initialSongIdx);
 
   const currentSong = useMemo(() => {
@@ -242,31 +177,138 @@ const useMusicalController = (
     MusicalSongTrackTimeStamp[]
   >([]);
 
+  const [stagedTrackFilters, setStagedTrackFilters] = useState<TrackFilter[]>(
+    initialFilters.map(f => ({ label: f, value: encodeURIComponent(f) }))
+  );
+
+  const trackFilterOptions = useMemo(
+    () =>
+      Array.from(
+        new Set(musical.songs.map(s => s.tracks.map(t => t.name)).flat())
+      )
+        .filter(name => !name.includes('Private video'))
+        .sort()
+        .map(name => ({ label: name, value: encodeURIComponent(name) })),
+    [musical.songs]
+  );
+
+  const addTrackFilter = useCallback(
+    (filter: TrackFilter) => {
+      const addVocalFilter =
+        !filter.label.toLowerCase().includes('piano') &&
+        !filter.label.toLowerCase().includes('instrumental') &&
+        !stagedTrackFilters.find(f => f.label === 'Vocal');
+      setStagedTrackFilters(
+        addVocalFilter
+          ? [
+              ...stagedTrackFilters,
+              filter,
+              { label: 'Vocal', value: encodeURIComponent('Vocal') },
+            ]
+          : [...stagedTrackFilters, filter]
+      );
+    },
+    [stagedTrackFilters]
+  );
+
+  const removeTrackFilter = useCallback(
+    (filter: TrackFilter) => {
+      setStagedTrackFilters(
+        stagedTrackFilters.filter(f => f.label !== filter.label)
+      );
+    },
+    [stagedTrackFilters]
+  );
+
+  const filterTracks = useCallback(
+    (newFilters: TrackFilter[], initializing?: boolean) => {
+      if (newFilters.length === 0) delete queryParams.current.filters;
+      else {
+        const filtersString = stagedTrackFilters
+          .map(f => f.value)
+          .join(encodeURIComponent(','));
+        queryParams.current.filters = filtersString;
+      }
+      updateQueryParams(); // apply changes to filters in URL query params as well
+      const newFilteredSongs =
+        newFilters.length === 0
+          ? musical.songs
+          : musical.songs
+              .map(s => ({
+                ...s,
+                tracks: s.tracks.filter(
+                  t =>
+                    !!newFilters.find(
+                      filter =>
+                        t.name.toLowerCase() === filter.label.toLowerCase()
+                    )
+                ),
+              }))
+              .filter(s => s.tracks.length > 0);
+
+      // TODO: make this easier to understand lol
+
+      if (initializing) {
+        setFilteredSongs(newFilteredSongs);
+        return;
+      }
+
+      if (currentSong) {
+        const currSongIdxInNewFilter = newFilteredSongs.findIndex(
+          s => s.title === currentSong.title
+        );
+        if (currSongIdxInNewFilter !== -1) {
+          console.log(
+            'Found current song in new filtered songs',
+            newFilteredSongs[currSongIdxInNewFilter]
+          );
+          // we can jump to index of current song in new filter selection
+          const currTrackIdxInNewFilter = newFilteredSongs[
+            currSongIdxInNewFilter
+          ].tracks.findIndex(t => t.name === currentTrack.name);
+          handleSongIdxChange(currSongIdxInNewFilter);
+          handleTrackIdxChange(
+            currTrackIdxInNewFilter !== -1 ? currTrackIdxInNewFilter : 0
+          );
+        } else {
+          handleTrackIdxChange(0);
+          handleSongIdxChange(0);
+        }
+      } else {
+        // current song not present anymore in current filter selection - jump to beginning!
+        handleTrackIdxChange(0);
+        handleSongIdxChange(0);
+      }
+      setFilteredSongs(newFilteredSongs);
+    },
+    [
+      currentSong,
+      currentTrack,
+      handleSongIdxChange,
+      handleTrackIdxChange,
+      musical.songs,
+      stagedTrackFilters,
+      updateQueryParams,
+    ]
+  );
+
+  useEffect(() => {
+    filterTracks(
+      initialFilters.map(f => ({ label: f, value: encodeURIComponent(f) })),
+      true
+    );
+  }, []);
+
   const applyFilters = useCallback(() => {
     console.log('applying filters');
-    setAppliedTrackFilters(stagedTrackFilters);
-    const filtersString = stagedTrackFilters
-      .map(f => f.value)
-      .join(encodeURIComponent(','));
-    queryParams.current.filters = filtersString;
-    updateQueryParams();
-    handleSongIdxChange(0);
-    handleTrackIdxChange(0);
-  }, [
-    handleSongIdxChange,
-    handleTrackIdxChange,
-    stagedTrackFilters,
-    updateQueryParams,
-  ]);
+    filterTracks(stagedTrackFilters);
+  }, [filterTracks, stagedTrackFilters]);
 
   const resetFilters = useCallback(() => {
-    delete queryParams.current.filters;
-    updateQueryParams();
-    handleSongIdxChange(0);
-    handleTrackIdxChange(0);
-    setAppliedTrackFilters([]);
+    console.log('resetting filters');
     setStagedTrackFilters([]);
-  }, [handleSongIdxChange, handleTrackIdxChange, updateQueryParams]);
+    filterTracks([]);
+  }, [filterTracks]);
 
   return {
     songs: filteredSongs,
