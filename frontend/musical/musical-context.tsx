@@ -75,10 +75,6 @@ const useMusicalController = (
 
   const handleSongIdxChange = useCallback(
     (newIdx: number) => {
-      if (!filteredSongs[newIdx]) {
-        console.log('invalid index selected!', newIdx);
-        return;
-      }
       setCurrSongIdx(newIdx);
       queryParams.current.songIdx = newIdx.toString();
       updateQueryParams();
@@ -86,7 +82,7 @@ const useMusicalController = (
       updateNextPreviousAvailability(newIdx);
       setLastSeekedTime(0);
     },
-    [filteredSongs, updateNextPreviousAvailability, updateQueryParams]
+    [updateNextPreviousAvailability, updateQueryParams]
   );
 
   const changeSongHandler = useCallback(
