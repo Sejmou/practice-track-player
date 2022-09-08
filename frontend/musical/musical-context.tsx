@@ -101,14 +101,12 @@ const useMusicalController = (
 
   const handleTrackIdxChange = useCallback(
     (newIdx: number) => {
-      const validIndex = !!tracks[newIdx];
-      if (!validIndex) return;
       setCurrTrackIdx(newIdx);
       setLastSeekedTime(0);
       queryParams.current.trackIdx = newIdx.toString();
       updateQueryParams();
     },
-    [tracks, updateQueryParams]
+    [updateQueryParams]
   );
 
   const changeTrackHandler = useCallback(
@@ -193,7 +191,7 @@ const useMusicalController = (
       const addVocalFilter =
         !filter.label.toLowerCase().includes('piano') &&
         !filter.label.toLowerCase().includes('instrumental') &&
-        !stagedTrackFilters.find(f => f.label === 'Vocal');
+        !(filter.label === 'Vocal');
       setStagedTrackFilters(
         addVocalFilter
           ? [
@@ -254,15 +252,12 @@ const useMusicalController = (
           s => s.title === currentSong.title
         );
         if (currSongIdxInNewFilter !== -1) {
-          console.log(
-            'Found current song in new filtered songs',
-            newFilteredSongs[currSongIdxInNewFilter]
-          );
           // we can jump to index of current song in new filter selection
           const currTrackIdxInNewFilter = newFilteredSongs[
             currSongIdxInNewFilter
           ].tracks.findIndex(t => t.name === currentTrack.name);
           handleSongIdxChange(currSongIdxInNewFilter);
+          // try to also jump to the index of the current track, if it exists in the filter selection
           handleTrackIdxChange(
             currTrackIdxInNewFilter !== -1 ? currTrackIdxInNewFilter : 0
           );
