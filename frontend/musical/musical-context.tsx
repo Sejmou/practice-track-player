@@ -191,6 +191,7 @@ const useMusicalController = (
       const addVocalFilter =
         !filter.label.toLowerCase().includes('piano') &&
         !filter.label.toLowerCase().includes('instrumental') &&
+        !stagedTrackFilters.map(f => f.label).includes('Vocal') &&
         !(filter.label === 'Vocal');
       setStagedTrackFilters(
         addVocalFilter
