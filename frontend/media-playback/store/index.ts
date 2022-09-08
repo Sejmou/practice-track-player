@@ -1,12 +1,21 @@
 import create from 'zustand';
 import { subscribeWithSelector, devtools } from 'zustand/middleware';
-import { BasicPlayback, createBasicPlaybackManipulator } from './basic';
-import { MediaSwitching, createMediaSwitcher } from './media-switching';
+import {
+  BasicPlayback,
+  BasicPlaybackActions,
+  createBasicPlaybackManipulator,
+} from './basic';
+import {
+  MediaSwitching,
+  createMediaSwitcher,
+  MediaSwitchingActions,
+} from './media-switching';
 import {
   createMediaSessionManipulator,
+  MediaSessionActions,
   MediaSessionManipulation,
 } from './media-session';
-import { createLoopManipulator, Loop } from './loop';
+import { createLoopManipulator, Loop, LoopActions } from './loop';
 
 export type PlaybackStore = BasicPlayback &
   Loop &
@@ -52,3 +61,8 @@ export type PlaybackStateManipulator<
   ) => void,
   get: () => T & AdditionalManipulatedState
 ) => T;
+
+export type PlaybackActions = BasicPlaybackActions &
+  LoopActions &
+  MediaSessionActions &
+  MediaSwitchingActions;
