@@ -1,10 +1,12 @@
 import Head from 'next/head';
 import { NextPage } from 'next/types';
-import { useCallback, useEffect, useState } from 'react';
-import { Button, SxProps } from '@mui/material';
+import { ChangeEventHandler, useCallback, useEffect, useState } from 'react';
+import { Button, Stack, SxProps } from '@mui/material';
 import { Box } from '@mui/material';
-import AudioPlayer from '@components/AudioPlayer/AudioPlayer';
+import AudioPlayer from '@frontend/media-playback/AudioPlayer';
 import { Song, SourceData } from '@models';
+import * as mmb from 'music-metadata-browser';
+import SongList from 'features/SongList/SongList';
 
 type Props = {};
 
@@ -16,7 +18,6 @@ const containerStyles: SxProps = {
 
 type SongData = {
   song: Song;
-  file: File;
   sourceData: SourceData;
   audioBuffer: AudioBuffer;
 };
@@ -29,11 +30,6 @@ const Player: NextPage = (props: Props) => {
 
   const [songData, setSongData] = useState<SongData[]>([]);
   const [currSongIdx, setCurrSongIdx] = useState(0);
-  const [nextAvailable, setNextAvailable] = useState(false);
-
-  useEffect(() => {
-    setNextAvailable(currSongIdx < songData.length - 1);
-  }, [currSongIdx, songData.length]);
 
   const nextSongHandler = useCallback(() => {
     setCurrSongIdx(prev => Math.min(prev + 1, songData.length - 1));
@@ -43,43 +39,46 @@ const Player: NextPage = (props: Props) => {
     setCurrSongIdx(prev => Math.max(prev - 1, 0));
   }, []);
 
-  const requestFileAccess = useCallback(async () => {
-    if (!audioContext) return;
-    const fileHandles = await window.showOpenFilePicker({
-      multiple: true,
-      types: [
-        {
-          description: 'Audio Files',
-          accept: {
-            'audio/*': ['.mp3', '.ogg'],
-          },
-        },
-      ],
-    });
-    console.log(fileHandles);
-    for (const fileName in fileHandles.entries()) {
-      console.log(fileName);
-    }
-    const files = await Promise.all(fileHandles.map(fh => fh.getFile()));
-    const fileAudioBuffers = await Promise.all(
-      files.map(f => f.arrayBuffer().then(b => audioContext.decodeAudioData(b)))
-    );
+  const fileChangeHandler: ChangeEventHandler<HTMLInputElement> = useCallback(
+    async ev => {
+      if (!audioContext) return;
+      const fileList = ev.target.files;
+      if (fileList) {
+        const files = Array.from(fileList);
 
-    setSongData(
-      files.map((f, i) => ({
-        file: f,
-        song: {
-          title: f.name,
-          no: (i + 1).toString(),
-        },
-        sourceData: {
-          src: URL.createObjectURL(f),
-          type: f.type,
-        },
-        audioBuffer: fileAudioBuffers[i],
-      }))
-    );
-  }, [audioContext]);
+        async function processFile(
+          file: File,
+          audioContext: AudioContext
+        ): Promise<SongData> {
+          const metadata = (await mmb.parseBlob(file)).common;
+          const audioBuffer = await file
+            .arrayBuffer()
+            .then(b => audioContext.decodeAudioData(b));
+          return {
+            song: {
+              title: metadata.title || file.name,
+              album: metadata.album,
+              artist: metadata.artist || 'Unknown Artist',
+            },
+            sourceData: {
+              src: URL.createObjectURL(file),
+              type: file.type,
+            },
+            audioBuffer,
+          };
+        }
+
+        const songData = await Promise.all(
+          files.map(f => processFile(f, audioContext))
+        );
+
+        console.log(songData);
+
+        setSongData(songData);
+      }
+    },
+    [audioContext]
+  );
 
   return (
     <>
@@ -93,19 +92,49 @@ const Player: NextPage = (props: Props) => {
       </Head>
       <Box sx={containerStyles}>
         {songData.length === 0 ? (
-          <Button sx={{ m: 'auto' }} onClick={requestFileAccess}>
-            Select file(s) from local folder
+          <Button sx={{ m: 'auto' }} component="label">
+            Select file(s) from your device
+            <input
+              hidden
+              accept="audio/mpeg, audio/aac, audio/mp4, audio/ogg, audio/opus, audio/wav, audio/webm, audio/3gp, audio/3g2"
+              type="file"
+              multiple
+              onChange={fileChangeHandler}
+            />
           </Button>
         ) : (
-          <AudioPlayer
-            mainTitle={songData[currSongIdx].song.title}
-            audioElSrcData={songData[currSongIdx].sourceData}
-            audioContext={audioContext}
-            nextDisabled={currSongIdx === songData.length - 1}
-            // audioBuffer={songData[currSongIdx].audioBuffer}
-            onNext={nextSongHandler}
-            onPrevious={previousSongHandler}
-          />
+          <Stack spacing={2}>
+            <AudioPlayer
+              mainTitle={songData[currSongIdx].song.title}
+              subTitle={songData[currSongIdx].song.artist}
+              audioElSrcData={songData[currSongIdx].sourceData}
+              audioContext={audioContext}
+              nextDisabled={currSongIdx === songData.length - 1}
+              onNext={nextSongHandler}
+              onPrevious={previousSongHandler}
+            />
+            {songData.length > 1 && (
+              <SongList
+                songs={songData.map(d => d.song)}
+                currentSong={songData[currSongIdx].song}
+                handleSongChange={song =>
+                  setCurrSongIdx(songData.findIndex(d => d.song === song))
+                }
+              />
+            )}
+            <Stack direction="row">
+              <Button sx={{ m: 'auto' }} component="label">
+                Pick other file(s)
+                <input
+                  hidden
+                  accept="audio/mpeg, audio/aac, audio/mp4, audio/ogg, audio/opus, audio/wav, audio/webm, audio/3gp, audio/3g2"
+                  type="file"
+                  multiple
+                  onChange={fileChangeHandler}
+                />
+              </Button>
+            </Stack>
+          </Stack>
         )}
       </Box>
     </>

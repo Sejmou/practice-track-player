@@ -26,8 +26,11 @@ export const MusicalSongTrackValidator = z.object({
 export type MusicalSongTrack = z.infer<typeof MusicalSongTrackValidator>;
 
 const SongValidator = z.object({
-  no: z.string(),
   title: z.string(),
+  artist: z.string().optional(),
+  releaseDate: z.date().optional(),
+  album: z.string().optional(),
+  no: z.string().optional(),
 });
 export type Song = z.infer<typeof SongValidator>;
 
@@ -61,3 +64,25 @@ export const TimeStampValidator = z.object({
 });
 
 export type TimeStamp = z.infer<typeof TimeStampValidator>;
+
+export const YouTubeVideoDataValidator = z.object({
+  videoId: z.string(),
+  title: z.string(),
+  description: z.string(),
+  channelTitle: z.string(),
+});
+
+export type YouTubeVideoData = z.infer<typeof YouTubeVideoDataValidator>;
+
+export const YouTubePlaylistVideoDataValidator =
+  YouTubeVideoDataValidator.extend({
+    videoOwnerChannelTitle: z.string(),
+  });
+export type YouTubePlaylistVideoData = z.infer<
+  typeof YouTubePlaylistVideoDataValidator
+>;
+
+export const YouTubePlaylistDataValidator = z.array(
+  YouTubePlaylistVideoDataValidator
+);
+export type YouTubePlaylistData = z.infer<typeof YouTubePlaylistDataValidator>;

@@ -82,6 +82,20 @@ const Home: NextPage = () => {
             </Button>
           </CardActions>
         </Card>
+        <Card>
+          <CardContent>
+            <Typography variant="h5">YouTube Player (Beta)</Typography>
+            <Typography>
+              Play YouTube videos in an alternative interface with additional
+              controls (compared to YouTube website) 🚀
+            </Typography>
+          </CardContent>
+          <CardActions sx={{ mt: 'auto' }}>
+            <Button size="small">
+              <InternalLink href="/yt-player">Click here</InternalLink>
+            </Button>
+          </CardActions>
+        </Card>
       </Box>
     </>
   );
