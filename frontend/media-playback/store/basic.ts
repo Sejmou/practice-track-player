@@ -1,6 +1,7 @@
 import { PlaybackStateManipulator } from '.';
 import { clamp } from '@util';
 import { MediaSessionManipulation } from './media-session';
+import { Loop } from './loop';
 
 interface BasicPlaybackState {
   playing: boolean;
@@ -53,9 +54,12 @@ const initialMediumPlaybackState: BasicPlaybackState = {
 
 export const createBasicPlaybackManipulator: PlaybackStateManipulator<
   BasicPlayback,
-  MediaSessionManipulation
+  MediaSessionManipulation & Loop
 > = (set, get) => ({
   play: () => {
+    if (get().loopActive) {
+      get().seekTo(get().loopStart);
+    }
     set(state => ({ playing: true }));
     get().updateMediaSessionPlaybackState();
   },
@@ -64,8 +68,11 @@ export const createBasicPlaybackManipulator: PlaybackStateManipulator<
     get().updateMediaSessionPlaybackState();
   },
   togglePlayPause: () => {
-    set(state => ({ playing: !state.playing }));
-    get().updateMediaSessionPlaybackState();
+    if (get().playing) {
+      get().pause();
+    } else {
+      get().play();
+    }
   },
   jumpToStart: () =>
     set(state => {
@@ -110,8 +117,21 @@ export const createBasicPlaybackManipulator: PlaybackStateManipulator<
   seekTo: (time: number) =>
     set(state => {
       if (!state.duration) return {}; // this should make that action a no-op if duration is not available yet
+      if (time === state.duration) {
+        return {
+          lastSeekTime: clamp(
+            time - Math.random() * 0.00000001,
+            0,
+            state.duration
+          ),
+        };
+      }
       return {
-        lastSeekTime: clamp(time, 0, state.duration),
+        lastSeekTime: clamp(
+          time + Math.random() * 0.00000001,
+          0,
+          state.duration
+        ),
       };
     }),
   setDuration: (newDuration: number) => set(() => ({ duration: newDuration })),
