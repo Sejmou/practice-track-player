@@ -238,7 +238,7 @@ const YouTubePlayerPage: NextPage = () => {
                 }}
               />
             )}
-            <Stack direction="column">
+            <Stack alignItems="center">
               <Button onClick={() => reset()}>
                 Pick other video or playlist
               </Button>
