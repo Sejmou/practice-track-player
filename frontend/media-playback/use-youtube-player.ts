@@ -28,6 +28,13 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
   const loopActive = usePlaybackStore(state => state.loopActive);
   const loopEnd = usePlaybackStore(state => state.loopEnd);
   const loopStart = usePlaybackStore(state => state.loopStart);
+  const toggleLoop = usePlaybackStore(state => state.toggleLoop);
+  const setLoopStartToCurrent = usePlaybackStore(
+    state => state.setLoopStartToCurrent
+  );
+  const setLoopEndToCurrent = usePlaybackStore(
+    state => state.setLoopEndToCurrent
+  );
 
   const playbackFns = useMemo(() => {
     return {
@@ -40,6 +47,9 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
       decreasePlaybackRate,
       play,
       pause,
+      toggleLoop,
+      setLoopStartToCurrent,
+      setLoopEndToCurrent,
     };
   }, [
     togglePlayPause,
@@ -51,6 +61,9 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
     decreasePlaybackRate,
     play,
     pause,
+    toggleLoop,
+    setLoopStartToCurrent,
+    setLoopEndToCurrent,
   ]);
 
   usePlaybackShortcuts(playbackFns, true);

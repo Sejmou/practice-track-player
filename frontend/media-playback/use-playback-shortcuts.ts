@@ -11,6 +11,9 @@ export function usePlaybackShortcuts(
     | 'decreasePlaybackRate'
     | 'previous'
     | 'next'
+    | 'toggleLoop'
+    | 'setLoopStartToCurrent'
+    | 'setLoopEndToCurrent'
   >,
   active: boolean
 ) {
@@ -20,18 +23,15 @@ export function usePlaybackShortcuts(
         { key: ' ' },
         event => {
           if (document.activeElement) {
-            const inputElementTagNames = [
-              'input',
-              'select',
-              'button',
-              'textarea',
-            ];
+            const kindaInputElementTagNames = ['input', 'select', 'textarea'];
+            const activeElementIsKindaInput = !!kindaInputElementTagNames.find(
+              n => n === document.activeElement?.tagName.toLowerCase()
+            );
             if (
-              inputElementTagNames.find(
-                n => n === document.activeElement?.tagName.toLowerCase()
-              )
+              activeElementIsKindaInput &&
+              !(document.activeElement.getAttribute('type') === 'range') // space key on slider should still trigger playpause toggle, so we add this condition
             ) {
-              // user probably wants to interact with input, do nothing
+              // user probably wants to interact with element, do nothing
               return;
             }
           }
@@ -46,6 +46,10 @@ export function usePlaybackShortcuts(
       [{ key: '+' }, () => shortcutActions.increasePlaybackRate(0.05)],
       [{ key: 'ArrowLeft', ctrlKey: true }, () => shortcutActions.previous()],
       [{ key: 'ArrowRight', ctrlKey: true }, () => shortcutActions.next()],
+      [{ key: 'ArrowRight', ctrlKey: true }, () => shortcutActions.next()],
+      [{ key: 'l' }, () => shortcutActions.toggleLoop()],
+      [{ key: ',' }, () => shortcutActions.setLoopStartToCurrent()],
+      [{ key: '.' }, () => shortcutActions.setLoopEndToCurrent()],
     ],
     active
   );

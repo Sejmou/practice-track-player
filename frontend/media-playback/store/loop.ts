@@ -11,9 +11,12 @@ interface LoopState {
 export interface LoopActions {
   enableLoop: () => void;
   disableLoop: () => void;
+  toggleLoop: () => void;
   resetLoop: () => void;
   setLoopStart: (newTime: number) => void;
   setLoopEnd: (newTime: number) => void;
+  setLoopStartToCurrent: () => void;
+  setLoopEndToCurrent: () => void;
 }
 
 export type Loop = LoopState & LoopActions;
@@ -34,15 +37,27 @@ export const createLoopManipulator: PlaybackStateManipulator<
     const prevStart = get().loopStart;
     const prevEnd = get().loopEnd;
     const loopInInitialState = prevStart === 0 && prevEnd === 0;
-    const currTime = get().currentTime;
-    const loopStart = loopInInitialState ? currTime : 0;
-    const loopEnd = loopInInitialState ? duration : 0;
-    console.log('enabling loop');
-    set(() => ({ loopActive: true, loopStart, loopEnd }));
+    if (loopInInitialState) {
+      const currTime = get().currentTime;
+      console.log(
+        'first time setting loop start and end; initializing with current time and duration:',
+        currTime,
+        duration
+      );
+      set(() => ({ loopActive: true, loopStart: currTime, loopEnd: duration }));
+    }
+    set(() => ({ loopActive: true }));
   },
   disableLoop: () => {
     console.log('disabling loop');
     set(() => ({ loopActive: false }));
+  },
+  toggleLoop: () => {
+    if (get().loopActive) {
+      get().disableLoop();
+    } else {
+      get().enableLoop();
+    }
   },
   resetLoop: () => {
     set(() => initialLoopState);
@@ -61,6 +76,16 @@ export const createLoopManipulator: PlaybackStateManipulator<
         get().loopStart,
         get().duration ?? get().currentTime
       ),
+    }));
+  },
+  setLoopStartToCurrent: () => {
+    set(() => ({
+      loopStart: get().currentTime,
+    }));
+  },
+  setLoopEndToCurrent: () => {
+    set(() => ({
+      loopEnd: get().currentTime,
     }));
   },
   ...initialLoopState,

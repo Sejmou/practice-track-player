@@ -14,8 +14,6 @@ const ProgressBar = ({ sx, seekImmediately: seekProps }: Props) => {
   const duration = usePlaybackStore(state => state.duration);
   const lastSeekTime = usePlaybackStore(state => state.lastSeekTime);
   const seekTo = usePlaybackStore(state => state.seekTo);
-  const seekBackward = usePlaybackStore(state => state.seekBackward);
-  const seekForward = usePlaybackStore(state => state.seekForward);
 
   const handleChange = (_: Event, newValue: number | number[]) => {
     setUserInteracting(true);
@@ -36,14 +34,7 @@ const ProgressBar = ({ sx, seekImmediately: seekProps }: Props) => {
       sx={sx}
       onKeyDownCapture={ev => {
         // prevent everything except TAB -> may be used to skip through focusable elements on page
-        // left/right arrow interactions would trigger slider movement -> does not work well with
-        // "global keyboard shortcuts" for skipping through media (also bound to left/right)
-        if (ev.key === 'ArrowLeft') {
-          seekBackward(5);
-          ev.preventDefault();
-        }
-        if (ev.key === 'ArrowRight') {
-          seekForward(5);
+        if (ev.key !== 'Tab') {
           ev.preventDefault();
         }
       }}
