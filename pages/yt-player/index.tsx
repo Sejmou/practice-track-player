@@ -1,14 +1,18 @@
 import Head from 'next/head';
 import { NextPage } from 'next/types';
+import YouTube, { YouTubeProps, YouTubeEvent } from 'react-youtube';
+import { signIn, signOut, useSession, getCsrfToken } from 'next-auth/react';
 import {
   ChangeEvent,
   FocusEvent,
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
+import { getURLVideoID } from 'ytdl-core';
 import {
   Button,
   InputAdornment,
@@ -21,7 +25,8 @@ import {
 import { Box } from '@mui/material';
 import SongList from 'features/SongList/SongList';
 import InsertLinkIcon from '@mui/icons-material/InsertLink';
-import { getURLVideoID } from 'ytdl-core';
+import useSWRImmutable from 'swr/immutable';
+import { jsonFetcher } from '@frontend/util/data-fetchers';
 import {
   Song,
   YouTubePlaylistDataValidator,
@@ -29,7 +34,6 @@ import {
   YouTubeVideoData,
   YouTubeVideoDataValidator,
 } from '@models';
-import YouTube, { YouTubeProps, YouTubeEvent } from 'react-youtube';
 import {
   useYouTubePlayer,
   YouTubePlayer,
@@ -38,7 +42,6 @@ import ClassicPlayerUI from '@frontend/media-playback/ui/ClassicPlayerUI';
 import PBRPlayerUI from '@frontend/media-playback/ui/PBRPlayerUI';
 import { usePlaybackStore } from '@frontend/media-playback/store';
 import PBRAndLoopPlayerUI from '@frontend/media-playback/ui/PBRAndLoopPlayerUI';
-import { signIn, signOut, useSession } from 'next-auth/react';
 
 const containerStyles: SxProps = {
   flex: '1',
@@ -54,10 +57,27 @@ type YouTubeLinkData = {
 
 const YouTubePlayerPage: NextPage = () => {
   const session = useSession();
+  const googleApiToken = session?.data?.accessToken;
 
-  if (session.status === 'authenticated') {
-    fetch('/api/yt/user/playlists');
-  }
+  const { data: playlists } = useSWRImmutable(
+    googleApiToken ? '/api/yt/user/playlists' : null,
+    jsonFetcher
+  );
+
+  console.log('user playlists', playlists);
+
+  // wanted to fetch YouTube data on client-side, doesn't work because of CORS lol
+  // const csrfToken = getCsrfToken();
+  // const { data } = useSWR(
+  //   googleApiToken
+  //     ? [
+  //         'https://www.googleapis.com/youtube/v3/playlists',
+  //         { headers: { Bearer: googleApiToken } },
+  //       ]
+  //     : null,
+  //   jsonFetcher
+  // );
+  // console.log(data);
 
   const [linkInputTouched, setLinkInputTouched] = useState(false);
   const [videoLinkError, setVideoLinkError] = useState(false);
@@ -166,45 +186,52 @@ const YouTubePlayerPage: NextPage = () => {
     <>
       <Typography variant="h3">YouTube Player</Typography>
       <Paper sx={{ p: 1, mt: 1 }}>
-        <Typography variant="subtitle1" my={1} maxWidth="650px">
-          Play any YouTube video or playlist, with more controls than
-          YouTube&apos;s own player offers.
-        </Typography>
-        <Typography>{session.status}</Typography>
-        {!session || session.status !== 'authenticated' ? (
-          <>
-            <Typography variant="subtitle1" maxWidth="650px">
-              Want to play videos stored in your YouTube account?
-            </Typography>
-            <Button onClick={() => signIn('google')}>Login</Button>
-          </>
-        ) : (
-          <Button onClick={() => signOut()}>Logout</Button>
-        )}
-        <Typography variant="subtitle1" maxWidth="650px">
-          You can also just paste a video/playlist link:
-        </Typography>
-        <TextField
-          label="Paste a YouTube video/playlist link here!"
-          helperText={
-            videoLinkError
-              ? 'Please provide a valid YouTube playlist/video URL'
-              : ''
-          }
-          id="outlined-start-adornment"
-          sx={{ m: 1, width: '98.5%' }} // for some reason, width: 100% causes input to grow outside of Paper container!?
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <InsertLinkIcon />
-              </InputAdornment>
-            ),
-            error: videoLinkError && linkInputTouched,
-            spellCheck: false,
-          }}
-          onChange={handleLinkInputChange}
-          onBlur={handleLinkBlur}
-        />
+        <Stack spacing={1} alignItems="flex-start">
+          <Typography variant="subtitle1" maxWidth="650px">
+            Play any YouTube video or playlist, with more controls than
+            YouTube&apos;s own player offers.
+          </Typography>
+          {!session || session.status !== 'authenticated' ? (
+            <>
+              <Typography variant="subtitle1" maxWidth="650px">
+                Want to play videos stored in your YouTube account?
+              </Typography>
+              <Button onClick={() => signIn('google')}>Login</Button>
+            </>
+          ) : (
+            <Stack spacing={1} direction="row" alignItems="center">
+              <Typography>
+                You are currently logged in with your Google Account (
+                {session.data.user?.name}).
+              </Typography>
+              <Button onClick={() => signOut()}>Logout</Button>
+            </Stack>
+          )}
+          <Typography variant="subtitle1" maxWidth="650px">
+            Wanna play a video/playlist? Just paste the link below:
+          </Typography>
+          <TextField
+            label="Video/Playlist link"
+            helperText={
+              videoLinkError
+                ? 'Please provide a valid YouTube playlist/video URL'
+                : ''
+            }
+            id="outlined-start-adornment"
+            sx={{ m: 1, width: '100%', maxWidth: 650 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <InsertLinkIcon />
+                </InputAdornment>
+              ),
+              error: videoLinkError && linkInputTouched,
+              spellCheck: false,
+            }}
+            onChange={handleLinkInputChange}
+            onBlur={handleLinkBlur}
+          />
+        </Stack>
       </Paper>
     </>
   );

@@ -1,36 +1,7 @@
 import useSWRImmutable from 'swr/immutable';
 import { SourceData } from '@models';
 import { useEffect, useState } from 'react';
-
-// makes sure that we always get an error if the fetch request fails
-const baseFetcher = async (url: string) => {
-  const res = await fetch(url);
-
-  // If the status code is not in the range 200-299,
-  // we still try to parse and throw it.
-  if (!res.ok) {
-    const error = new Error(
-      'An error occurred while fetching the data. Status code: ' + res.status
-    );
-    // TODO: Attach extra info to the error object - not working like that because of TypeScript lol
-    // error.info = await res.json()
-    // error.status = res.status
-    throw error;
-  }
-  return res;
-};
-
-const jsonFetcher = (url: string) =>
-  baseFetcher(url).then(async data => {
-    try {
-      const json = await data.json();
-      return json;
-    } catch (error) {
-      const msg = 'Could not decode API response - not valid JSON!';
-      console.error(msg + '\n', error);
-      throw Error('Could not decode API response - not valid JSON!');
-    }
-  });
+import { baseFetcher, jsonFetcher } from '@frontend/util/data-fetchers';
 
 const binaryDataFetcher = (url: string) =>
   baseFetcher(url).then(data => data.arrayBuffer());
