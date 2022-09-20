@@ -12,7 +12,6 @@ import {
 import {
   Button,
   InputAdornment,
-  Link,
   Paper,
   Stack,
   SxProps,
@@ -39,6 +38,7 @@ import ClassicPlayerUI from '@frontend/media-playback/ui/ClassicPlayerUI';
 import PBRPlayerUI from '@frontend/media-playback/ui/PBRPlayerUI';
 import { usePlaybackStore } from '@frontend/media-playback/store';
 import PBRAndLoopPlayerUI from '@frontend/media-playback/ui/PBRAndLoopPlayerUI';
+import { signIn, signOut, useSession } from 'next-auth/react';
 
 const containerStyles: SxProps = {
   flex: '1',
@@ -53,6 +53,12 @@ type YouTubeLinkData = {
 };
 
 const YouTubePlayerPage: NextPage = () => {
+  const session = useSession();
+
+  if (session.status === 'authenticated') {
+    fetch('/api/yt/user/playlists');
+  }
+
   const [linkInputTouched, setLinkInputTouched] = useState(false);
   const [videoLinkError, setVideoLinkError] = useState(false);
 
@@ -154,6 +160,8 @@ const YouTubePlayerPage: NextPage = () => {
     setLinkInputTouched(true);
   };
 
+  console.log(session);
+
   const linkInput = (
     <>
       <Typography variant="h3">YouTube Player</Typography>
@@ -162,21 +170,19 @@ const YouTubePlayerPage: NextPage = () => {
           Play any YouTube video or playlist, with more controls than
           YouTube&apos;s own player offers.
         </Typography>
-        <Typography variant="subtitle1" mb={1} maxWidth="650px">
-          Note: Initially, my goal was to allow you to play the audio of YouTube
-          videos using the same player interface as on the other subsites.
-        </Typography>
-        <Typography variant="subtitle1" mb={1} maxWidth={600}>
-          However, that&apos;s unfortunately very difficult to do without quite
-          extreme hacks. Furthermore, separating audio and video channels for a
-          YouTube video would also violate YouTube&apos;s{' '}
-          <Link
-            href="https://developers.google.com/youtube/terms/developer-policies?hl=en#i.-additional-prohibitions:~:text=separate%2C%20isolate%2C%20or%20modify%20the%20audio%20or%20video%20components%20of%20any%20YouTube%20audiovisual%20content%20made%20available%20as%20part%20of%2C%20or%20in%20connection%20with%2C%20YouTube%20API%20Services.%20For%20example%2C%20you%20must%20not%20apply%20alternate%20audio%20tracks%20to%20videos%3B"
-            target="_blank"
-          >
-            Terms of Use
-          </Link>
-          .
+        <Typography>{session.status}</Typography>
+        {!session || session.status !== 'authenticated' ? (
+          <>
+            <Typography variant="subtitle1" maxWidth="650px">
+              Want to play videos stored in your YouTube account?
+            </Typography>
+            <Button onClick={() => signIn('google')}>Login</Button>
+          </>
+        ) : (
+          <Button onClick={() => signOut()}>Logout</Button>
+        )}
+        <Typography variant="subtitle1" maxWidth="650px">
+          You can also just paste a video/playlist link:
         </Typography>
         <TextField
           label="Paste a YouTube video/playlist link here!"
