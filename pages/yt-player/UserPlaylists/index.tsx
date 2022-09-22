@@ -7,6 +7,7 @@ import { Button, Stack, Typography } from '@mui/material';
 import PlaylistPicker from './PlaylistPicker';
 import { PlaylistItem } from '@pages/api/yt/user/playlists';
 import { PlaylistVideoItemsData } from '..';
+import { YouTubePlaylistDataValidator } from '@models';
 
 type Props = {
   onUserPlaylistPicked: (playlistData: PlaylistVideoItemsData) => void;
@@ -25,9 +26,14 @@ const UserPlaylists = ({ onUserPlaylistPicked }: Props) => {
 
   console.log(session);
 
-  const handlePlaylistSelection = (playlist: PlaylistItem) => {
-    // TODO: implement fetching of videos for playlist, calling onUserPlaylistPicked in the end
+  const handlePlaylistSelection = async (playlist: PlaylistItem) => {
     console.log('user picked playlist', playlist);
+    await fetch(`/api/yt/playlist-video-metadata/${playlist.id}`)
+      .then(res => res.json())
+      .then(json => {
+        const data = YouTubePlaylistDataValidator.parse(json);
+        onUserPlaylistPicked({ videos: data, initialIndex: 0 });
+      });
   };
 
   return (
