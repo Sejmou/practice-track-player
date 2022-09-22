@@ -14,8 +14,10 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 type Props = {
   title: string;
+  description?: string;
   children: React.ReactNode;
   sx?: SxProps;
+  contentWrapperSx?: SxProps;
   contentWrapperSxNarrow?: SxProps;
   contentWrapperSxWide?: SxProps;
 };
@@ -28,13 +30,31 @@ type Props = {
  */
 const ResponsiveContainer = ({
   title,
+  description,
   children,
   sx,
-  contentWrapperSxNarrow,
-  contentWrapperSxWide,
+  contentWrapperSx: contentWrapperSxProp,
+  contentWrapperSxNarrow: contentWrapperSxNarrowProp,
+  contentWrapperSxWide: contentWrapperSxWideProp,
 }: Props) => {
   const theme = useTheme();
   const narrowViewport = useMediaQuery(theme.breakpoints.down('md'));
+
+  const contentWrapperSx: SxProps = {
+    maxHeight: { xs: '400px', md: '600px' },
+    overflow: 'auto',
+    ...(contentWrapperSxProp ?? {}),
+  };
+
+  const contentWrapperSxNarrow = {
+    ...contentWrapperSx,
+    ...(contentWrapperSxNarrowProp ?? {}),
+  };
+
+  const contentWrapperSxWide = {
+    ...contentWrapperSx,
+    ...(contentWrapperSxWideProp ?? {}),
+  };
 
   return narrowViewport ? (
     <Accordion sx={sx}>
@@ -42,23 +62,25 @@ const ResponsiveContainer = ({
         <Typography>{title}</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Box
-          sx={{ maxHeight: 250, overflow: 'auto', ...contentWrapperSxNarrow }}
-        >
-          {children}
+        <Box sx={contentWrapperSxNarrow}>
+          <>
+            {description && (
+              <Typography mb={1} variant="body2">
+                {description}
+              </Typography>
+            )}
+            {children}
+          </>
         </Box>
       </AccordionDetails>
     </Accordion>
   ) : (
     <Box sx={sx}>
-      <Typography variant="h4" sx={{ mb: 1, ml: 1 }}>
+      <Typography variant="h4" sx={{ mb: 1 }}>
         {title}
       </Typography>
-      <Paper
-        sx={{ maxHeight: '250px', overflow: 'auto', ...contentWrapperSxWide }}
-      >
-        {children}
-      </Paper>
+      {description && <Typography variant="body1">{description}</Typography>}
+      <Paper sx={contentWrapperSxWide}>{children}</Paper>
     </Box>
   );
 };

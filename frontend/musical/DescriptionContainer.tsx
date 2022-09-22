@@ -8,9 +8,9 @@ import { getSubstringAfterFirstSubstringOccurence } from '@util';
 import moment from 'moment';
 import { useEffect, useMemo } from 'react';
 
-type Props = { sx?: SxProps };
+type Props = { sx?: SxProps; contentWrapperSxWide?: SxProps };
 
-const DescriptionContainer = ({ sx }: Props) => {
+const DescriptionContainer = ({ sx, contentWrapperSxWide }: Props) => {
   const {
     currentTrack: track,
     seekCurrentTrack,
@@ -76,7 +76,7 @@ const DescriptionContainer = ({ sx }: Props) => {
   return (
     <ResponsiveContainer
       sx={sx}
-      contentWrapperSxWide={{ px: 2, py: 1 }}
+      contentWrapperSxWide={{ px: 2, py: 1, ...contentWrapperSxWide }}
       title="Current Track Description"
     >
       <>

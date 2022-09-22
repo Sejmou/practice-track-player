@@ -68,6 +68,12 @@ async function fetchUserPlaylists(
 
 export type PlaylistItems = ReturnType<typeof processApiPlaylistResponse>;
 
+type ArrElement<ArrType> = ArrType extends readonly (infer ElementType)[]
+  ? ElementType
+  : never;
+
+export type PlaylistItem = ArrElement<PlaylistItems>;
+
 function processApiPlaylistResponse(
   response: GaxiosResponse<youtube_v3.Schema$PlaylistListResponse>
 ) {
