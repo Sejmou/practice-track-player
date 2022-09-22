@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
-import { google } from 'googleapis';
+import { google, youtube_v3 } from 'googleapis';
+import { GaxiosResponse } from 'gaxios';
 
 const youtube = google.youtube('v3');
 
@@ -28,41 +29,47 @@ export default async function handler(
       return;
     }
 
-    google.options({ auth: googleApiToken });
-
-    const response = await youtube.playlists.list({
-      access_token: googleApiToken,
-      mine: true,
-      part: ['snippet'],
-      maxResults: 50, // TODO: handle users with more than 50 playlists
-    });
-
-    console.log(response.data);
-
-    if (response.status === 200) {
-      res
-        .status(200)
-        .send(response.data.items?.map(i => ({ id: i.id, ...i.snippet })));
-    } else {
-      res.status(500).end();
-    }
-
-    // const response = await fetch(
-    //   `https://www.googleapis.com/youtube/v3/playlists?part=snippet&mine=true&key=${youTubeApiKey}`,
-    //   { headers: { Authorization: `Bearer ${googleApiToken}` } }
-    // );
-    // const data = await response.json();
-    // console.log(data);
-    // if (response.ok) {
-    //   res.status(200).send(data);
-    // } else {
-    //   res.status(500).end();
-    // }
+    res.send(await fetchUserPlaylists(googleApiToken));
   } catch (error) {
     console.warn(
       "An error occurred while fetching the user's playlists",
       error
     );
-    res.status(404).end();
+    res.status(500).end();
   }
+}
+
+async function fetchUserPlaylists(
+  apiToken: string,
+  previouslyFetched: PlaylistItems = [],
+  pageToken?: string
+): Promise<PlaylistItems> {
+  const response = await youtube.playlists.list({
+    access_token: apiToken,
+    mine: true,
+    part: ['snippet'],
+    maxResults: 2,
+    pageToken,
+  });
+  if (!(response.status === 200)) {
+    throw Error(
+      'An error occurred while fetching user playlist items' +
+        (pageToken ? ' with page token' + pageToken : '')
+    );
+  }
+  const pagePlaylists = processApiPlaylistResponse(response);
+  previouslyFetched.push(...pagePlaylists);
+
+  const nextPageToken = response.data.nextPageToken;
+  if (nextPageToken)
+    return fetchUserPlaylists(apiToken, previouslyFetched, nextPageToken);
+  else return previouslyFetched;
+}
+
+export type PlaylistItems = ReturnType<typeof processApiPlaylistResponse>;
+
+function processApiPlaylistResponse(
+  response: GaxiosResponse<youtube_v3.Schema$PlaylistListResponse>
+) {
+  return response.data.items?.map(i => ({ id: i.id, ...i.snippet })) || [];
 }

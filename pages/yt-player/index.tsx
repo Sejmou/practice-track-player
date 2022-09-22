@@ -42,6 +42,7 @@ import ClassicPlayerUI from '@frontend/media-playback/ui/ClassicPlayerUI';
 import PBRPlayerUI from '@frontend/media-playback/ui/PBRPlayerUI';
 import { usePlaybackStore } from '@frontend/media-playback/store';
 import PBRAndLoopPlayerUI from '@frontend/media-playback/ui/PBRAndLoopPlayerUI';
+import PlayListList from './PlayListList';
 
 const containerStyles: SxProps = {
   flex: '1',
@@ -64,20 +65,18 @@ const YouTubePlayerPage: NextPage = () => {
     jsonFetcher
   );
 
-  console.log('user playlists', playlists);
-
-  // wanted to fetch YouTube data on client-side, doesn't work because of CORS lol
-  // const csrfToken = getCsrfToken();
-  // const { data } = useSWR(
-  //   googleApiToken
-  //     ? [
-  //         'https://www.googleapis.com/youtube/v3/playlists',
-  //         { headers: { Bearer: googleApiToken } },
-  //       ]
-  //     : null,
-  //   jsonFetcher
-  // );
-  // console.log(data);
+  const userPlaylistList = !playlists ? (
+    <Typography>
+      If you had playlists in your account they would show up here.
+    </Typography>
+  ) : (
+    <PlayListList
+      playlists={playlists}
+      onPlaylistChange={(idx: number) => {
+        console.log('new playlist index:', idx);
+      }}
+    />
+  );
 
   const [linkInputTouched, setLinkInputTouched] = useState(false);
   const [videoLinkError, setVideoLinkError] = useState(false);
@@ -199,13 +198,16 @@ const YouTubePlayerPage: NextPage = () => {
               <Button onClick={() => signIn('google')}>Login</Button>
             </>
           ) : (
-            <Stack spacing={1} direction="row" alignItems="center">
-              <Typography>
-                You are currently logged in with your Google Account (
-                {session.data.user?.name}).
-              </Typography>
-              <Button onClick={() => signOut()}>Logout</Button>
-            </Stack>
+            <>
+              <Stack spacing={1} direction="row" alignItems="center">
+                <Typography>
+                  You are currently logged in with your Google Account (
+                  {session.data.user?.name}).
+                </Typography>
+                <Button onClick={() => signOut()}>Logout</Button>
+              </Stack>
+              {userPlaylistList}
+            </>
           )}
           <Typography variant="subtitle1" maxWidth="650px">
             Wanna play a video/playlist? Just paste the link below:
