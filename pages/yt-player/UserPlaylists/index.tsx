@@ -16,10 +16,12 @@ const UserPlaylists = ({ onUserPlaylistPicked }: Props) => {
   const session = useSession();
   const googleApiToken = session?.data?.accessToken;
 
-  const { data: playlists } = useSWRImmutable(
+  const { data: playlists, error } = useSWRImmutable(
     googleApiToken ? '/api/yt/user/playlists' : null,
     jsonFetcher
   );
+
+  const loading = !playlists && !error;
 
   console.log(session);
 
@@ -52,7 +54,11 @@ const UserPlaylists = ({ onUserPlaylistPicked }: Props) => {
             </Typography>
             <Button onClick={() => signOut()}>Logout</Button>
           </Stack>
-          {!playlists ? (
+          {loading ? (
+            <Typography sx={{ px: 2, pt: 1 }}>
+              Fetching your playlists...
+            </Typography>
+          ) : !playlists ? (
             <Typography sx={{ px: 2, pt: 1 }}>
               If you had playlists in your account they would show up here.
             </Typography>
