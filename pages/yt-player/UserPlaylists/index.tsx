@@ -66,7 +66,9 @@ const UserPlaylists = ({ onUserPlaylistPicked }: Props) => {
             </Typography>
           ) : !playlists ? (
             <Typography variant="body2" sx={{ px: 2, pt: 1 }}>
-              If you had playlists in your account they would show up here.
+              {error
+                ? 'Could not fetch playlists 😢'
+                : 'If you had playlists in your account they would show up here.'}
             </Typography>
           ) : (
             <PlaylistPicker

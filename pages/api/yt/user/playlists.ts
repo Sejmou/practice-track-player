@@ -48,7 +48,7 @@ async function fetchUserPlaylists(
     access_token: apiToken,
     mine: true,
     part: ['snippet'],
-    maxResults: 2,
+    maxResults: 50,
     pageToken,
   });
   if (!(response.status === 200)) {
