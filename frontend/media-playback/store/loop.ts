@@ -6,6 +6,9 @@ interface LoopState {
   loopActive: boolean;
   loopStart: number;
   loopEnd: number;
+  loopZoomLevel: number;
+  loopZoomViewLowerLimit: number;
+  loopZoomViewUpperLimit: number;
 }
 
 export interface LoopActions {
@@ -17,6 +20,9 @@ export interface LoopActions {
   setLoopEnd: (newTime: number) => void;
   setLoopStartToCurrent: () => void;
   setLoopEndToCurrent: () => void;
+  increaseLoopZoom: () => void;
+  decreaseLoopZoom: () => void;
+  resetLoopZoom: () => void;
 }
 
 export type Loop = LoopState & LoopActions;
@@ -25,6 +31,9 @@ const initialLoopState: LoopState = {
   loopActive: false,
   loopStart: 0,
   loopEnd: 0,
+  loopZoomLevel: 0,
+  loopZoomViewLowerLimit: 0,
+  loopZoomViewUpperLimit: 0,
 };
 
 export const createLoopManipulator: PlaybackStateManipulator<
@@ -44,7 +53,14 @@ export const createLoopManipulator: PlaybackStateManipulator<
         currTime,
         duration
       );
-      set(() => ({ loopActive: true, loopStart: currTime, loopEnd: duration }));
+      set(() => ({
+        loopActive: true,
+        loopStart: currTime,
+        loopEnd: duration,
+        loopZoomViewLowerLimit: 0,
+        loopZoomViewUpperLimit: duration,
+        zoomLevel: 0,
+      }));
     }
     set(() => ({ loopActive: true }));
   },
@@ -88,5 +104,51 @@ export const createLoopManipulator: PlaybackStateManipulator<
       loopEnd: get().currentTime,
     }));
   },
+  increaseLoopZoom: () => {
+    const currTime = get().currentTime;
+    set(state => ({
+      loopZoomLevel: state.loopZoomLevel + 1,
+      ...calculateNewLoopZoomViewBorders({
+        changeType: 'zoom-in',
+        currLower: state.loopZoomViewLowerLimit,
+        currUpper: state.loopZoomViewUpperLimit,
+        currTime,
+      }),
+    }));
+  },
+  decreaseLoopZoom: () => {
+    const currTime = get().currentTime;
+    set(state => ({
+      loopZoomLevel:
+        state.loopZoomLevel > 0 ? state.loopZoomLevel - 1 : state.loopZoomLevel,
+      ...calculateNewLoopZoomViewBorders({
+        changeType: 'zoom-out',
+        currLower: state.loopZoomViewLowerLimit,
+        currUpper: state.loopZoomViewUpperLimit,
+        currTime,
+      }),
+    }));
+  },
+  resetLoopZoom: () => {
+    set(() => ({ loopZoomLevel: 0 }));
+  },
   ...initialLoopState,
 });
+
+function calculateNewLoopZoomViewBorders(data: {
+  changeType: 'zoom-in' | 'zoom-out';
+  currLower: number;
+  currTime: number;
+  currUpper: number;
+}) {
+  const { changeType, currLower, currTime, currUpper } = data;
+  if (changeType === 'zoom-in') {
+    const loopViewLowerLimit = currLower + (currTime - currLower) / 2;
+    const loopViewUpperLimit = currUpper - (currTime + currUpper) / 2;
+    return { loopViewLowerLimit, loopViewUpperLimit };
+  } else if (changeType === 'zoom-out') {
+    const loopViewLowerLimit = currLower + (currTime - currLower) * 2;
+    const loopViewUpperLimit = currUpper - (currTime + currUpper) * 2;
+    return { loopViewLowerLimit, loopViewUpperLimit };
+  }
+}
