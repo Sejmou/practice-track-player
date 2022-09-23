@@ -1,6 +1,6 @@
 import { ChangeEvent, FocusEvent, useCallback, useState } from 'react';
 import { getURLVideoID } from 'ytdl-core';
-import { Box, InputAdornment, TextField } from '@mui/material';
+import { Box, InputAdornment, SxProps, TextField } from '@mui/material';
 import InsertLinkIcon from '@mui/icons-material/InsertLink';
 
 import {
@@ -9,9 +9,12 @@ import {
 } from '@models';
 import { PlaylistVideoItemsData } from '.';
 
-type Props = { onLinkDataChange: (newData: PlaylistVideoItemsData) => void };
+type Props = {
+  onLinkDataChange: (newData: PlaylistVideoItemsData) => void;
+  sx?: SxProps;
+};
 
-const YouTubeLinkInput = ({ onLinkDataChange }: Props) => {
+const YouTubeLinkInput = ({ onLinkDataChange, sx }: Props) => {
   const [linkInputTouched, setLinkInputTouched] = useState(false);
   const [videoLinkError, setVideoLinkError] = useState(false);
 
@@ -50,7 +53,7 @@ const YouTubeLinkInput = ({ onLinkDataChange }: Props) => {
   }, []);
 
   return (
-    <Box sx={{ mx: 2, my: 1 }}>
+    <Box sx={sx}>
       <TextField
         label="Video/Playlist link"
         helperText={

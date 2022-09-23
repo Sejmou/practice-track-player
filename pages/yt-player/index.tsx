@@ -25,7 +25,6 @@ import PBRAndLoopPlayerUI from '@frontend/media-playback/ui/PBRAndLoopPlayerUI';
 import UserPlaylists from './UserPlaylists';
 import YouTubeLinkInput from './YouTubeLinkInput';
 import ResponsiveContainer from '@frontend/layout/ResponsiveContainer';
-import { PlaylistItem } from '@pages/api/yt/user/playlists';
 
 export type PlaylistVideoItemsData = {
   videos: YouTubeVideoData[];
@@ -120,29 +119,31 @@ const YouTubePlayerPage: NextPage = () => {
         YouTube&apos;s own player offers.
       </Typography>
 
-      <Grid container spacing={{ md: 2 }}>
-        <Grid item xs={12} md={6}>
-          <ResponsiveContainer title="YouTube link">
-            <>
-              <Typography
-                variant="subtitle1"
-                maxWidth="650px"
-                sx={{ px: { md: 2 }, pt: { md: 1 } }}
-              >
-                Got a video/playlist link? Just paste it below:
-              </Typography>
-              <YouTubeLinkInput
-                onLinkDataChange={newData =>
-                  initialize(newData.videos, newData.initialIndex)
-                }
-              />
-            </>
-          </ResponsiveContainer>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <UserPlaylists onUserPlaylistPicked={handlePickedUserPlaylist} />
-        </Grid>
-      </Grid>
+      <Box
+        sx={{
+          display: 'grid',
+          gridAutoColumns: 'minmax(0,1fr)',
+          gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+          gap: { md: 2 },
+        }}
+      >
+        <ResponsiveContainer
+          title="YouTube link"
+          contentWrapperSxWide={{ px: 2, py: 2 }}
+        >
+          <>
+            <Typography variant="subtitle1" sx={{ mb: 1 }}>
+              Got a video/playlist link? Just paste it below:
+            </Typography>
+            <YouTubeLinkInput
+              onLinkDataChange={newData =>
+                initialize(newData.videos, newData.initialIndex)
+              }
+            />
+          </>
+        </ResponsiveContainer>
+        <UserPlaylists onUserPlaylistPicked={handlePickedUserPlaylist} />
+      </Box>
     </>
   );
 

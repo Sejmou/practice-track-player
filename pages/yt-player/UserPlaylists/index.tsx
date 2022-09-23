@@ -39,7 +39,7 @@ const UserPlaylists = ({ onUserPlaylistPicked }: Props) => {
   return (
     <ResponsiveContainer
       title="Play your own playlist"
-      contentWrapperSxWide={{ px: 2, py: 1 }}
+      contentWrapperSxWide={{ px: 2, py: 2 }}
     >
       {!session || session.status !== 'authenticated' ? (
         <Stack>
@@ -50,7 +50,7 @@ const UserPlaylists = ({ onUserPlaylistPicked }: Props) => {
         </Stack>
       ) : (
         <Stack spacing={1}>
-          <Stack sx={{ px: 2, pt: 1, textAlign: 'center' }}>
+          <Stack sx={{ textAlign: 'center' }}>
             <Typography>
               Hi, {session.data.user?.name?.split(' ')[0]}!
             </Typography>
@@ -65,7 +65,7 @@ const UserPlaylists = ({ onUserPlaylistPicked }: Props) => {
               Fetching your playlists...
             </Typography>
           ) : !playlists ? (
-            <Typography sx={{ px: 2, pt: 1 }}>
+            <Typography variant="body2" sx={{ px: 2, pt: 1 }}>
               If you had playlists in your account they would show up here.
             </Typography>
           ) : (
