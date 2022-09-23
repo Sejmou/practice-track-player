@@ -4,6 +4,7 @@ import {
   BasicPlayback,
   BasicPlaybackActions,
   createBasicPlaybackManipulator,
+  initialMediumPlaybackState,
 } from './basic';
 import {
   MediaSwitching,
@@ -15,7 +16,12 @@ import {
   MediaSessionActions,
   MediaSessionManipulation,
 } from './media-session';
-import { createLoopManipulator, Loop, LoopActions } from './loop';
+import {
+  createLoopManipulator,
+  initialLoopState,
+  Loop,
+  LoopActions,
+} from './loop';
 
 export type PlaybackStore = BasicPlayback &
   Loop &
@@ -66,3 +72,16 @@ export type PlaybackActions = BasicPlaybackActions &
   LoopActions &
   MediaSessionActions &
   MediaSwitchingActions;
+
+const resetCurrentMediumPlaybackState = () =>
+  usePlaybackStore.setState(initialMediumPlaybackState);
+const resetLoopState = () => usePlaybackStore.setState(initialLoopState);
+
+const unsubIdx = usePlaybackStore.subscribe(
+  store => store.currIdx,
+  newIdx => {
+    console.log('resetting current medium playback + loop states');
+    resetCurrentMediumPlaybackState();
+    resetLoopState();
+  }
+);

@@ -42,7 +42,7 @@ export interface BasicPlaybackActions {
 
 export type BasicPlayback = BasicPlaybackState & BasicPlaybackActions;
 
-const initialMediumPlaybackState: BasicPlaybackState = {
+export const initialMediumPlaybackState: BasicPlaybackState = {
   lastSeekTime: null,
   minPlaybackRate: 0.5,
   maxPlaybackRate: 1,

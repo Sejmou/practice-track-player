@@ -1,5 +1,5 @@
 import { Box, Slider, SxProps, Typography, Stack } from '@mui/material';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { usePlaybackStore } from '@frontend/media-playback/store';
 import { secondsToMinutesAndSecondsStr } from '@frontend/media-playback/ui/format-time';
 
@@ -14,8 +14,38 @@ const LoopBar = ({ sx }: Props) => {
   const loopEnd = usePlaybackStore(state => state.loopEnd);
   const setLoopEnd = usePlaybackStore(state => state.setLoopEnd);
 
-  const loopStartPerc = percentageFromTime(loopStart, duration);
-  const loopEndPerc = percentageFromTime(loopEnd, duration);
+  const currentTime = usePlaybackStore(state => state.currentTime);
+  const formatSliderValue = useCallback(
+    (percValue: number) =>
+      secondsToMinutesAndSecondsStr(percentageToTime(percValue, duration)),
+    [duration]
+  );
+  const zoomLowerLimit = usePlaybackStore(
+    store => store.loopZoomViewLowerLimit
+  );
+  const zoomUpperLimit = usePlaybackStore(
+    store => store.loopZoomViewUpperLimit
+  );
+
+  // TODO
+  // const loopStartSliderValue =
+  //   zoomLowerLimit < loopStart
+  //     ? percentageFromTime(loopStart, zoomUpperLimit)
+  //     : 0;
+  // const loopEndSliderValue =
+  //   zoomUpperLimit > loopEnd
+  //     ? percentageFromTime(loopEnd, zoomUpperLimit)
+  //     : 100;
+
+  const loopStartInZoomView = useMemo(
+    () => loopStart >= zoomLowerLimit && loopStart <= zoomUpperLimit,
+    [loopStart, zoomLowerLimit, zoomUpperLimit]
+  );
+
+  const loopEndInZoomView = useMemo(
+    () => loopEnd >= zoomLowerLimit && loopEnd <= zoomUpperLimit,
+    [loopEnd, zoomLowerLimit, zoomUpperLimit]
+  );
 
   const handleChange = useCallback(
     (_: Event, newValue: number | number[]) => {
@@ -23,23 +53,29 @@ const LoopBar = ({ sx }: Props) => {
         percentageToTime(num, duration)
       );
       if (end === 0) return;
-      if (start !== loopStart) setLoopStart(start);
-      if (end !== loopEnd) setLoopEnd(end);
+      if (loopStartInZoomView && start !== loopStart) setLoopStart(start);
+      if (loopEndInZoomView && end !== loopEnd) setLoopEnd(end);
     },
-    [duration, setLoopEnd, setLoopStart, loopStart, loopEnd]
+    [
+      duration,
+      setLoopEnd,
+      setLoopStart,
+      loopStart,
+      loopEnd,
+      loopStartInZoomView,
+      loopEndInZoomView,
+    ]
   );
 
-  const currentTime = usePlaybackStore(state => state.currentTime);
-  const formatSliderValue = useCallback(
-    (percValue: number) =>
-      secondsToMinutesAndSecondsStr(percentageToTime(percValue, duration)),
-    [duration]
-  );
+  useEffect(() => {
+    console.log('zoom view limits', zoomLowerLimit, zoomUpperLimit);
+  }, [zoomLowerLimit, zoomUpperLimit]);
+
   const sliderMarks = useMemo(
     () => [
       {
-        value: 0,
-        label: formatSliderValue(0),
+        value: percentageFromTime(zoomLowerLimit, duration),
+        label: secondsToMinutesAndSecondsStr(zoomLowerLimit),
       },
       {
         value: percentageFromTime(currentTime, duration),
@@ -55,20 +91,26 @@ const LoopBar = ({ sx }: Props) => {
         ),
       },
       {
-        value: 100,
-        label: formatSliderValue(100),
+        value: percentageFromTime(zoomUpperLimit, duration),
+        label: secondsToMinutesAndSecondsStr(zoomUpperLimit),
       },
     ],
-    [currentTime, duration, formatSliderValue]
+    [currentTime, duration, zoomLowerLimit, zoomUpperLimit]
   );
-
-  const lowerLimit = usePlaybackStore(store => store.loopZoomViewLowerLimit);
-  const upperLimit = usePlaybackStore(store => store.loopZoomViewUpperLimit);
 
   return (
     <Box sx={{ width: '100%', ...sx }}>
       <Slider
-        sx={{ mx: 2, mb: 2 }}
+        sx={{
+          mx: 2,
+          mb: 2,
+          '& .MuiSlider-thumb[data-index="0"]': {
+            display: loopStartInZoomView ? undefined : 'none',
+          },
+          '& .MuiSlider-thumb[data-index="1"]': {
+            display: loopEndInZoomView ? undefined : 'none',
+          },
+        }}
         onKeyDownCapture={ev => {
           // prevent everything except TAB -> may be used to skip through focusable elements on page
           // left/right arrow interactions would trigger slider movement -> does not work well with
@@ -80,7 +122,10 @@ const LoopBar = ({ sx }: Props) => {
             ev.preventDefault();
           }
         }}
-        value={[loopStartPerc, loopEndPerc]}
+        value={[
+          percentageFromTime(loopStart, duration),
+          percentageFromTime(loopEnd, duration),
+        ]}
         valueLabelDisplay="auto"
         valueLabelFormat={formatSliderValue}
         onChange={handleChange}

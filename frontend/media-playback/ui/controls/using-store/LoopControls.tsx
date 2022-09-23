@@ -21,6 +21,12 @@ const LoopControls = ({ sx }: Props) => {
   const disableLoop = usePlaybackStore(state => state.disableLoop);
   const loopStart = usePlaybackStore(state => state.loopStart);
   const loopEnd = usePlaybackStore(state => state.loopEnd);
+  const increaseLoopViewZoom = usePlaybackStore(
+    state => state.increaseLoopZoom
+  );
+  const decreaseLoopViewZoom = usePlaybackStore(
+    state => state.decreaseLoopZoom
+  );
   return (
     <Box
       sx={{
@@ -52,16 +58,10 @@ const LoopControls = ({ sx }: Props) => {
       </Typography>
       {loopActive && (
         <Stack direction="row">
-          <IconButton
-            color="primary"
-            // onClick={onZoomIn}
-          >
+          <IconButton color="primary" onClick={increaseLoopViewZoom}>
             <ZoomInIcon />
           </IconButton>
-          <IconButton
-            color="primary"
-            // onClick={onZoomOut}
-          >
+          <IconButton color="primary" onClick={decreaseLoopViewZoom}>
             <ZoomOutIcon />
           </IconButton>
         </Stack>
