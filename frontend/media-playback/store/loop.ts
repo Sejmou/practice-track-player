@@ -6,7 +6,6 @@ interface LoopState {
   loopActive: boolean;
   loopStart: number;
   loopEnd: number;
-  loopZoomLevel: number;
   loopZoomViewLowerLimit: number;
   loopZoomViewUpperLimit: number;
 }
@@ -32,7 +31,6 @@ export const initialLoopState: LoopState = {
   loopActive: false,
   loopStart: 0,
   loopEnd: 0,
-  loopZoomLevel: 0,
   loopZoomViewLowerLimit: 0,
   loopZoomViewUpperLimit: 0,
 };
@@ -60,7 +58,6 @@ export const createLoopManipulator: PlaybackStateManipulator<
         loopEnd: duration,
         loopZoomViewLowerLimit: 0,
         loopZoomViewUpperLimit: duration,
-        zoomLevel: 0,
       }));
     }
     set(() => ({ loopActive: true }));
@@ -108,6 +105,11 @@ export const createLoopManipulator: PlaybackStateManipulator<
   },
   increaseLoopZoom: () => {
     const currTime = get().currentTime;
+    const duration = get().duration;
+    if (!duration) {
+      console.log('cannot increase zoom; duration not available!');
+      return;
+    }
     console.log('increasing zoom');
     const {
       newLower: loopZoomViewLowerLimit,
@@ -117,38 +119,42 @@ export const createLoopManipulator: PlaybackStateManipulator<
       currLower: get().loopZoomViewLowerLimit,
       currUpper: get().loopZoomViewUpperLimit,
       currTime,
+      duration,
     });
-    set(state => ({
-      loopZoomLevel: state.loopZoomLevel + 1,
+    set(() => ({
       loopZoomViewLowerLimit,
       loopZoomViewUpperLimit,
     }));
   },
   decreaseLoopZoom: () => {
-    if (get().loopZoomLevel === 0) {
+    if (
+      get().loopZoomViewLowerLimit === 0 &&
+      get().loopZoomViewUpperLimit === get().duration
+    ) {
       console.log('cannot decrease loop zoom; already zoomed out completely!');
       return;
     }
-    console.log(
-      'resetting zoom, as I have no idea how to decrease the zoom (yet)'
-    );
-    get().resetLoopZoom();
-    // console.log('decreasing zoom');
-    // const currTime = get().currentTime;
-    // const {
-    //   newLower: loopZoomViewLowerLimit,
-    //   newUpper: loopZoomViewUpperLimit,
-    // } = calculateNewLoopZoomViewBorders({
-    //   changeType: 'zoom-out',
-    //   currLower: get().loopZoomViewLowerLimit,
-    //   currUpper: get().loopZoomViewUpperLimit,
-    //   currTime,
-    // });
-    // set(state => ({
-    //   loopZoomLevel: state.loopZoomLevel - 1,
-    //   loopZoomViewLowerLimit,
-    //   loopZoomViewUpperLimit,
-    // }));
+    const currTime = get().currentTime;
+    const duration = get().duration;
+    if (!duration) {
+      console.log('cannot reset zoom; duration not available!');
+      return;
+    }
+    console.log('decreasing zoom');
+    const {
+      newLower: loopZoomViewLowerLimit,
+      newUpper: loopZoomViewUpperLimit,
+    } = calculateNewLoopZoomViewBorders({
+      changeType: 'zoom-out',
+      currLower: get().loopZoomViewLowerLimit,
+      currUpper: get().loopZoomViewUpperLimit,
+      currTime,
+      duration,
+    });
+    set(() => ({
+      loopZoomViewLowerLimit,
+      loopZoomViewUpperLimit,
+    }));
   },
   resetLoopZoom: () => {
     const duration = get().duration;
@@ -156,8 +162,7 @@ export const createLoopManipulator: PlaybackStateManipulator<
       console.log('cannot reset zoom; duration not available!');
       return;
     }
-    set(state => ({
-      loopZoomLevel: 0,
+    set(() => ({
       loopZoomViewLowerLimit: 0,
       loopZoomViewUpperLimit: duration,
     }));
@@ -191,20 +196,30 @@ function calculateNewLoopZoomViewBorders(data: {
   currLower: number;
   currTime: number;
   currUpper: number;
+  duration: number;
 }) {
-  const { changeType, currLower, currTime, currUpper } = data;
+  const { changeType, currLower, currTime, currUpper, duration } = data;
   if (changeType === 'zoom-in') {
+    console.log('computing new loop zoom view borders for zooming in');
     const newLower = currLower + (currTime - currLower) / 2;
     const newUpper = currUpper - (currUpper - currTime) / 2;
-    console.log('computing new loop zoom view borders for zooming in');
     console.log('old', currLower, currUpper);
     console.log('new', newLower, newUpper);
     return { newLower, newUpper };
   } else {
-    // TODO: figure that out
-    const newLower = 1 / (currLower + (currTime - currLower) / 2);
-    const newUpper = 1 / (currUpper - (currTime + currUpper) / 2);
     console.log('computing new loop zoom view borders for zooming out');
+    const currTimeInView = currTime >= currLower && currTime <= currUpper;
+    const currZoomTimeInterval = currUpper - currLower;
+    const newLower = Math.max(
+      currLower -
+        (currTimeInView ? currTime - currLower : currZoomTimeInterval),
+      0
+    );
+    const newUpper = Math.min(
+      currUpper +
+        (currTimeInView ? currTime + currUpper : currZoomTimeInterval),
+      duration
+    );
     console.log('old', currLower, currUpper);
     console.log('new', newLower, newUpper);
     return { newLower, newUpper };
