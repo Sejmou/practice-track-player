@@ -24,6 +24,7 @@ const LoopBarScroll = ({ sx }: Props) => {
     // this scrollbar container calculation is only necessary if the user has zoomed into the timeline in the loop view
     if (!duration) return 0;
     const parentContainerWidth = containerRef.current?.offsetWidth || 0;
+    console.log('parent container width', parentContainerWidth);
     const zoomTimeIntervalSize = zoomUpperLimit - zoomLowerLimit;
     const totalTimeIntervalSize = duration;
     const scrollContainerWidth =

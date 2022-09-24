@@ -68,6 +68,7 @@ export const createLoopManipulator: PlaybackStateManipulator<
   disableLoop: () => {
     console.log('disabling loop');
     set(() => ({ loopActive: false }));
+    get().resetLoopZoom();
   },
   toggleLoop: () => {
     if (get().loopActive) {
@@ -131,16 +132,7 @@ export const createLoopManipulator: PlaybackStateManipulator<
     console.log(
       'resetting zoom, as I have no idea how to decrease the zoom (yet)'
     );
-    const duration = get().duration;
-    if (!duration) {
-      console.log('cannot reset zoom; duration not available!');
-      return;
-    }
-    set(state => ({
-      loopZoomLevel: 0,
-      loopZoomViewLowerLimit: 0,
-      loopZoomViewUpperLimit: duration,
-    }));
+    get().resetLoopZoom();
     // console.log('decreasing zoom');
     // const currTime = get().currentTime;
     // const {
@@ -159,7 +151,16 @@ export const createLoopManipulator: PlaybackStateManipulator<
     // }));
   },
   resetLoopZoom: () => {
-    set(() => ({ loopZoomLevel: 0 }));
+    const duration = get().duration;
+    if (!duration) {
+      console.log('cannot reset zoom; duration not available!');
+      return;
+    }
+    set(state => ({
+      loopZoomLevel: 0,
+      loopZoomViewLowerLimit: 0,
+      loopZoomViewUpperLimit: duration,
+    }));
   },
   setLoopZoomViewScroll: (percentage: number) => {
     const duration = get().duration;

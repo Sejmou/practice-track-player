@@ -34,28 +34,34 @@ const LoopControls = ({ sx }: Props) => {
         justifyContent: 'center',
         alignItems: 'center',
         justifySelf: 'flex-start',
+        flexDirection: {
+          xs: 'column',
+          md: 'row',
+        },
         gap: 1,
         ...sx,
       }}
     >
-      <ToggleButton
-        value="test"
-        selected={loopActive}
-        onClick={() => {
-          loopActive ? disableLoop() : enableLoop();
-        }}
-        color="primary"
-        size="small"
-      >
-        <LoopIcon />
-      </ToggleButton>
-      <Typography variant="body2">
-        {loopActive
-          ? `Looping (${secondsToMinutesAndSecondsStr(
-              loopStart
-            )} - ${secondsToMinutesAndSecondsStr(loopEnd)})`
-          : 'Not looping'}
-      </Typography>
+      <Stack direction="row" alignItems="center" spacing={1}>
+        <ToggleButton
+          value="test"
+          selected={loopActive}
+          onClick={() => {
+            loopActive ? disableLoop() : enableLoop();
+          }}
+          color="primary"
+          size="small"
+        >
+          <LoopIcon />
+        </ToggleButton>
+        <Typography variant="body2">
+          {loopActive
+            ? `${secondsToMinutesAndSecondsStr(
+                loopStart
+              )} - ${secondsToMinutesAndSecondsStr(loopEnd)}`
+            : 'Not looping'}
+        </Typography>
+      </Stack>
       {loopActive && (
         <Stack direction="row">
           <IconButton color="primary" onClick={increaseLoopViewZoom}>
