@@ -22,8 +22,8 @@ import ClassicPlayerUI from '@frontend/media-playback/ui/ClassicPlayerUI';
 import PBRPlayerUI from '@frontend/media-playback/ui/PBRPlayerUI';
 import { usePlaybackStore } from '@frontend/media-playback/store';
 import PBRAndLoopPlayerUI from '@frontend/media-playback/ui/PBRAndLoopPlayerUI';
-import UserPlaylists from './UserPlaylists';
-import YouTubeLinkInput from './YouTubeLinkInput';
+import UserPlaylists from '../../frontend/yt-player/UserPlaylists';
+import YouTubeLinkInput from '../../frontend/yt-player/YouTubeLinkInput';
 import ResponsiveContainer from '@frontend/layout/ResponsiveContainer';
 
 export type PlaylistVideoItemsData = {

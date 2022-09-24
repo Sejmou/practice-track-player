@@ -7,7 +7,7 @@ import {
   YouTubePlaylistDataValidator,
   YouTubeVideoDataValidator,
 } from '@models';
-import { PlaylistVideoItemsData } from '.';
+import { PlaylistVideoItemsData } from '../../pages/yt-player';
 
 type Props = {
   onLinkDataChange: (newData: PlaylistVideoItemsData) => void;

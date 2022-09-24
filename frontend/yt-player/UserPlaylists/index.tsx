@@ -6,7 +6,7 @@ import ResponsiveContainer from '@frontend/layout/ResponsiveContainer';
 import { Button, Stack, Typography } from '@mui/material';
 import PlaylistPicker from './PlaylistPicker';
 import { PlaylistItem } from '@pages/api/yt/user/playlists';
-import { PlaylistVideoItemsData } from '..';
+import { PlaylistVideoItemsData } from '../../../pages/yt-player';
 import { YouTubePlaylistDataValidator } from '@models';
 
 type Props = {
@@ -66,9 +66,22 @@ const UserPlaylists = ({ onUserPlaylistPicked }: Props) => {
             </Typography>
           ) : !playlists ? (
             <Typography variant="body2" sx={{ px: 2, pt: 1 }}>
-              {error
-                ? 'Could not fetch playlists 😢'
-                : 'If you had playlists in your account they would show up here.'}
+              {error ? (
+                session.data.error === 'RefreshAccessTokenError' ? (
+                  <Stack direction="row">
+                    <Typography variant="caption">
+                      Your playlists could not be loaded because your
+                      credentials expired. Please sign in again by clicking the
+                      button:
+                    </Typography>
+                    <Button onClick={() => signIn('google')}>Login</Button>
+                  </Stack>
+                ) : (
+                  'Could not fetch playlists 😢'
+                )
+              ) : (
+                'If you had playlists in your account they would show up here.'
+              )}
             </Typography>
           ) : (
             <PlaylistPicker
