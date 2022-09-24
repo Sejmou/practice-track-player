@@ -129,7 +129,7 @@ export const createLoopManipulator: PlaybackStateManipulator<
       return;
     }
     console.log(
-      'restting zoom, as I have no idea how to decrease the zoom (yet)'
+      'resetting zoom, as I have no idea how to decrease the zoom (yet)'
     );
     const duration = get().duration;
     if (!duration) {

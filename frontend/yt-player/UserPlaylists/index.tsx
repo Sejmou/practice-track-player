@@ -24,8 +24,6 @@ const UserPlaylists = ({ onUserPlaylistPicked }: Props) => {
 
   const loading = !playlists && !error;
 
-  console.log(session);
-
   const handlePlaylistSelection = async (playlist: PlaylistItem) => {
     console.log('user picked playlist', playlist);
     await fetch(`/api/yt/playlist-video-metadata/${playlist.id}`)

@@ -67,9 +67,9 @@ const LoopBar = ({ sx }: Props) => {
       {
         value:
           currentTime < zoomLowerLimit
-            ? 0
+            ? 0 + 0.000000000000001 // if we use exact value, React renderer gets confused as two slider marks with same value exist
             : currentTime > zoomUpperLimit
-            ? 100
+            ? 100 - 0.000000000000001
             : percentageFromTime(
                 currentTime - zoomLowerLimit,
                 zoomUpperLimit - zoomLowerLimit
