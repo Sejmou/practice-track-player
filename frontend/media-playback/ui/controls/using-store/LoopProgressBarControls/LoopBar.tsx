@@ -5,9 +5,10 @@ import { secondsToMinutesAndSecondsStr } from '@frontend/media-playback/ui/forma
 
 type Props = {
   sx?: SxProps;
+  children?: React.ReactNode;
 };
 
-const LoopBar = ({ sx }: Props) => {
+const LoopBar = ({ sx, children }: Props) => {
   const loopStart = usePlaybackStore(state => state.loopStart);
   const setLoopStart = usePlaybackStore(state => state.setLoopStart);
   const loopEnd = usePlaybackStore(state => state.loopEnd);
@@ -146,6 +147,7 @@ const LoopBar = ({ sx }: Props) => {
         size="small"
         marks={sliderMarks}
       />
+      {children}
     </Box>
   );
 };

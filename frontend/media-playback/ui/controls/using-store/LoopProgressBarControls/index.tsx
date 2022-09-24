@@ -20,10 +20,17 @@ const LoopProgressBarControls = ({ sx }: Props) => {
   return (
     <Box sx={{ ...containerStyles, ...sx }}>
       {loopActive ? (
-        <Stack width="100%">
-          <LoopBarScroll sx={{ mb: 1 }} />
-          <LoopBar />
-        </Stack>
+        <LoopBar sx={{ position: 'relative', zIndex: '2' }}>
+          <LoopBarScroll
+            sx={{
+              position: 'absolute',
+              height: '32px',
+              top: 32,
+              left: 0,
+              zIndex: '1',
+            }}
+          />
+        </LoopBar>
       ) : (
         <PlaybackProgressBar />
       )}
