@@ -54,7 +54,7 @@ export const authOptions: NextAuthOptions = {
       if (account && user) {
         return {
           accessToken: account.access_token,
-          accessTokenExpires: Date.now() + account.expires_at! * 1000, // TODO: is expires_at really always defined? I think so, bc we only use GoogleProvider atm
+          accessTokenExpires: account.expires_at! * 1000, // TODO: is expires_at really always defined? I think so, bc we only use GoogleProvider atm
           refreshToken: account.refresh_token,
           user,
         };

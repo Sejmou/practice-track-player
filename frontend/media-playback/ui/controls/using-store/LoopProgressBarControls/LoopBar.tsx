@@ -8,34 +8,18 @@ type Props = {
 };
 
 const LoopBar = ({ sx }: Props) => {
-  const duration = usePlaybackStore(state => state.duration);
   const loopStart = usePlaybackStore(state => state.loopStart);
   const setLoopStart = usePlaybackStore(state => state.setLoopStart);
   const loopEnd = usePlaybackStore(state => state.loopEnd);
   const setLoopEnd = usePlaybackStore(state => state.setLoopEnd);
 
   const currentTime = usePlaybackStore(state => state.currentTime);
-  const formatSliderValue = useCallback(
-    (percValue: number) =>
-      secondsToMinutesAndSecondsStr(percentageToTime(percValue, duration)),
-    [duration]
-  );
   const zoomLowerLimit = usePlaybackStore(
     store => store.loopZoomViewLowerLimit
   );
   const zoomUpperLimit = usePlaybackStore(
     store => store.loopZoomViewUpperLimit
   );
-
-  // TODO
-  // const loopStartSliderValue =
-  //   zoomLowerLimit < loopStart
-  //     ? percentageFromTime(loopStart, zoomUpperLimit)
-  //     : 0;
-  // const loopEndSliderValue =
-  //   zoomUpperLimit > loopEnd
-  //     ? percentageFromTime(loopEnd, zoomUpperLimit)
-  //     : 100;
 
   const loopStartInZoomView = useMemo(
     () => loopStart >= zoomLowerLimit && loopStart <= zoomUpperLimit,
@@ -49,21 +33,24 @@ const LoopBar = ({ sx }: Props) => {
 
   const handleChange = useCallback(
     (_: Event, newValue: number | number[]) => {
-      const [start, end] = (newValue as number[]).map(num =>
-        percentageToTime(num, duration)
+      const [start, end] = (newValue as number[]).map(
+        num =>
+          percentageToTime(num, zoomUpperLimit - zoomLowerLimit) +
+          zoomLowerLimit
       );
       if (end === 0) return;
       if (loopStartInZoomView && start !== loopStart) setLoopStart(start);
       if (loopEndInZoomView && end !== loopEnd) setLoopEnd(end);
     },
     [
-      duration,
-      setLoopEnd,
-      setLoopStart,
-      loopStart,
-      loopEnd,
       loopStartInZoomView,
+      loopStart,
+      setLoopStart,
       loopEndInZoomView,
+      loopEnd,
+      setLoopEnd,
+      zoomUpperLimit,
+      zoomLowerLimit,
     ]
   );
 
@@ -74,11 +61,19 @@ const LoopBar = ({ sx }: Props) => {
   const sliderMarks = useMemo(
     () => [
       {
-        value: percentageFromTime(zoomLowerLimit, duration),
+        value: 0,
         label: secondsToMinutesAndSecondsStr(zoomLowerLimit),
       },
       {
-        value: percentageFromTime(currentTime, duration),
+        value:
+          currentTime < zoomLowerLimit
+            ? 0
+            : currentTime > zoomUpperLimit
+            ? 100
+            : percentageFromTime(
+                currentTime - zoomLowerLimit,
+                zoomUpperLimit - zoomLowerLimit
+              ),
         label: (
           <Stack sx={{ mt: -5, alignItems: 'center' }}>
             {/* <Typography variant="caption" sx={{ mb: -1 }}>
@@ -91,11 +86,20 @@ const LoopBar = ({ sx }: Props) => {
         ),
       },
       {
-        value: percentageFromTime(zoomUpperLimit, duration),
+        value: 100,
         label: secondsToMinutesAndSecondsStr(zoomUpperLimit),
       },
     ],
-    [currentTime, duration, zoomLowerLimit, zoomUpperLimit]
+    [currentTime, zoomLowerLimit, zoomUpperLimit]
+  );
+
+  const formatSliderValue = useCallback(
+    (percValue: number) =>
+      secondsToMinutesAndSecondsStr(
+        percentageToTime(percValue, zoomUpperLimit - zoomLowerLimit) +
+          zoomLowerLimit
+      ),
+    [zoomLowerLimit, zoomUpperLimit]
   );
 
   return (
@@ -123,8 +127,14 @@ const LoopBar = ({ sx }: Props) => {
           }
         }}
         value={[
-          percentageFromTime(loopStart, duration),
-          percentageFromTime(loopEnd, duration),
+          percentageFromTime(
+            loopStart - zoomLowerLimit,
+            zoomUpperLimit - zoomLowerLimit
+          ),
+          percentageFromTime(
+            loopEnd - zoomLowerLimit,
+            zoomUpperLimit - zoomLowerLimit
+          ),
         ]}
         valueLabelDisplay="auto"
         valueLabelFormat={formatSliderValue}
@@ -137,10 +147,10 @@ const LoopBar = ({ sx }: Props) => {
 };
 export default LoopBar;
 
-function percentageFromTime(time: number, duration: number | null) {
-  return (time / (duration ?? 1)) * 100;
+function percentageFromTime(time: number, maxTimeValue: number | null) {
+  return (time / (maxTimeValue ?? 1)) * 100;
 }
 
-function percentageToTime(perc: number, duration: number | null) {
-  return (perc / 100) * (duration ?? 1);
+function percentageToTime(perc: number, maxTimeValue: number | null) {
+  return (perc / 100) * (maxTimeValue ?? 1);
 }
