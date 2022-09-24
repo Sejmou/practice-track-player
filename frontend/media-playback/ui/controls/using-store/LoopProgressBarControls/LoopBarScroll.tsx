@@ -5,7 +5,6 @@ import { usePlaybackStore } from '@frontend/media-playback/store';
 type Props = { sx?: SxProps };
 const LoopBarScroll = ({ sx }: Props) => {
   const containerRef = useRef<HTMLDivElement>();
-  const storeChangeScrollUpdateInProgress = useRef<boolean>(false);
 
   const zoomLowerLimit = usePlaybackStore(
     store => store.loopZoomViewLowerLimit
@@ -35,7 +34,6 @@ const LoopBarScroll = ({ sx }: Props) => {
   useEffect(() => {
     // if the zoom level changes, the zoom limits may also change, which also means that the scroll bar needs to move
     if (!duration) return;
-    storeChangeScrollUpdateInProgress.current = true;
     const scroll = zoomLowerLimit / duration;
     console.log('new scroll % (LoopBarScroll useEffect)', scroll);
     containerRef.current?.scrollTo({ left: scrollContainerWidth * scroll });
@@ -46,11 +44,6 @@ const LoopBarScroll = ({ sx }: Props) => {
       ref={containerRef}
       sx={{ ...sx, width: '100%', overflowX: 'auto' }}
       onScroll={() => {
-        if (storeChangeScrollUpdateInProgress.current) {
-          // don't need to react to that scroll, as it was triggered by change in store
-          storeChangeScrollUpdateInProgress.current = false; // update finished once this callback is called
-          return;
-        }
         const containerWidth = containerRef.current?.offsetWidth;
         if (!containerWidth) return;
         const scrollPercentage =

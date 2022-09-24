@@ -58,16 +58,18 @@ const LoopBar = ({ sx }: Props) => {
     console.log('zoom view limits', zoomLowerLimit, zoomUpperLimit);
   }, [zoomLowerLimit, zoomUpperLimit]);
 
+  // TODO: investigate the weird rendering issues that caused me to just use those almost exact but unique integers as a workaround
+  // got the "Encountered Two Children with the Same Key" error beforehand (probably has something to do with internal implementation of slider markers)
   const sliderMarks = useMemo(
     () => [
       {
-        value: 0,
+        value: 0.0000000001,
         label: secondsToMinutesAndSecondsStr(zoomLowerLimit),
       },
       {
         value:
           currentTime < zoomLowerLimit
-            ? 0 + 0.000000000000001 // if we use exact value, React renderer gets confused as two slider marks with same value exist
+            ? 0 + 0.000000000000001
             : currentTime > zoomUpperLimit
             ? 100 - 0.000000000000001
             : percentageFromTime(
@@ -80,13 +82,17 @@ const LoopBar = ({ sx }: Props) => {
               current:
             </Typography> */}
             <Typography variant="caption">
+              {currentTime < zoomLowerLimit && '<< '}
+              {(currentTime < zoomLowerLimit || currentTime > zoomUpperLimit) &&
+                'current: '}
               {secondsToMinutesAndSecondsStr(currentTime)}
+              {currentTime > zoomUpperLimit && ' >>'}
             </Typography>
           </Stack>
         ),
       },
       {
-        value: 100,
+        value: 100 - 0.0000001,
         label: secondsToMinutesAndSecondsStr(zoomUpperLimit),
       },
     ],
