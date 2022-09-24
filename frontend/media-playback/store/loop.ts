@@ -23,6 +23,7 @@ export interface LoopActions {
   increaseLoopZoom: () => void;
   decreaseLoopZoom: () => void;
   resetLoopZoom: () => void;
+  setLoopZoomViewScroll: (percentage: number) => void;
 }
 
 export type Loop = LoopState & LoopActions;
@@ -159,6 +160,27 @@ export const createLoopManipulator: PlaybackStateManipulator<
   },
   resetLoopZoom: () => {
     set(() => ({ loopZoomLevel: 0 }));
+  },
+  setLoopZoomViewScroll: (percentage: number) => {
+    const duration = get().duration;
+    if (!duration) {
+      console.error('cannot set zoom view scroll, duration not avaiable!');
+      return;
+    }
+    const zoomLowerLimit = get().loopZoomViewLowerLimit;
+    const zoomUpperLimit = get().loopZoomViewUpperLimit;
+    const zoomTimeInterval = zoomUpperLimit - zoomLowerLimit;
+    const min = 0;
+    const max = (duration - zoomTimeInterval) / duration;
+    const newScrollPercentage = clamp(percentage, min, max);
+    console.log('new scroll percentage', newScrollPercentage);
+    const newZoomLower = newScrollPercentage * duration;
+    const newZoomUpper = zoomTimeInterval + newScrollPercentage * duration;
+    console.log('new zoom view limits', newZoomLower, newZoomUpper);
+    set(() => ({
+      loopZoomViewLowerLimit: newZoomLower,
+      loopZoomViewUpperLimit: newZoomUpper,
+    }));
   },
   ...initialLoopState,
 });

@@ -1,7 +1,8 @@
+import { Box, SxProps, Stack } from '@mui/material';
 import { usePlaybackStore } from '@frontend/media-playback/store';
-import { Box, SxProps } from '@mui/material';
 import PlaybackProgressBar from '../PlaybackProgressBar';
 import LoopBar from './LoopBar';
+import LoopBarScroll from './LoopBarScroll';
 
 //TODO: this is very similar to PlaybackProgressBar/index.tsx, maybe refactor one day
 
@@ -17,7 +18,14 @@ const LoopProgressBarControls = ({ sx }: Props) => {
 
   return (
     <Box sx={{ ...containerStyles, ...sx }}>
-      {loopActive ? <LoopBar /> : <PlaybackProgressBar />}
+      {loopActive ? (
+        <Stack width="100%">
+          <LoopBarScroll sx={{ mb: 1 }} />
+          <LoopBar />
+        </Stack>
+      ) : (
+        <PlaybackProgressBar />
+      )}
     </Box>
   );
 };
