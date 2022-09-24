@@ -5,6 +5,7 @@ import {
   Typography,
   Stack,
   IconButton,
+  Button,
 } from '@mui/material';
 import LoopIcon from '@mui/icons-material/Loop';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
@@ -27,6 +28,11 @@ const LoopControls = ({ sx }: Props) => {
   const decreaseLoopViewZoom = usePlaybackStore(
     state => state.decreaseLoopZoom
   );
+  const setStartCurrent = usePlaybackStore(
+    state => state.setLoopStartToCurrent
+  );
+  const setEndCurrent = usePlaybackStore(state => state.setLoopEndToCurrent);
+
   return (
     <Box
       sx={{
@@ -63,14 +69,24 @@ const LoopControls = ({ sx }: Props) => {
         </Typography>
       </Stack>
       {loopActive && (
-        <Stack direction="row">
-          <IconButton color="primary" onClick={increaseLoopViewZoom}>
-            <ZoomInIcon />
-          </IconButton>
-          <IconButton color="primary" onClick={decreaseLoopViewZoom}>
-            <ZoomOutIcon />
-          </IconButton>
-        </Stack>
+        <>
+          <Stack direction="row">
+            <IconButton color="primary" onClick={increaseLoopViewZoom}>
+              <ZoomInIcon />
+            </IconButton>
+            <IconButton color="primary" onClick={decreaseLoopViewZoom}>
+              <ZoomOutIcon />
+            </IconButton>
+          </Stack>
+          <Stack direction="row">
+            <Button color="primary" onClick={setStartCurrent}>
+              Start Now
+            </Button>
+            <Button color="primary" onClick={setEndCurrent}>
+              End Now
+            </Button>
+          </Stack>
+        </>
       )}
     </Box>
   );
