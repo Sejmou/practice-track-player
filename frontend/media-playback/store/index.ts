@@ -73,13 +73,16 @@ export type PlaybackActions = BasicPlaybackActions &
   MediaSessionActions &
   MediaSwitchingActions;
 
+// whenever the currently playing medium changes, we want to reset both the "medium playback state" (except for the playing prop) and the "loop state"
+const { playing, ...mediumPlaybackStateResetProps } =
+  initialMediumPlaybackState;
 const resetCurrentMediumPlaybackState = () =>
-  usePlaybackStore.setState(initialMediumPlaybackState);
+  usePlaybackStore.setState(mediumPlaybackStateResetProps);
 const resetLoopState = () => usePlaybackStore.setState(initialLoopState);
 
 const unsubIdx = usePlaybackStore.subscribe(
   store => store.currIdx,
-  newIdx => {
+  () => {
     console.log('resetting current medium playback + loop states');
     resetCurrentMediumPlaybackState();
     resetLoopState();
