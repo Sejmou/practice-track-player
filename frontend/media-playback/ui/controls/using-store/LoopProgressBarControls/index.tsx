@@ -9,6 +9,7 @@ import LoopBarScroll from './LoopBarScroll';
 const containerStyles: SxProps = {
   display: 'flex',
   width: '100%',
+  px: 4,
 };
 
 type Props = { sx?: SxProps };

@@ -112,8 +112,6 @@ const LoopBar = ({ sx }: Props) => {
     <Box sx={{ width: '100%', ...sx }}>
       <Slider
         sx={{
-          mx: 2,
-          mb: 2,
           '& .MuiSlider-thumb[data-index="0"]': {
             display: loopStartInZoomView ? undefined : 'none',
           },
