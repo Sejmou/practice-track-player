@@ -1,5 +1,5 @@
 import ResponsiveContainer from '@frontend/layout/ResponsiveContainer';
-import SuspenseContainer from 'features/SuspenseContainer/SuspenseContainer';
+import SuspenseContainer from '@frontend/util/SuspenseContainer';
 import { useMusicalContext } from '@frontend/musical/musical-context';
 import { useYouTubeDescriptionFetcher } from '@frontend/media-playback/use-audio-data-fetcher';
 import { MusicalSongTrackTimeStamp } from '@models';

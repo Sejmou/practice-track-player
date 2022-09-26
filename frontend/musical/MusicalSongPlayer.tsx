@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 
 import { useMusicalContext } from '@frontend/musical/musical-context';
-import SuspenseContainer from 'features/SuspenseContainer/SuspenseContainer';
+import SuspenseContainer from '@frontend/util/SuspenseContainer';
 import AudioPlayer from '@frontend/media-playback/AudioPlayer';
 import {
   useServerWaveformDataFetcher,

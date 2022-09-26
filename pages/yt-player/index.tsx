@@ -11,7 +11,7 @@ import {
 
 import { Button, Grid, Stack, SxProps, Typography } from '@mui/material';
 import { Box } from '@mui/material';
-import SongList from 'features/SongList/SongList';
+import SongList from '@frontend/media-playback/ui/SongList';
 
 import { Song, YouTubePlaylistVideoData, YouTubeVideoData } from '@models';
 import {
