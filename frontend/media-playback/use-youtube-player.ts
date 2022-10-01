@@ -16,8 +16,8 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
   const togglePlayPause = usePlaybackStore(state => state.togglePlayPause);
   const seekForward = usePlaybackStore(state => state.seekForward);
   const seekBackward = usePlaybackStore(state => state.seekBackward);
-  const next = usePlaybackStore(state => state.goToNext);
-  const previous = usePlaybackStore(state => state.goToPrevious);
+  const goToNext = usePlaybackStore(state => state.goToNext);
+  const goToPrevious = usePlaybackStore(state => state.goToPrevious);
   const increasePlaybackRate = usePlaybackStore(
     state => state.increasePlaybackRate
   );
@@ -41,8 +41,8 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
       togglePlayPause,
       seekForward,
       seekBackward,
-      next,
-      previous,
+      goToNext,
+      goToPrevious,
       increasePlaybackRate,
       decreasePlaybackRate,
       play,
@@ -55,8 +55,8 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
     togglePlayPause,
     seekForward,
     seekBackward,
-    next,
-    previous,
+    goToNext,
+    goToPrevious,
     increasePlaybackRate,
     decreasePlaybackRate,
     play,
@@ -196,7 +196,7 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
         const duration = player.getDuration();
         if (duration && playing && duration - currentTime < 1) {
           // playing and less than 1 second of playback left -> go to next video!
-          next();
+          goToNext();
         }
       }, 50);
 
@@ -218,7 +218,7 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
     loopActive,
     loopEnd,
     loopStart,
-    next,
+    goToNext,
     pause,
     play,
     player,
