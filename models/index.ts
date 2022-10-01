@@ -63,7 +63,7 @@ export const TimeStampValidator = z.object({
   label: z.string(),
 });
 
-export type TimeStamp = z.infer<typeof TimeStampValidator>;
+export type Timestamp = z.infer<typeof TimeStampValidator>;
 
 export const YouTubeVideoDataValidator = z.object({
   videoId: z.string(),
@@ -72,7 +72,9 @@ export const YouTubeVideoDataValidator = z.object({
   channelTitle: z.string(),
 });
 
-export type YouTubeVideoData = z.infer<typeof YouTubeVideoDataValidator>;
+export type YouTubeVideoData = z.infer<typeof YouTubeVideoDataValidator> & {
+  timestamps: Timestamp[];
+};
 
 export const YouTubePlaylistVideoDataValidator =
   YouTubeVideoDataValidator.extend({
@@ -80,7 +82,9 @@ export const YouTubePlaylistVideoDataValidator =
   });
 export type YouTubePlaylistVideoData = z.infer<
   typeof YouTubePlaylistVideoDataValidator
->;
+> & {
+  timestamps: Timestamp[];
+};
 
 export const YouTubePlaylistDataValidator = z.array(
   YouTubePlaylistVideoDataValidator

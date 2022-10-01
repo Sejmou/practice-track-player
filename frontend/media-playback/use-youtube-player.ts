@@ -16,8 +16,8 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
   const togglePlayPause = usePlaybackStore(state => state.togglePlayPause);
   const seekForward = usePlaybackStore(state => state.seekForward);
   const seekBackward = usePlaybackStore(state => state.seekBackward);
-  const next = usePlaybackStore(state => state.next);
-  const previous = usePlaybackStore(state => state.previous);
+  const next = usePlaybackStore(state => state.goToNext);
+  const previous = usePlaybackStore(state => state.goToPrevious);
   const increasePlaybackRate = usePlaybackStore(
     state => state.increasePlaybackRate
   );

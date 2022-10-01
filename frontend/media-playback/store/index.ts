@@ -22,11 +22,16 @@ import {
   Loop,
   LoopActions,
 } from './loop';
+import { Timestamp } from '@models';
 
 export type PlaybackStore = BasicPlayback &
   Loop &
   MediaSwitching &
   MediaSessionManipulation;
+
+export type MediaElement = { [prop: string]: any } & {
+  timestamps: Timestamp[];
+};
 
 export const usePlaybackStore = create<PlaybackStore>()(
   devtools(

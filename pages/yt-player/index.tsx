@@ -57,6 +57,8 @@ const YouTubePlayerPage: NextPage = () => {
     | YouTubePlaylistVideoData
   )[];
 
+  console.log(mediaElements);
+
   const [songListData, setSongListData] = useState<Song[]>([]);
   useEffect(() => {
     setSongListData(

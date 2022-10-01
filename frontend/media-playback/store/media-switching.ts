@@ -1,18 +1,18 @@
-import { PlaybackStateManipulator } from '.';
+import { MediaElement, PlaybackStateManipulator } from '.';
 import { BasicPlayback } from './basic';
 import { MediaSessionManipulation } from './media-session';
 
 export interface MediaSwitchingActions {
   switchTo: (newIdx: number) => void;
-  next: () => void;
-  previous: () => void;
-  initialize: (mediaElements: any[], startIdx: number) => void;
+  goToNext: () => void;
+  goToPrevious: () => void;
+  initialize: (mediaElements: MediaElement[], startIdx: number) => void;
   reset: () => void;
 }
 
 interface MediaElementsState {
   currIdx: number;
-  mediaElements: any[];
+  mediaElements: MediaElement[];
   initialized: boolean;
 }
 
@@ -28,7 +28,7 @@ export const createMediaSwitcher: PlaybackStateManipulator<
       get().resetCurrentPlaybackState(); // apparently this is a sensible approach for side-effects in zustand: https://github.com/pmndrs/zustand/discussions/307
       return { currIdx: newIdx };
     }),
-  next: () =>
+  goToNext: () =>
     set(state => {
       if (state.currIdx === null || !state.mediaElements[state.currIdx + 1])
         return {};
@@ -37,7 +37,7 @@ export const createMediaSwitcher: PlaybackStateManipulator<
         lastSeekTime: null,
       };
     }),
-  previous: () =>
+  goToPrevious: () =>
     set(state => {
       if (state.currIdx === null || !state.mediaElements[state.currIdx - 1])
         return {};
@@ -50,7 +50,7 @@ export const createMediaSwitcher: PlaybackStateManipulator<
         lastSeekTime: null,
       };
     }),
-  initialize: (mediaElements: any[], startIdx: number) =>
+  initialize: (mediaElements, startIdx) =>
     set(() => {
       if (
         startIdx < 0 ||

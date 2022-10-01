@@ -16,8 +16,8 @@ const BasicControls = ({ sx }: Props) => {
     seekBackward,
     seekForward,
     togglePlayPause,
-    next,
-    previous,
+    goToNext: next,
+    goToPrevious: previous,
   } = usePlaybackStore();
 
   return (
