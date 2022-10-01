@@ -1,6 +1,6 @@
 import ResponsiveContainer from '@frontend/layout/ResponsiveContainer';
 import { usePlaybackStore } from '@frontend/media-playback/store';
-import { secondsToMinutesAndSecondsStr } from '@frontend/util/format-time';
+import { secondsToTimeStr } from '@frontend/util/format-time';
 import {
   Box,
   IconButton,
@@ -110,7 +110,7 @@ const Timestamps = (props: Props) => {
             >
               <ListItemText
                 primary={timestamp.label}
-                secondary={secondsToMinutesAndSecondsStr(timestamp.seconds)}
+                secondary={secondsToTimeStr(timestamp.seconds)}
               />
             </ListItemButton>
           ))}

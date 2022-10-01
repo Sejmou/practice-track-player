@@ -1,7 +1,7 @@
 import { Box, Slider, SxProps, Typography, Stack } from '@mui/material';
 import { useCallback, useEffect, useMemo } from 'react';
 import { usePlaybackStore } from '@frontend/media-playback/store';
-import { secondsToMinutesAndSecondsStr } from '@frontend/util/format-time';
+import { secondsToTimeStr } from '@frontend/util/format-time';
 
 type Props = {
   sx?: SxProps;
@@ -65,7 +65,7 @@ const LoopBar = ({ sx, children }: Props) => {
     () => [
       {
         value: 0.0000000001,
-        label: secondsToMinutesAndSecondsStr(zoomLowerLimit),
+        label: secondsToTimeStr(zoomLowerLimit),
       },
       {
         value:
@@ -86,7 +86,7 @@ const LoopBar = ({ sx, children }: Props) => {
               {currentTime < zoomLowerLimit && '<< '}
               {(currentTime < zoomLowerLimit || currentTime > zoomUpperLimit) &&
                 'current: '}
-              {secondsToMinutesAndSecondsStr(currentTime)}
+              {secondsToTimeStr(currentTime)}
               {currentTime > zoomUpperLimit && ' >>'}
             </Typography>
           </Stack>
@@ -94,7 +94,7 @@ const LoopBar = ({ sx, children }: Props) => {
       },
       {
         value: 100 - 0.0000001,
-        label: secondsToMinutesAndSecondsStr(zoomUpperLimit),
+        label: secondsToTimeStr(zoomUpperLimit),
       },
     ],
     [currentTime, zoomLowerLimit, zoomUpperLimit]
@@ -102,7 +102,7 @@ const LoopBar = ({ sx, children }: Props) => {
 
   const formatSliderValue = useCallback(
     (percValue: number) =>
-      secondsToMinutesAndSecondsStr(
+      secondsToTimeStr(
         percentageToTime(percValue, zoomUpperLimit - zoomLowerLimit) +
           zoomLowerLimit
       ),

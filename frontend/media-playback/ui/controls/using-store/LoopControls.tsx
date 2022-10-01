@@ -11,7 +11,7 @@ import LoopIcon from '@mui/icons-material/Loop';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import { usePlaybackStore } from '@frontend/media-playback/store';
-import { secondsToMinutesAndSecondsStr } from '../../../../util/format-time';
+import { secondsToTimeStr } from '../../../../util/format-time';
 
 type Props = {
   sx?: SxProps;
@@ -62,9 +62,7 @@ const LoopControls = ({ sx }: Props) => {
         </ToggleButton>
         <Typography variant="body2">
           {loopActive
-            ? `${secondsToMinutesAndSecondsStr(
-                loopStart
-              )} - ${secondsToMinutesAndSecondsStr(loopEnd)}`
+            ? `${secondsToTimeStr(loopStart)} - ${secondsToTimeStr(loopEnd)}`
             : 'Not looping'}
         </Typography>
       </Stack>
