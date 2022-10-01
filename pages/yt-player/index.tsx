@@ -25,6 +25,7 @@ import PBRAndLoopPlayerUI from '@frontend/media-playback/ui/PBRAndLoopPlayerUI';
 import UserPlaylists from '../../frontend/yt-player/UserPlaylists';
 import YouTubeLinkInput from '../../frontend/yt-player/YouTubeLinkInput';
 import ResponsiveContainer from '@frontend/layout/ResponsiveContainer';
+import Timestamps from '@frontend/media-playback/ui/controls/using-store/Timestamps';
 
 export type PlaylistVideoItemsData = {
   videos: YouTubeVideoData[];
@@ -56,8 +57,6 @@ const YouTubePlayerPage: NextPage = () => {
     | YouTubeVideoData
     | YouTubePlaylistVideoData
   )[];
-
-  console.log(mediaElements);
 
   const [songListData, setSongListData] = useState<Song[]>([]);
   useEffect(() => {
@@ -174,6 +173,7 @@ const YouTubePlayerPage: NextPage = () => {
             {/* {youTubePlayer && <ClassicPlayerUI />} */}
             {/* {youTubePlayer && <PBRPlayerUI />} */}
             {youTubePlayer && <PBRAndLoopPlayerUI />}
+            <Timestamps />
             {mediaElements.length > 1 && (
               <SongList
                 title="Videos"

@@ -11,7 +11,7 @@ import LoopIcon from '@mui/icons-material/Loop';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import { usePlaybackStore } from '@frontend/media-playback/store';
-import { secondsToMinutesAndSecondsStr } from '../../format-time';
+import { secondsToMinutesAndSecondsStr } from '../../../../util/format-time';
 
 type Props = {
   sx?: SxProps;

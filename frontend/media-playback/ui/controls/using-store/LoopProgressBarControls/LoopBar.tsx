@@ -1,7 +1,7 @@
 import { Box, Slider, SxProps, Typography, Stack } from '@mui/material';
 import { useCallback, useEffect, useMemo } from 'react';
 import { usePlaybackStore } from '@frontend/media-playback/store';
-import { secondsToMinutesAndSecondsStr } from '@frontend/media-playback/ui/format-time';
+import { secondsToMinutesAndSecondsStr } from '@frontend/util/format-time';
 
 type Props = {
   sx?: SxProps;
