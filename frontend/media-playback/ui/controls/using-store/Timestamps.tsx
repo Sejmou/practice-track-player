@@ -3,6 +3,7 @@ import { usePlaybackStore } from '@frontend/media-playback/store';
 import { secondsToTimeStr } from '@frontend/util/format-time';
 import {
   Box,
+  Button,
   IconButton,
   List,
   ListItemButton,
@@ -72,10 +73,20 @@ const Timestamps = (props: Props) => {
               </Typography>
             </Stack>
           )}
-          <Box width="40%">
-            <Typography textAlign="center" noWrap textOverflow="ellipsis">
-              {currentTimestamp.label}
-            </Typography>
+          <Box
+            width="40%"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Button
+              sx={{ textTransform: 'none' }}
+              onClick={() => seekTo(currentTimestamp.seconds)}
+            >
+              <Typography noWrap textOverflow="ellipsis">
+                {currentTimestamp.label}
+              </Typography>
+            </Button>
           </Box>
           {nextTimestamp && (
             <Stack direction="row" alignItems="center" width="30%">
