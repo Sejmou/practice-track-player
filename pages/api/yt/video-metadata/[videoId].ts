@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { extractQueryParamAsString } from '@backend';
 import { YouTubeVideoData, YouTubeVideoDataValidator } from '@models';
-import { extractTimeStamps } from '@util';
+import { extractTimestamps } from '@util';
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,7 +20,7 @@ export default async function handler(
 
     res.status(200).json({
       ...videoData,
-      timestamps: extractTimeStamps(videoData.description),
+      timestamps: extractTimestamps(videoData.description),
     });
   } catch (error) {
     console.warn('An error occurred while fetching the video metadata', error);

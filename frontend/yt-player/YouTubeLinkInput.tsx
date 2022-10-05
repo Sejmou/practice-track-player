@@ -8,7 +8,7 @@ import {
   YouTubeVideoDataValidator,
 } from '@models';
 import { PlaylistVideoItemsData } from '../../pages/yt-player';
-import { extractTimeStamps } from '@util';
+import { extractTimestamps } from '@util';
 
 type Props = {
   onLinkDataChange: (newData: PlaylistVideoItemsData) => void;

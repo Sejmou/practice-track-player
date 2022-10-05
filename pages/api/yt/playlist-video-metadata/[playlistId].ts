@@ -5,7 +5,7 @@ import {
   YouTubePlaylistDataValidator,
 } from '@models';
 import { getToken } from 'next-auth/jwt';
-import { extractTimeStamps } from '@util';
+import { extractTimestamps } from '@util';
 
 export default async function handler(
   req: NextApiRequest,
@@ -30,14 +30,12 @@ export default async function handler(
       googleApiToken
     );
 
-    res
-      .status(200)
-      .json(
-        videoData.map(vid => ({
-          ...vid,
-          timestamps: extractTimeStamps(vid.description),
-        }))
-      );
+    res.status(200).json(
+      videoData.map(vid => ({
+        ...vid,
+        timestamps: extractTimestamps(vid.description),
+      }))
+    );
   } catch (error) {
     console.warn(
       'An error occurred while fetching the playlist video metadata',

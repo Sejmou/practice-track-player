@@ -8,7 +8,7 @@ import PlaylistPicker from './PlaylistPicker';
 import { PlaylistItem } from '@pages/api/yt/user/playlists';
 import { PlaylistVideoItemsData } from '../../../pages/yt-player';
 import { YouTubePlaylistDataValidator } from '@models';
-import { extractTimeStamps } from '@util';
+import { extractTimestamps } from '@util';
 
 type Props = {
   onUserPlaylistPicked: (playlistData: PlaylistVideoItemsData) => void;
@@ -34,7 +34,7 @@ const UserPlaylists = ({ onUserPlaylistPicked }: Props) => {
         onUserPlaylistPicked({
           videos: data.map(v => ({
             ...v,
-            timestamps: extractTimeStamps(v.description),
+            timestamps: extractTimestamps(v.description),
           })),
           initialIndex: 0,
         });
