@@ -31,6 +31,7 @@ import Timestamps from '@frontend/media-playback/ui/controls/using-store/Timesta
 import { getToken } from 'next-auth/jwt';
 import { fetchPlaylistVideoMetaData } from '@pages/api/yt/playlist-video-metadata/[playlistId]';
 import { fetchVideoMetaData } from '@pages/api/yt/video-metadata/[videoId]';
+import { clamp } from '@util';
 
 export type YouTubeVideoItemsData = {
   videos: YouTubeVideoData[];
@@ -74,6 +75,15 @@ const YouTubePlayerPage: NextPage<Props> = ({
     if (initialMediaElements)
       initialize(initialMediaElements, initialIndex ?? 0);
   }, [initialMediaElements]);
+
+  useEffect(() => {
+    // update query params whenever other video is selected
+    if (currIdx === -1) return;
+    router.push({
+      pathname: router.pathname,
+      query: { ...router.query, i: currIdx },
+    });
+  }, [currIdx]);
 
   const playerContainerRef = useRef<HTMLDivElement>();
   const [youTubePlayer, setYouTubePlayer] = useState<YouTubePlayer>();
@@ -249,10 +259,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
   query,
 }) => {
   const { p: playlistIdVal, v: videoIdVal, i: indexVal } = query;
-  const initialIndex =
-    typeof indexVal === 'string' && !isNaN(parseInt(indexVal))
-      ? parseInt(indexVal)
-      : undefined;
   let initialMediaElements:
     | (YouTubeVideoData | YouTubePlaylistVideoData)[]
     | null = null;
@@ -270,11 +276,17 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
     const videoData = await fetchVideoMetaData(videoIdVal);
     initialMediaElements = [videoData];
   }
+  const initialIndex =
+    typeof indexVal === 'string' &&
+    !isNaN(parseInt(indexVal)) &&
+    initialMediaElements
+      ? clamp(parseInt(indexVal), 0, initialMediaElements.length)
+      : null;
 
   return {
     props: {
       initialMediaElements,
-      initialIndex: 0,
+      initialIndex,
     },
   };
 };
