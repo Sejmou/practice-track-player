@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { NextPage } from 'next/types';
+import { GetServerSideProps, NextPage } from 'next/types';
 import YouTube, { YouTubeProps, YouTubeEvent } from 'react-youtube';
 import {
   useCallback,
@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useRouter } from 'next/router';
 
 import { Button, Grid, Stack, SxProps, Typography } from '@mui/material';
 import { Box } from '@mui/material';
@@ -27,9 +28,21 @@ import YouTubeLinkInput from '../../frontend/yt-player/YouTubeLinkInput';
 import ResponsiveContainer from '@frontend/layout/ResponsiveContainer';
 import Timestamps from '@frontend/media-playback/ui/controls/using-store/Timestamps';
 
-export type PlaylistVideoItemsData = {
+import { getToken } from 'next-auth/jwt';
+import { fetchPlaylistVideoMetaData } from '@pages/api/yt/playlist-video-metadata/[playlistId]';
+import { fetchVideoMetaData } from '@pages/api/yt/video-metadata/[videoId]';
+
+export type YouTubeVideoItemsData = {
   videos: YouTubeVideoData[];
   initialIndex: number;
+  /**
+   * undefined if the videos aren't from an actual YouTube playlist (I know, this is pretty confusing, I should have designed that whole thing differently lol)
+   */
+  playlistId?: string;
+  /**
+   * !== undefined if video is actually just an array with a single video (I know, this is stupid, should rewrite some day lol)
+   */
+  videoId?: string;
 };
 
 const containerStyles: SxProps = {
@@ -38,20 +51,34 @@ const containerStyles: SxProps = {
   flexDirection: 'column',
 };
 
-const YouTubePlayerPage: NextPage = () => {
+/**
+ * Those props are passed from server based on query params in URL (see getServerSideProps)
+ */
+type Props = {
+  initialMediaElements: (YouTubeVideoData | YouTubePlaylistVideoData)[] | null;
+  initialIndex: number | null;
+};
+
+const YouTubePlayerPage: NextPage<Props> = ({
+  initialMediaElements,
+  initialIndex,
+}) => {
+  const initialize = usePlaybackStore(store => store.initialize);
+  const mediaElementsAny = usePlaybackStore(store => store.mediaElements); // TODO: cleanup this mess
+  const currIdx = usePlaybackStore(store => store.currIdx);
+  const switchTo = usePlaybackStore(store => store.switchTo);
+  const playerInitialized = usePlaybackStore(store => store.initialized);
+  const reset = usePlaybackStore(store => store.reset);
+
+  useEffect(() => {
+    if (initialMediaElements)
+      initialize(initialMediaElements, initialIndex ?? 0);
+  }, [initialMediaElements]);
+
   const playerContainerRef = useRef<HTMLDivElement>();
   const [youTubePlayer, setYouTubePlayer] = useState<YouTubePlayer>();
 
   useYouTubePlayer(youTubePlayer);
-
-  const {
-    initialize,
-    mediaElements: mediaElementsAny,
-    currIdx,
-    switchTo,
-    initialized: playerInitialized,
-    reset,
-  } = usePlaybackStore();
 
   const mediaElements = mediaElementsAny as (
     | YouTubeVideoData
@@ -105,12 +132,35 @@ const YouTubePlayerPage: NextPage = () => {
     return () => window.removeEventListener('resize', resizePlayer);
   }, [resizePlayer]);
 
-  const handlePickedUserPlaylist = useCallback(
-    (playlistData: PlaylistVideoItemsData) => {
+  const router = useRouter();
+
+  const handleVideosChange = useCallback(
+    (playlistData: YouTubeVideoItemsData) => {
       initialize(playlistData.videos, playlistData.initialIndex);
+      // TODO: maybe change this some day
+      // this is freakin' ugly, couldn't find a cleaner way to only add query params if they are actually needed
+      const query = {
+        p: playlistData.playlistId,
+        i: playlistData.initialIndex,
+        v: playlistData.videoId,
+      };
+      if (!query.v) delete query.v;
+      if (!query.p) delete query.p;
+      router.push({
+        pathname: router.pathname,
+        query,
+      });
     },
     [initialize]
   );
+
+  const handleReset = useCallback(() => {
+    reset();
+    router.push({
+      pathname: router.pathname,
+      query: {},
+    });
+  }, [reset]);
 
   const pickPlayerVideoContent = (
     <>
@@ -136,14 +186,10 @@ const YouTubePlayerPage: NextPage = () => {
             <Typography variant="subtitle1" sx={{ mb: 1 }}>
               Got a video/playlist link? Just paste it below:
             </Typography>
-            <YouTubeLinkInput
-              onLinkDataChange={newData =>
-                initialize(newData.videos, newData.initialIndex)
-              }
-            />
+            <YouTubeLinkInput onLinkDataChange={handleVideosChange} />
           </>
         </ResponsiveContainer>
-        <UserPlaylists onUserPlaylistPicked={handlePickedUserPlaylist} />
+        <UserPlaylists onUserPlaylistPicked={handleVideosChange} />
       </Box>
     </>
   );
@@ -185,7 +231,7 @@ const YouTubePlayerPage: NextPage = () => {
               />
             )}
             <Stack alignItems="center">
-              <Button onClick={() => reset()}>
+              <Button onClick={handleReset}>
                 Pick other video or playlist
               </Button>
             </Stack>
@@ -197,3 +243,38 @@ const YouTubePlayerPage: NextPage = () => {
 };
 
 export default YouTubePlayerPage;
+
+export const getServerSideProps: GetServerSideProps<Props> = async ({
+  req,
+  query,
+}) => {
+  const { p: playlistIdVal, v: videoIdVal, i: indexVal } = query;
+  const initialIndex =
+    typeof indexVal === 'string' && !isNaN(parseInt(indexVal))
+      ? parseInt(indexVal)
+      : undefined;
+  let initialMediaElements:
+    | (YouTubeVideoData | YouTubePlaylistVideoData)[]
+    | null = null;
+
+  if (!!playlistIdVal && typeof playlistIdVal === 'string') {
+    const token = await getToken({ req });
+    const googleApiToken = token?.accessToken;
+    const playlistData = await fetchPlaylistVideoMetaData(
+      playlistIdVal,
+      undefined,
+      googleApiToken
+    );
+    initialMediaElements = playlistData;
+  } else if (!!videoIdVal && typeof videoIdVal === 'string') {
+    const videoData = await fetchVideoMetaData(videoIdVal);
+    initialMediaElements = [videoData];
+  }
+
+  return {
+    props: {
+      initialMediaElements,
+      initialIndex: 0,
+    },
+  };
+};

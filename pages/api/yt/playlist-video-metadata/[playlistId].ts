@@ -24,18 +24,13 @@ export default async function handler(
       return;
     }
 
-    const videoData = await fetchPlaylistVideoData(
+    const videoData = await fetchPlaylistVideoMetaData(
       playlistId,
       undefined,
       googleApiToken
     );
 
-    res.status(200).json(
-      videoData.map(vid => ({
-        ...vid,
-        timestamps: extractTimestamps(vid.description),
-      }))
-    );
+    res.status(200).json(videoData);
   } catch (error) {
     console.warn(
       'An error occurred while fetching the playlist video metadata',
@@ -45,7 +40,7 @@ export default async function handler(
   }
 }
 
-async function fetchPlaylistVideoData(
+export async function fetchPlaylistVideoMetaData(
   playlistId: string,
   nextPageTokenVal?: string,
   authToken?: string
@@ -75,8 +70,15 @@ async function fetchPlaylistVideoData(
   const videoData = YouTubePlaylistDataValidator.parse(filteredContent);
   if (nextPageToken) {
     videoData.push(
-      ...(await fetchPlaylistVideoData(playlistId, nextPageToken, authToken))
+      ...(await fetchPlaylistVideoMetaData(
+        playlistId,
+        nextPageToken,
+        authToken
+      ))
     );
   }
-  return videoData;
+  return videoData.map(vid => ({
+    ...vid,
+    timestamps: extractTimestamps(vid.description),
+  }));
 }

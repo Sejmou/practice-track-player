@@ -7,11 +7,11 @@ import {
   YouTubePlaylistDataValidator,
   YouTubeVideoDataValidator,
 } from '@models';
-import { PlaylistVideoItemsData } from '../../pages/yt-player';
+import { YouTubeVideoItemsData } from '../../pages/yt-player';
 import { extractTimestamps } from '@util';
 
 type Props = {
-  onLinkDataChange: (newData: PlaylistVideoItemsData) => void;
+  onLinkDataChange: (newData: YouTubeVideoItemsData) => void;
   sx?: SxProps;
 };
 
@@ -36,12 +36,13 @@ const YouTubeLinkInput = ({ onLinkDataChange, sx }: Props) => {
         onLinkDataChange({
           videos: playlistData,
           initialIndex: playlistIndex ?? 0,
+          playlistId,
         });
       } else if (videoId) {
         const videoData = await fetch(`/api/yt/video-metadata/${videoId}`).then(
           res => res.json() // TODO: no response validation done, make use of tRPC to simplify stuff and still be type-safe
         );
-        onLinkDataChange({ videos: [videoData], initialIndex: 0 });
+        onLinkDataChange({ videos: [videoData], initialIndex: 0, videoId });
       }
     },
     [onLinkDataChange]

@@ -6,12 +6,12 @@ import ResponsiveContainer from '@frontend/layout/ResponsiveContainer';
 import { Button, Stack, Typography } from '@mui/material';
 import PlaylistPicker from './PlaylistPicker';
 import { PlaylistItem } from '@pages/api/yt/user/playlists';
-import { PlaylistVideoItemsData } from '../../../pages/yt-player';
+import { YouTubeVideoItemsData } from '../../../pages/yt-player';
 import { YouTubePlaylistDataValidator } from '@models';
 import { extractTimestamps } from '@util';
 
 type Props = {
-  onUserPlaylistPicked: (playlistData: PlaylistVideoItemsData) => void;
+  onUserPlaylistPicked: (playlistData: YouTubeVideoItemsData) => void;
 };
 
 const UserPlaylists = ({ onUserPlaylistPicked }: Props) => {
@@ -29,14 +29,11 @@ const UserPlaylists = ({ onUserPlaylistPicked }: Props) => {
     console.log('user picked playlist', playlist);
     await fetch(`/api/yt/playlist-video-metadata/${playlist.id}`)
       .then(res => res.json())
-      .then(json => {
-        const data = YouTubePlaylistDataValidator.parse(json);
+      .then(videos => {
         onUserPlaylistPicked({
-          videos: data.map(v => ({
-            ...v,
-            timestamps: extractTimestamps(v.description),
-          })),
+          videos,
           initialIndex: 0,
+          playlistId: playlist.id as string,
         });
       });
   };
