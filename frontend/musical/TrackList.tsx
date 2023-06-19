@@ -11,9 +11,9 @@ import { useMusicalContext } from '@frontend/musical/musical-context';
 import ResponsiveContainer from '@frontend/layout/ResponsiveContainer';
 import { useKeyboardShortcuts } from '@frontend/util/use-keyboard-shortcuts';
 
-type Props = { sx?: SxProps };
+type Props = { sx?: SxProps; contentWrapperSxWide?: SxProps };
 
-const TrackList = ({ sx }: Props) => {
+const TrackList = ({ sx, contentWrapperSxWide }: Props) => {
   const {
     tracks,
     currentTrack,
@@ -51,7 +51,11 @@ const TrackList = ({ sx }: Props) => {
   );
 
   return (
-    <ResponsiveContainer sx={sx} title="Available Tracks">
+    <ResponsiveContainer
+      sx={sx}
+      contentWrapperSxWide={contentWrapperSxWide}
+      title="Available Tracks"
+    >
       {trackList}
     </ResponsiveContainer>
   );

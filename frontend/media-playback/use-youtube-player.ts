@@ -16,8 +16,8 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
   const togglePlayPause = usePlaybackStore(state => state.togglePlayPause);
   const seekForward = usePlaybackStore(state => state.seekForward);
   const seekBackward = usePlaybackStore(state => state.seekBackward);
-  const next = usePlaybackStore(state => state.next);
-  const previous = usePlaybackStore(state => state.previous);
+  const goToNext = usePlaybackStore(state => state.goToNext);
+  const goToPrevious = usePlaybackStore(state => state.goToPrevious);
   const increasePlaybackRate = usePlaybackStore(
     state => state.increasePlaybackRate
   );
@@ -28,29 +28,42 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
   const loopActive = usePlaybackStore(state => state.loopActive);
   const loopEnd = usePlaybackStore(state => state.loopEnd);
   const loopStart = usePlaybackStore(state => state.loopStart);
+  const toggleLoop = usePlaybackStore(state => state.toggleLoop);
+  const setLoopStartToCurrent = usePlaybackStore(
+    state => state.setLoopStartToCurrent
+  );
+  const setLoopEndToCurrent = usePlaybackStore(
+    state => state.setLoopEndToCurrent
+  );
 
   const playbackFns = useMemo(() => {
     return {
       togglePlayPause,
       seekForward,
       seekBackward,
-      next,
-      previous,
+      goToNext,
+      goToPrevious,
       increasePlaybackRate,
       decreasePlaybackRate,
       play,
       pause,
+      toggleLoop,
+      setLoopStartToCurrent,
+      setLoopEndToCurrent,
     };
   }, [
     togglePlayPause,
     seekForward,
     seekBackward,
-    next,
-    previous,
+    goToNext,
+    goToPrevious,
     increasePlaybackRate,
     decreasePlaybackRate,
     play,
     pause,
+    toggleLoop,
+    setLoopStartToCurrent,
+    setLoopEndToCurrent,
   ]);
 
   usePlaybackShortcuts(playbackFns, true);
@@ -183,7 +196,7 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
         const duration = player.getDuration();
         if (duration && playing && duration - currentTime < 1) {
           // playing and less than 1 second of playback left -> go to next video!
-          next();
+          goToNext();
         }
       }, 50);
 
@@ -205,7 +218,7 @@ export const useYouTubePlayer = (player?: YouTubePlayer) => {
     loopActive,
     loopEnd,
     loopStart,
-    next,
+    goToNext,
     pause,
     play,
     player,

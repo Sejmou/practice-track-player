@@ -4,6 +4,8 @@ import {
   YouTubePlaylistVideoData,
   YouTubePlaylistDataValidator,
 } from '@models';
+import { getToken } from 'next-auth/jwt';
+import { extractTimestamps } from '@util';
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,7 +13,22 @@ export default async function handler(
 ) {
   try {
     const playlistId = extractQueryParamAsString(req, 'playlistId');
-    const videoData = await fetchPlaylistVideoData(playlistId);
+    const token = await getToken({ req });
+    const googleApiToken = token?.accessToken;
+    if (!!googleApiToken && !(typeof googleApiToken === 'string')) {
+      res.status(400).end();
+      console.error(
+        'Invalid value provided for googleApiToken',
+        googleApiToken
+      );
+      return;
+    }
+
+    const videoData = await fetchPlaylistVideoMetaData(
+      playlistId,
+      undefined,
+      googleApiToken
+    );
 
     res.status(200).json(videoData);
   } catch (error) {
@@ -23,14 +40,20 @@ export default async function handler(
   }
 }
 
-async function fetchPlaylistVideoData(
+export async function fetchPlaylistVideoMetaData(
   playlistId: string,
-  nextPageTokenVal?: string
+  nextPageTokenVal?: string,
+  authToken?: string
 ) {
   const reqUrl = `https://youtube.googleapis.com/youtube/v3/playlistItems?part=contentDetails,snippet&playlistId=${playlistId}&maxResults=50&key=${
     process.env.YOUTUBE_API_KEY
   }${nextPageTokenVal ? `&nextPageToken=${nextPageTokenVal}` : ''}`;
-  const resJson = await fetch(reqUrl);
+  const resJson = await fetch(
+    reqUrl,
+    authToken
+      ? { headers: { Authorization: `Bearer ${authToken}` } }
+      : undefined
+  );
   const parsedJson = await resJson.json();
   const { nextPageToken } = parsedJson;
   const itemContent = parsedJson.items.map(
@@ -47,8 +70,15 @@ async function fetchPlaylistVideoData(
   const videoData = YouTubePlaylistDataValidator.parse(filteredContent);
   if (nextPageToken) {
     videoData.push(
-      ...(await fetchPlaylistVideoData(playlistId, nextPageToken))
+      ...(await fetchPlaylistVideoMetaData(
+        playlistId,
+        nextPageToken,
+        authToken
+      ))
     );
   }
-  return videoData;
+  return videoData.map(vid => ({
+    ...vid,
+    timestamps: extractTimestamps(vid.description),
+  }));
 }

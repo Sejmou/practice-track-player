@@ -1,36 +1,20 @@
 import Head from 'next/head';
-import { NextPage } from 'next/types';
+import { GetServerSideProps, NextPage } from 'next/types';
+import YouTube, { YouTubeProps, YouTubeEvent } from 'react-youtube';
 import {
-  ChangeEvent,
-  FocusEvent,
   useCallback,
   useEffect,
   useLayoutEffect,
   useRef,
   useState,
 } from 'react';
-import {
-  Button,
-  InputAdornment,
-  Link,
-  Paper,
-  Stack,
-  SxProps,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { useRouter } from 'next/router';
+
+import { Button, Grid, Stack, SxProps, Typography } from '@mui/material';
 import { Box } from '@mui/material';
-import SongList from 'features/SongList/SongList';
-import InsertLinkIcon from '@mui/icons-material/InsertLink';
-import { getURLVideoID } from 'ytdl-core';
-import {
-  Song,
-  YouTubePlaylistDataValidator,
-  YouTubePlaylistVideoData,
-  YouTubeVideoData,
-  YouTubeVideoDataValidator,
-} from '@models';
-import YouTube, { YouTubeProps, YouTubeEvent } from 'react-youtube';
+import SongList from '@frontend/media-playback/ui/SongList';
+
+import { Song, YouTubePlaylistVideoData, YouTubeVideoData } from '@models';
 import {
   useYouTubePlayer,
   YouTubePlayer,
@@ -39,6 +23,28 @@ import ClassicPlayerUI from '@frontend/media-playback/ui/ClassicPlayerUI';
 import PBRPlayerUI from '@frontend/media-playback/ui/PBRPlayerUI';
 import { usePlaybackStore } from '@frontend/media-playback/store';
 import PBRAndLoopPlayerUI from '@frontend/media-playback/ui/PBRAndLoopPlayerUI';
+import UserPlaylists from '../../frontend/yt-player/UserPlaylists';
+import YouTubeLinkInput from '../../frontend/yt-player/YouTubeLinkInput';
+import ResponsiveContainer from '@frontend/layout/ResponsiveContainer';
+import Timestamps from '@frontend/media-playback/ui/controls/using-store/Timestamps';
+
+import { getToken } from 'next-auth/jwt';
+import { fetchPlaylistVideoMetaData } from '@pages/api/yt/playlist-video-metadata/[playlistId]';
+import { fetchVideoMetaData } from '@pages/api/yt/video-metadata/[videoId]';
+import { clamp } from '@util';
+
+export type YouTubeVideoItemsData = {
+  videos: YouTubeVideoData[];
+  initialIndex: number;
+  /**
+   * undefined if the videos aren't from an actual YouTube playlist (I know, this is pretty confusing, I should have designed that whole thing differently lol)
+   */
+  playlistId?: string;
+  /**
+   * !== undefined if video is actually just an array with a single video (I know, this is stupid, should rewrite some day lol)
+   */
+  videoId?: string;
+};
 
 const containerStyles: SxProps = {
   flex: '1',
@@ -46,29 +52,43 @@ const containerStyles: SxProps = {
   flexDirection: 'column',
 };
 
-type YouTubeLinkData = {
-  videoId?: string;
-  playlistId?: string;
-  playlistIndex?: number;
+/**
+ * Those props are passed from server based on query params in URL (see getServerSideProps)
+ */
+type Props = {
+  initialMediaElements: (YouTubeVideoData | YouTubePlaylistVideoData)[] | null;
+  initialIndex: number | null;
 };
 
-const YouTubePlayerPage: NextPage = () => {
-  const [linkInputTouched, setLinkInputTouched] = useState(false);
-  const [videoLinkError, setVideoLinkError] = useState(false);
+const YouTubePlayerPage: NextPage<Props> = ({
+  initialMediaElements,
+  initialIndex,
+}) => {
+  const initialize = usePlaybackStore(store => store.initialize);
+  const mediaElementsAny = usePlaybackStore(store => store.mediaElements); // TODO: cleanup this mess
+  const currIdx = usePlaybackStore(store => store.currIdx);
+  const switchTo = usePlaybackStore(store => store.switchTo);
+  const playerInitialized = usePlaybackStore(store => store.initialized);
+  const reset = usePlaybackStore(store => store.reset);
+
+  useEffect(() => {
+    if (initialMediaElements)
+      initialize(initialMediaElements, initialIndex ?? 0);
+  }, [initialMediaElements]);
+
+  useEffect(() => {
+    // update query params whenever other video is selected
+    if (currIdx === -1) return;
+    router.push({
+      pathname: router.pathname,
+      query: { ...router.query, i: currIdx },
+    });
+  }, [currIdx]);
 
   const playerContainerRef = useRef<HTMLDivElement>();
   const [youTubePlayer, setYouTubePlayer] = useState<YouTubePlayer>();
 
   useYouTubePlayer(youTubePlayer);
-
-  const {
-    initialize,
-    mediaElements: mediaElementsAny,
-    currIdx,
-    switchTo,
-    initialized,
-    reset,
-  } = usePlaybackStore();
 
   const mediaElements = mediaElementsAny as (
     | YouTubeVideoData
@@ -122,84 +142,65 @@ const YouTubePlayerPage: NextPage = () => {
     return () => window.removeEventListener('resize', resizePlayer);
   }, [resizePlayer]);
 
-  const handleLinkInputChange = useCallback(
-    async (
-      ev: ChangeEvent<HTMLInputElement> | FocusEvent<HTMLInputElement>
-    ) => {
-      const input = ev.target.value;
-      const { videoId, playlistId, playlistIndex } = getYouTubeLinkData(input);
-      const inputInvalid = !videoId && !playlistId;
-      setVideoLinkError(inputInvalid);
+  const router = useRouter();
 
-      // too lazy to write useSWR hook for that, should be fine anyway
-      if (playlistId) {
-        const playlistData = await fetch(
-          `/api/yt/playlist-video-metadata/${playlistId}`
-        )
-          .then(res => res.json())
-          .then(json => YouTubePlaylistDataValidator.parse(json));
-        initialize(playlistData, playlistIndex ?? 0);
-        // setLocalMediaElements(playlistData);
-      } else if (videoId) {
-        const videoData = await fetch(`/api/yt/video-metadata/${videoId}`)
-          .then(res => res.json())
-          .then(json => YouTubeVideoDataValidator.parse(json));
-        initialize([videoData], 0);
-      }
+  const handleVideosChange = useCallback(
+    (playlistData: YouTubeVideoItemsData) => {
+      initialize(playlistData.videos, playlistData.initialIndex);
+      // TODO: maybe change this some day
+      // this is freakin' ugly, couldn't find a cleaner way to only add query params if they are actually needed
+      const query = {
+        p: playlistData.playlistId,
+        i: playlistData.initialIndex,
+        v: playlistData.videoId,
+      };
+      if (!query.v) delete query.v;
+      if (!query.p) delete query.p;
+      router.push({
+        pathname: router.pathname,
+        query,
+      });
     },
-    []
+    [initialize]
   );
 
-  const handleLinkBlur = () => {
-    setLinkInputTouched(true);
-  };
+  const handleReset = useCallback(() => {
+    reset();
+    router.push({
+      pathname: router.pathname,
+      query: {},
+    });
+  }, [reset]);
 
-  const linkInput = (
+  const pickPlayerVideoContent = (
     <>
       <Typography variant="h3">YouTube Player</Typography>
-      <Paper sx={{ p: 1, mt: 1 }}>
-        <Typography variant="subtitle1" my={1} maxWidth="650px">
-          Play any YouTube video or playlist, with more controls than
-          YouTube&apos;s own player offers.
-        </Typography>
-        <Typography variant="subtitle1" mb={1} maxWidth="650px">
-          Note: Initially, my goal was to allow you to play the audio of YouTube
-          videos using the same player interface as on the other subsites.
-        </Typography>
-        <Typography variant="subtitle1" mb={1} maxWidth={600}>
-          However, that&apos;s unfortunately very difficult to do without quite
-          extreme hacks. Furthermore, separating audio and video channels for a
-          YouTube video would also violate YouTube&apos;s{' '}
-          <Link
-            href="https://developers.google.com/youtube/terms/developer-policies?hl=en#i.-additional-prohibitions:~:text=separate%2C%20isolate%2C%20or%20modify%20the%20audio%20or%20video%20components%20of%20any%20YouTube%20audiovisual%20content%20made%20available%20as%20part%20of%2C%20or%20in%20connection%20with%2C%20YouTube%20API%20Services.%20For%20example%2C%20you%20must%20not%20apply%20alternate%20audio%20tracks%20to%20videos%3B"
-            target="_blank"
-          >
-            Terms of Use
-          </Link>
-          .
-        </Typography>
-        <TextField
-          label="Paste a YouTube video/playlist link here!"
-          helperText={
-            videoLinkError
-              ? 'Please provide a valid YouTube playlist/video URL'
-              : ''
-          }
-          id="outlined-start-adornment"
-          sx={{ m: 1, width: '98.5%' }} // for some reason, width: 100% causes input to grow outside of Paper container!?
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <InsertLinkIcon />
-              </InputAdornment>
-            ),
-            error: videoLinkError && linkInputTouched,
-            spellCheck: false,
-          }}
-          onChange={handleLinkInputChange}
-          onBlur={handleLinkBlur}
-        />
-      </Paper>
+      <Typography variant="subtitle1" maxWidth="650px">
+        Play any YouTube video or playlist, with more controls than
+        YouTube&apos;s own player offers.
+      </Typography>
+
+      <Box
+        sx={{
+          display: 'grid',
+          gridAutoColumns: 'minmax(0,1fr)',
+          gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+          gap: { md: 2 },
+        }}
+      >
+        <ResponsiveContainer
+          title="YouTube link"
+          contentWrapperSxWide={{ px: 2, py: 2 }}
+        >
+          <>
+            <Typography variant="subtitle1" sx={{ mb: 1 }}>
+              Got a video/playlist link? Just paste it below:
+            </Typography>
+            <YouTubeLinkInput onLinkDataChange={handleVideosChange} />
+          </>
+        </ResponsiveContainer>
+        <UserPlaylists onUserPlaylistPicked={handleVideosChange} />
+      </Box>
     </>
   );
 
@@ -214,8 +215,8 @@ const YouTubePlayerPage: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Box sx={containerStyles}>
-        {!initialized ? (
-          linkInput
+        {!playerInitialized ? (
+          pickPlayerVideoContent
         ) : (
           <Stack spacing={2}>
             <Box ref={playerContainerRef}>
@@ -228,6 +229,7 @@ const YouTubePlayerPage: NextPage = () => {
             {/* {youTubePlayer && <ClassicPlayerUI />} */}
             {/* {youTubePlayer && <PBRPlayerUI />} */}
             {youTubePlayer && <PBRAndLoopPlayerUI />}
+            <Timestamps />
             {mediaElements.length > 1 && (
               <SongList
                 title="Videos"
@@ -238,8 +240,8 @@ const YouTubePlayerPage: NextPage = () => {
                 }}
               />
             )}
-            <Stack direction="column">
-              <Button onClick={() => reset()}>
+            <Stack alignItems="center">
+              <Button onClick={handleReset}>
                 Pick other video or playlist
               </Button>
             </Stack>
@@ -249,51 +251,42 @@ const YouTubePlayerPage: NextPage = () => {
     </>
   );
 };
+
 export default YouTubePlayerPage;
 
-function getYouTubeLinkData(input: string): YouTubeLinkData {
-  let videoId;
-  try {
-    // make use of function used by ytdl-core
-    videoId = getURLVideoID(input);
-  } catch (error) {
-    // continue in any case to also check if there is a playlist ID
+export const getServerSideProps: GetServerSideProps<Props> = async ({
+  req,
+  query,
+}) => {
+  const { p: playlistIdVal, v: videoIdVal, i: indexVal } = query;
+  let initialMediaElements:
+    | (YouTubeVideoData | YouTubePlaylistVideoData)[]
+    | null = null;
+
+  if (!!playlistIdVal && typeof playlistIdVal === 'string') {
+    const token = await getToken({ req });
+    const googleApiToken = token?.accessToken;
+    const playlistData = await fetchPlaylistVideoMetaData(
+      playlistIdVal,
+      undefined,
+      googleApiToken
+    );
+    initialMediaElements = playlistData;
+  } else if (!!videoIdVal && typeof videoIdVal === 'string') {
+    const videoData = await fetchVideoMetaData(videoIdVal);
+    initialMediaElements = [videoData];
   }
-  const playlistId = getYouTubeQueryParam(input, 'list');
-  const playlistIndex = Number(getYouTubeQueryParam(input, 'index'));
+  const initialIndex =
+    typeof indexVal === 'string' &&
+    !isNaN(parseInt(indexVal)) &&
+    initialMediaElements
+      ? clamp(parseInt(indexVal), 0, initialMediaElements.length)
+      : null;
+
   return {
-    videoId,
-    playlistId,
-    playlistIndex: isNaN(playlistIndex) ? undefined : playlistIndex - 1, // playlistIndex on YouTube is not zero-based
+    props: {
+      initialMediaElements,
+      initialIndex,
+    },
   };
-}
-
-//recycling code from ytdl-core
-const validQueryDomains = new Set([
-  'youtube.com',
-  'www.youtube.com',
-  'm.youtube.com',
-  'music.youtube.com',
-  'gaming.youtube.com',
-]);
-
-/**
- * Extracts YouTube link query parameters other than video ID
- *
- * returns undefined if not a valid YouTube URL or param not found
- */
-function getYouTubeQueryParam(link: string, paramName: string) {
-  try {
-    const parsed = new URL(link.trim());
-    let paramValue = parsed.searchParams.get(paramName);
-    if (parsed.hostname && !validQueryDomains.has(parsed.hostname)) {
-      return;
-    }
-    if (!paramValue) {
-      return;
-    }
-    return paramValue;
-  } catch (error) {
-    return;
-  }
-}
+};

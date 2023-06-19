@@ -1,4 +1,5 @@
 import { usePlaybackStore } from '@frontend/media-playback/store';
+import { secondsToTimeStr } from '@frontend/util/format-time';
 import { Box, SxProps, Typography } from '@mui/material';
 import ProgressBar from './ProgressBar';
 
@@ -39,27 +40,13 @@ const PlaybackProgressBar = ({ sx }: Props) => {
   return (
     <Box sx={{ ...containerStyles, ...sx }}>
       <Typography sx={currentTimeStyles}>
-        {secondsToMinutesAndSecondsStr(currentTime)}
+        {secondsToTimeStr(currentTime)}
       </Typography>
       <ProgressBar sx={progressBarStyles} />
       <Typography sx={durationStyles}>
-        {duration ? secondsToMinutesAndSecondsStr(duration) : '--:--'}
+        {duration ? secondsToTimeStr(duration) : '--:--'}
       </Typography>
     </Box>
   );
 };
 export default PlaybackProgressBar;
-
-function secondsToMinutesAndSecondsStr(secs: number) {
-  let minutes = Math.floor(secs / 60);
-  let seconds = Math.round(secs % 60);
-  if (seconds == 60) {
-    minutes++;
-    seconds = 0;
-  }
-  return `${padTo2Digits(minutes)}:${padTo2Digits(seconds)}`;
-}
-
-function padTo2Digits(num: number) {
-  return num.toString().padStart(2, '0');
-}

@@ -4,6 +4,7 @@ import {
   BasicPlayback,
   BasicPlaybackActions,
   createBasicPlaybackManipulator,
+  initialMediumPlaybackState,
 } from './basic';
 import {
   MediaSwitching,
@@ -15,12 +16,22 @@ import {
   MediaSessionActions,
   MediaSessionManipulation,
 } from './media-session';
-import { createLoopManipulator, Loop, LoopActions } from './loop';
+import {
+  createLoopManipulator,
+  initialLoopState,
+  Loop,
+  LoopActions,
+} from './loop';
+import { Timestamp } from '@models';
 
 export type PlaybackStore = BasicPlayback &
   Loop &
   MediaSwitching &
   MediaSessionManipulation;
+
+export type MediaElement = { [prop: string]: any } & {
+  timestamps: Timestamp[];
+};
 
 export const usePlaybackStore = create<PlaybackStore>()(
   devtools(
@@ -66,3 +77,19 @@ export type PlaybackActions = BasicPlaybackActions &
   LoopActions &
   MediaSessionActions &
   MediaSwitchingActions;
+
+// whenever the currently playing medium changes, we want to reset both the "medium playback state" (except for the playing prop) and the "loop state"
+const { playing, ...mediumPlaybackStateResetProps } =
+  initialMediumPlaybackState;
+const resetCurrentMediumPlaybackState = () =>
+  usePlaybackStore.setState(mediumPlaybackStateResetProps);
+const resetLoopState = () => usePlaybackStore.setState(initialLoopState);
+
+const unsubIdx = usePlaybackStore.subscribe(
+  store => store.currIdx,
+  () => {
+    console.log('resetting current medium playback + loop states');
+    resetCurrentMediumPlaybackState();
+    resetLoopState();
+  }
+);

@@ -6,7 +6,7 @@ import { Box } from '@mui/material';
 import AudioPlayer from '@frontend/media-playback/AudioPlayer';
 import { Song, SourceData } from '@models';
 import * as mmb from 'music-metadata-browser';
-import SongList from 'features/SongList/SongList';
+import SongList from '@frontend/media-playback/ui/SongList';
 
 type Props = {};
 

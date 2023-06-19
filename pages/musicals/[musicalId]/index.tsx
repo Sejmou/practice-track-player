@@ -84,8 +84,14 @@ const MusicalPage: NextPage<Props> = ({
         <TrackFilter />
         <MusicalSongPlayer />
         <Box sx={tracksAndSongsContainerStyles}>
-          <TrackList sx={trackListStyles} />
-          <DescriptionContainer sx={descriptionContainerStyles} />
+          <TrackList
+            sx={trackListStyles}
+            contentWrapperSxWide={{ maxHeight: { md: 200 } }}
+          />
+          <DescriptionContainer
+            sx={descriptionContainerStyles}
+            contentWrapperSxWide={{ maxHeight: { md: 200 } }}
+          />
           <MusicalSongList sx={songListStyles} />
         </Box>
       </Stack>

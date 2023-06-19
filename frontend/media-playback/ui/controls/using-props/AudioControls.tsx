@@ -10,7 +10,7 @@ import WaveformViewZoomControls from './WaveformViewZoomControls';
 import React from 'react';
 import { useKeyboardShortcuts } from '@frontend/util/use-keyboard-shortcuts';
 import { WaveformViewPoint } from './WaveFormView/WaveformView';
-import SuspenseContainer from 'features/SuspenseContainer/SuspenseContainer';
+import SuspenseContainer from '@frontend/util/SuspenseContainer';
 import LoopControls from './LoopControls';
 
 import tinycolor from 'tinycolor2';

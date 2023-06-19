@@ -5,7 +5,7 @@ import { createPointMarker, createSegmentMarker } from './MarkerFactories';
 import { createSegmentLabel } from './SegmentLabelFactory';
 
 import { Box, SxProps } from '@mui/material';
-import SuspenseContainer from 'features/SuspenseContainer/SuspenseContainer';
+import SuspenseContainer from '@frontend/util/SuspenseContainer';
 
 const viewContainerStyles: SxProps = {
   backgroundColor: '#fff',

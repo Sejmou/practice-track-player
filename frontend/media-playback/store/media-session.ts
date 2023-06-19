@@ -73,14 +73,14 @@ export const createMediaSessionManipulator: PlaybackStateManipulator<
           'nexttrack',
           () => {
             console.log('next track');
-            get().next();
+            get().goToNext();
           },
         ],
         [
           'previoustrack',
           () => {
             console.log('previous track');
-            get().previous();
+            get().goToPrevious();
           },
         ],
         //['seekto', playbackActions.seekTo],//TODO if motivated

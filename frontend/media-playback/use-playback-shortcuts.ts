@@ -9,8 +9,11 @@ export function usePlaybackShortcuts(
     | 'seekBackward'
     | 'increasePlaybackRate'
     | 'decreasePlaybackRate'
-    | 'previous'
-    | 'next'
+    | 'goToPrevious'
+    | 'goToNext'
+    | 'toggleLoop'
+    | 'setLoopStartToCurrent'
+    | 'setLoopEndToCurrent'
   >,
   active: boolean
 ) {
@@ -20,18 +23,15 @@ export function usePlaybackShortcuts(
         { key: ' ' },
         event => {
           if (document.activeElement) {
-            const inputElementTagNames = [
-              'input',
-              'select',
-              'button',
-              'textarea',
-            ];
+            const kindaInputElementTagNames = ['input', 'select', 'textarea'];
+            const activeElementIsKindaInput = !!kindaInputElementTagNames.find(
+              n => n === document.activeElement?.tagName.toLowerCase()
+            );
             if (
-              inputElementTagNames.find(
-                n => n === document.activeElement?.tagName.toLowerCase()
-              )
+              activeElementIsKindaInput &&
+              !(document.activeElement.getAttribute('type') === 'range') // space key on slider should still trigger playpause toggle, so we add this condition
             ) {
-              // user probably wants to interact with input, do nothing
+              // user probably wants to interact with element, do nothing
               return;
             }
           }
@@ -44,8 +44,15 @@ export function usePlaybackShortcuts(
       [{ key: 'ArrowRight' }, () => shortcutActions.seekForward(5)],
       [{ key: '-' }, () => shortcutActions.decreasePlaybackRate(0.05)],
       [{ key: '+' }, () => shortcutActions.increasePlaybackRate(0.05)],
-      [{ key: 'ArrowLeft', ctrlKey: true }, () => shortcutActions.previous()],
-      [{ key: 'ArrowRight', ctrlKey: true }, () => shortcutActions.next()],
+      [
+        { key: 'ArrowLeft', ctrlKey: true },
+        () => shortcutActions.goToPrevious(),
+      ],
+      [{ key: 'ArrowRight', ctrlKey: true }, () => shortcutActions.goToNext()],
+      [{ key: 'ArrowRight', ctrlKey: true }, () => shortcutActions.goToNext()],
+      [{ key: 'l' }, () => shortcutActions.toggleLoop()],
+      [{ key: ',' }, () => shortcutActions.setLoopStartToCurrent()],
+      [{ key: '.' }, () => shortcutActions.setLoopEndToCurrent()],
     ],
     active
   );

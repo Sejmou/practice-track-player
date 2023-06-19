@@ -1,16 +1,16 @@
+import { Link, SxProps, Typography } from '@mui/material';
+
+import { useEffect, useMemo } from 'react';
 import ResponsiveContainer from '@frontend/layout/ResponsiveContainer';
-import SuspenseContainer from 'features/SuspenseContainer/SuspenseContainer';
+import SuspenseContainer from '@frontend/util/SuspenseContainer';
 import { useMusicalContext } from '@frontend/musical/musical-context';
 import { useYouTubeDescriptionFetcher } from '@frontend/media-playback/use-audio-data-fetcher';
 import { MusicalSongTrackTimeStamp } from '@models';
-import { Link, SxProps, Typography } from '@mui/material';
-import { getSubstringAfterFirstSubstringOccurence } from '@util';
-import moment from 'moment';
-import { useEffect, useMemo } from 'react';
+import { extractTimestamp } from '@util';
 
-type Props = { sx?: SxProps };
+type Props = { sx?: SxProps; contentWrapperSxWide?: SxProps };
 
-const DescriptionContainer = ({ sx }: Props) => {
+const DescriptionContainer = ({ sx, contentWrapperSxWide }: Props) => {
   const {
     currentTrack: track,
     seekCurrentTrack,
@@ -29,7 +29,7 @@ const DescriptionContainer = ({ sx }: Props) => {
 
     const paragraphs =
       description?.split('\n').map((l, i) => {
-        const timeStampData = extractTimeStamp(l);
+        const timeStampData = extractTimestamp(l);
         if (timeStampData) {
           const { timeStampString, seconds, restOfLine } = timeStampData;
           const firstLetterIdx = restOfLine.match('[a-zA-Z]')?.index; // https://stackoverflow.com/a/59575890/13727176
@@ -76,7 +76,7 @@ const DescriptionContainer = ({ sx }: Props) => {
   return (
     <ResponsiveContainer
       sx={sx}
-      contentWrapperSxWide={{ px: 2, py: 1 }}
+      contentWrapperSxWide={{ px: 2, py: 1, ...contentWrapperSxWide }}
       title="Current Track Description"
     >
       <>
@@ -100,22 +100,3 @@ const DescriptionContainer = ({ sx }: Props) => {
   );
 };
 export default DescriptionContainer;
-
-function extractTimeStamp(descriptionLine: string) {
-  // remove whitespace at beginning and end of line, replace any repeated whitespace with single space
-  const str = descriptionLine.trim().replaceAll(/\s+/g, ' ');
-  const hmsDurationRegex = /^(?:(?:([01]?\d|2[0-3]):)?([0-5]?\d):)?([0-5]?\d)/;
-  // regex that should match HH:MM:SS duration string: https://stackoverflow.com/a/8318367/13727176
-  const match = str.match(hmsDurationRegex);
-  if (match) {
-    const timeStampString = match[0];
-    return {
-      timeStampString,
-      seconds: moment.duration(timeStampString).asSeconds(),
-      restOfLine: getSubstringAfterFirstSubstringOccurence(
-        descriptionLine,
-        timeStampString
-      ),
-    };
-  }
-}
